@@ -1,0 +1,43 @@
+<div class="header">
+    <div class="header-content">
+        <nav class="navbar navbar-expand">
+            <div class="collapse navbar-collapse justify-content-between">
+                <div class="header-left">
+                    <form>
+                        <div class="input-group search-area">
+                            <span class="input-group-text"><button type="button"><i class="flaticon-381-search-2"></i></button></span>
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                    </form>
+                    <div class="front-menu">
+                        <a href="javascript:void(0);" class="active">Dashboard</a>
+                        <a href="javascript:void(0);">Operações</a>
+                        <a href="javascript:void(0);">Relatórios</a>
+                    </div>
+                </div>
+                <ul class="navbar-nav header-right">
+                    <li class="nav-item dropdown header-profile">
+                        <a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
+                            <div class="header-info">
+                                <span>{{ request.user.get_full_name|default:request.user.get_username }}</span>
+                                <small>Rotta Backoffice</small>
+                            </div>
+                            <i class="fa fa-user-circle fs-2"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a href="javascript:void(0);" class="dropdown-item ai-icon">
+                                <span class="ms-2">Perfil</span>
+                            </a>
+                            <form method="post" action="{% url 'backoffice:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item ai-icon">
+                                    <span class="ms-2">Sair</span>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>

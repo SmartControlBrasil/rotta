@@ -6,6 +6,7 @@ from src.shared.infrastructure.django.views import health
 urlpatterns = [
     path("health/", health, name="health"),
     path("admin/", admin.site.urls),
+    path("app/", include("src.shared.interfaces.backoffice.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("src.shared.interfaces.http.urls")),
 ]

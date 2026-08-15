@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        {% include 'backoffice/partials/head.html' %}
+        {% block additional_css %}{% endblock %}
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        <div id="preloader">
+            <div class="lds-ripple">
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+        <div id="main-wrapper" class="wallet-open">
+            {% include 'backoffice/partials/nav-header.html' %}
+            {% include 'backoffice/partials/topbar.html' %}
+            {% include 'backoffice/partials/sidebar.html' %}
+
+            {% block message %}{% endblock %}
+            {% block content %}{% endblock %}
+
+            {% include 'backoffice/partials/footer.html' %}
+        </div>
+
+        {% include 'backoffice/partials/scripts.html' %}
+        {% block additional_js %}{% endblock %}
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>
