@@ -1,0 +1,4 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">{% include 'backoffice/partials/breadcrumbs.html' %}<div class="card"><div class="card-header"><h4 class="card-title">{{ role.code }}</h4></div><div class="card-body"><p><strong>Name:</strong> {{ role.name }}</p><p><strong>Description:</strong> {{ role.description|default:'-' }}</p><div class="table-responsive"><table class="table"><thead><tr><th>Permission</th><th>Name</th><th>Description</th></tr></thead><tbody>{% for binding in role.role_permissions.all %}<tr><td>{{ binding.permission.code }}</td><td>{{ binding.permission.name }}</td><td>{{ binding.permission.description|default:'-' }}</td></tr>{% empty %}<tr><td colspan="3">Nenhuma permission associada.</td></tr>{% endfor %}</tbody></table></div></div></div></div></div>
+{% endblock %}

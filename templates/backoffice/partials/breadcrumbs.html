@@ -1,0 +1,1 @@
+<div class="page-titles"><ol class="breadcrumb">{% for label, url in breadcrumbs %}{% if url %}<li class="breadcrumb-item"><a href="{{ url }}">{{ label }}</a></li>{% else %}<li class="breadcrumb-item active"><a href="javascript:void(0);">{{ label }}</a></li>{% endif %}{% endfor %}</ol></div>

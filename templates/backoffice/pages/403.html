@@ -1,0 +1,2 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}<div class="content-body"><div class="container-fluid">{% include 'backoffice/partials/breadcrumbs.html' %}<div class="card"><div class="card-body text-center"><h3>Acesso negado</h3><p class="mb-3">Seu usuário não possui permissão para acessar esta área.</p><a class="btn btn-primary" href="{% url 'backoffice:dashboard' %}">Voltar ao dashboard</a></div></div></div></div>{% endblock %}

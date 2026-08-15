@@ -10,3 +10,5 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("src.shared.interfaces.http.urls")),
 ]
+
+handler403 = "src.shared.interfaces.backoffice.views.backoffice_permission_denied"
