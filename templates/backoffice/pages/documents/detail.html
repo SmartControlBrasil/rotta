@@ -1,0 +1,84 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-5">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Metadados</h4>
+                        {% if can_download %}
+                            <a class="btn btn-outline-primary btn-sm" href="{% url 'backoffice:document_download' document.id %}">Download</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Entidade:</strong> {{ document_record.entity_label }} ({{ document_record.entity_type }})</p>
+                        <p><strong>Tipo:</strong> {{ document.document_type }}</p>
+                        <p><strong>Arquivo:</strong> {{ document.original_filename|default:'-' }}</p>
+                        <p><strong>Status:</strong> <span class="badge badge-light">{{ document.status }}</span></p>
+                        <p><strong>Emissão:</strong> {{ document.issue_date|date:'d/m/Y'|default:'-' }}</p>
+                        <p><strong>Validade:</strong> {{ document.expiration_date|date:'d/m/Y'|default:'-' }}</p>
+                        <p><strong>Revisor:</strong> {{ document.reviewed_by|default:'-' }}</p>
+                        <p><strong>Revisado em:</strong> {{ document.reviewed_at|date:'d/m/Y H:i'|default:'-' }}</p>
+                        {% if document.rejection_reason %}<p><strong>Motivo rejeição:</strong> {{ document.rejection_reason }}</p>{% endif %}
+                        {% if document.notes %}<p><strong>Observações:</strong> {{ document.notes }}</p>{% endif %}
+                        {% if can_review or can_approve or can_reject %}
+                            <hr>
+                            <form method="post" class="d-flex flex-wrap gap-2">
+                                {% csrf_token %}
+                                {% if can_review %}<button class="btn btn-info btn-sm" name="action" value="start_review" type="submit">Iniciar análise</button>{% endif %}
+                                {% if can_approve %}<button class="btn btn-success btn-sm" name="action" value="approve" type="submit">Aprovar</button>{% endif %}
+                            </form>
+                            {% if can_reject %}
+                                <form method="post" class="mt-3">
+                                    {% csrf_token %}
+                                    <div class="mb-2"><textarea class="form-control" name="rejection_reason" rows="2" placeholder="Motivo da rejeição" required></textarea></div>
+                                    <button class="btn btn-danger btn-sm" name="action" value="reject" type="submit">Rejeitar</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-7">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Versões</h4></div>
+                    <div class="card-body table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Status</th><th>Validade</th><th>Revisor</th><th>Criado em</th></tr></thead>
+                            <tbody>
+                                {% for version in versions %}
+                                    <tr>
+                                        <td>{{ version.status }}</td>
+                                        <td>{{ version.expiration_date|date:'d/m/Y'|default:'-' }}</td>
+                                        <td>{{ version.reviewed_by|default:'-' }}</td>
+                                        <td>{{ version.created_at|date:'d/m/Y H:i' }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr><td colspan="4" class="text-center text-muted">Sem histórico de versões.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Auditoria</h4></div>
+                    <div class="card-body table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Ação</th><th>Ator</th><th>Data</th></tr></thead>
+                            <tbody>
+                                {% for log in audit_logs %}
+                                    <tr><td>{{ log.action }}</td><td>{{ log.actor|default:'-' }}</td><td>{{ log.created_at|date:'d/m/Y H:i' }}</td></tr>
+                                {% empty %}
+                                    <tr><td colspan="3" class="text-center text-muted">Nenhum evento registrado.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

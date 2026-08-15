@@ -1,0 +1,90 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4 col-sm-6"><div class="card"><div class="card-body"><h6 class="text-muted mb-2">Total</h6><h3 class="mb-0">{{ kpis.total }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4 col-sm-6"><div class="card"><div class="card-body"><h6 class="text-muted mb-2">Ativos</h6><h3 class="mb-0">{{ kpis.active }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4 col-sm-6"><div class="card"><div class="card-body"><h6 class="text-muted mb-2">Disponíveis</h6><h3 class="mb-0">{{ kpis.available }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4 col-sm-6"><div class="card"><div class="card-body"><h6 class="text-muted mb-2">Em manutenção</h6><h3 class="mb-0">{{ kpis.maintenance }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4 col-sm-6"><div class="card"><div class="card-body"><h6 class="text-muted mb-2">Carga seca</h6><h3 class="mb-0">{{ kpis.dry }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4 col-sm-6"><div class="card"><div class="card-body"><h6 class="text-muted mb-2">Refrigerados</h6><h3 class="mb-0">{{ kpis.refrigerated }}</h3></div></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Frota</h4>
+                {% if can_create_vehicle %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'backoffice:vehicle_create' %}">+ Novo Veículo</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3"><input class="form-control" name="q" value="{{ filters.q }}" placeholder="Placa, RENAVAM, marca, modelo, transportadora"></div>
+                    <div class="col-md-2"><select class="form-control" name="status"><option value="">Status cadastral</option>{% for status in vehicle_statuses %}<option value="{{ status.value }}" {% if filters.status == status.value %}selected{% endif %}>{{ status.value }}</option>{% endfor %}</select></div>
+                    <div class="col-md-2"><select class="form-control" name="operational_status"><option value="">Status operacional</option>{% for status in operational_statuses %}<option value="{{ status.value }}" {% if filters.operational_status == status.value %}selected{% endif %}>{{ status.value }}</option>{% endfor %}</select></div>
+                    <div class="col-md-2"><select class="form-control" name="vehicle_type"><option value="">Tipo</option>{% for item in vehicle_types %}<option value="{{ item.value }}" {% if filters.vehicle_type == item.value %}selected{% endif %}>{{ item.value }}</option>{% endfor %}</select></div>
+                    <div class="col-md-1"><select class="form-control" name="body_type"><option value="">Carroceria</option>{% for item in vehicle_body_types %}<option value="{{ item.value }}" {% if filters.body_type == item.value %}selected{% endif %}>{{ item.value }}</option>{% endfor %}</select></div>
+                    <div class="col-md-1"><select class="form-control" name="cargo_profile"><option value="">Perfil</option>{% for item in vehicle_cargo_profiles %}<option value="{{ item.value }}" {% if filters.cargo_profile == item.value %}selected{% endif %}>{{ item.value }}</option>{% endfor %}</select></div>
+                    <div class="col-md-1"><input class="form-control" name="state" maxlength="2" placeholder="UF" value="{{ filters.state }}"></div>
+                    <div class="col-md-2"><select class="form-control" name="carrier"><option value="">Transportadora</option>{% for carrier in carriers %}<option value="{{ carrier.id }}" {% if filters.carrier == carrier.id|stringformat:'s' %}selected{% endif %}>{{ carrier.trade_name|default:carrier.organization.name }}</option>{% endfor %}</select></div>
+                    <div class="col-md-2"><select class="form-control" name="driver"><option value="">Motorista</option>{% for driver in drivers %}<option value="{{ driver.id }}" {% if filters.driver == driver.id|stringformat:'s' %}selected{% endif %}>{{ driver.full_name }}</option>{% endfor %}</select></div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Veículo</th>
+                                <th>Placa</th>
+                                <th>Tipo</th>
+                                <th>Carroceria</th>
+                                <th>Perfil</th>
+                                <th>Transportadora</th>
+                                <th>Motorista atual</th>
+                                <th>Capacidade</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                                <tr>
+                                    <td><strong>{{ vehicle.brand|default:'-' }} {{ vehicle.model|default:'' }}</strong><br><small class="text-muted">{{ vehicle.organization }}</small></td>
+                                    <td>{{ vehicle.plate }}</td>
+                                    <td>{{ vehicle.vehicle_type }}</td>
+                                    <td>{{ vehicle.body_type|default:'-' }}</td>
+                                    <td>
+                                        <span class="badge badge-info">{{ vehicle.cargo_profile }}</span>
+                                        {% if vehicle.refrigeration_profile_id %}<span class="badge badge-primary">Frio</span>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% for link in vehicle.carrier_links.all %}
+                                            {% if link.active %}{{ link.carrier.trade_name|default:link.carrier.organization.name }}{% endif %}
+                                        {% empty %}-{% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for assignment in vehicle.driver_assignments.all %}
+                                            {% if assignment.active and assignment.primary %}{{ assignment.driver.full_name }}{% endif %}
+                                        {% empty %}-{% endfor %}
+                                    </td>
+                                    <td>{{ vehicle.capacity_weight_kg|default:'-' }} kg</td>
+                                    <td>
+                                        <span class="badge badge-light">{{ vehicle.status }}</span>
+                                        <span class="badge badge-secondary">{{ vehicle.operational_status }}</span>
+                                    </td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:vehicle_detail' vehicle.id %}">Abrir</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="10" class="text-center text-muted">Nenhum veículo encontrado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

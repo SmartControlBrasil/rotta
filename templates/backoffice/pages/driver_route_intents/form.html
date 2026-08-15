@@ -1,0 +1,60 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header"><h4 class="card-title mb-0">{% if is_edit %}Editar{% else %}Nova{% endif %} Intenção de Rota</h4></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Motorista</label>{{ form.driver }}{{ form.driver.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Veículo (opcional)</label>{{ form.vehicle }}{{ form.vehicle.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipo</label>{{ form.intent_type }}{{ form.intent_type.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Preferência de carga</label>{{ form.cargo_preference }}{{ form.cargo_preference.errors }}
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Cidade origem</label>{{ form.origin_city }}{{ form.origin_city.errors }}
+                        </div>
+                        <div class="col-md-1 mb-3">
+                            <label class="form-label">UF</label>{{ form.origin_state }}{{ form.origin_state.errors }}
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Cidade destino</label>{{ form.destination_city }}{{ form.destination_city.errors }}
+                        </div>
+                        <div class="col-md-1 mb-3">
+                            <label class="form-label">UF</label>{{ form.destination_state }}{{ form.destination_state.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Disponível de</label>{{ form.available_from }}{{ form.available_from.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Disponível até</label>{{ form.available_until }}{{ form.available_until.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Desvio origem (km)</label>{{ form.max_origin_deviation_km }}{{ form.max_origin_deviation_km.errors }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Desvio destino (km)</label>{{ form.max_destination_deviation_km }}{{ form.max_destination_deviation_km.errors }}
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Observações</label>{{ form.notes }}{{ form.notes.errors }}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Salvar</button>
+                    <a class="btn btn-light" href="{% url 'backoffice:driver_route_intents' %}">Voltar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

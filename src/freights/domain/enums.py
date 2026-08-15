@@ -1,0 +1,38 @@
+from enum import StrEnum
+
+
+class FreightRequestStatus(StrEnum):
+    DRAFT = "DRAFT"
+    SUBMITTED = "SUBMITTED"
+    UNDER_REVIEW = "UNDER_REVIEW"
+    QUOTING = "QUOTING"
+    READY_TO_PUBLISH = "READY_TO_PUBLISH"
+    CANCELLED = "CANCELLED"
+    CLOSED = "CLOSED"
+
+
+class FreightStopType(StrEnum):
+    PICKUP = "PICKUP"
+    DELIVERY = "DELIVERY"
+
+
+class FreightCargoProfile(StrEnum):
+    DRY_CARGO = "DRY_CARGO"
+    REFRIGERATED_CARGO = "REFRIGERATED_CARGO"
+
+
+class FreightCargoType(StrEnum):
+    GENERAL_CARGO = "GENERAL_CARGO"
+    FOOD = "FOOD"
+    BEVERAGE = "BEVERAGE"
+    PHARMACEUTICAL = "PHARMACEUTICAL"
+    ELECTRONICS = "ELECTRONICS"
+    MACHINERY = "MACHINERY"
+    CONSTRUCTION_MATERIAL = "CONSTRUCTION_MATERIAL"
+    OTHER = "OTHER"
+
+
+class FreightRequestPriority(StrEnum):
+    NORMAL = "NORMAL"
+    URGENT = "URGENT"
+    SCHEDULED = "SCHEDULED"

@@ -1,0 +1,92 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Total</p><h3 class="mb-0">{{ kpis.total }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Aguardando análise</p><h3 class="mb-0">{{ kpis.pending_review|add:kpis.pending }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Aprovados</p><h3 class="mb-0">{{ kpis.approved }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Rejeitados</p><h3 class="mb-0">{{ kpis.rejected }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Vencendo 30d</p><h3 class="mb-0">{{ kpis.expiring_30 }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Vencidos</p><h3 class="mb-0">{{ kpis.expired }}</h3></div></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Documentos</h4>
+                <div class="d-flex gap-2">
+                    {% if can_review %}<a class="btn btn-outline-primary btn-sm" href="{% url 'backoffice:documents_review' %}">Fila de análise</a>{% endif %}
+                    {% if can_upload %}<a class="btn btn-primary btn-sm" href="{% url 'backoffice:document_upload' %}">+ Upload</a>{% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3"><input class="form-control" name="q" value="{{ filters.q }}" placeholder="Busca"></div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="entity_type">
+                            <option value="">Entidade</option>
+                            {% for entity_type in entity_types %}<option value="{{ entity_type }}" {% if filters.entity_type == entity_type %}selected{% endif %}>{{ entity_type }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="status">
+                            <option value="">Status</option>
+                            {% for status in document_statuses %}<option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>{{ status }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="validity">
+                            <option value="">Validade</option>
+                            <option value="valid" {% if filters.validity == 'valid' %}selected{% endif %}>Válido</option>
+                            <option value="expiring_30" {% if filters.validity == 'expiring_30' %}selected{% endif %}>Vencendo 30d</option>
+                            <option value="expiring_15" {% if filters.validity == 'expiring_15' %}selected{% endif %}>Vencendo 15d</option>
+                            <option value="expiring_7" {% if filters.validity == 'expiring_7' %}selected{% endif %}>Vencendo 7d</option>
+                            <option value="expired" {% if filters.validity == 'expired' %}selected{% endif %}>Vencido</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Documento</th>
+                                <th>Entidade</th>
+                                <th>Tipo</th>
+                                <th>Emissão</th>
+                                <th>Validade</th>
+                                <th>Status</th>
+                                <th>Revisor</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for document in documents %}
+                                <tr>
+                                    <td>{{ document.original_filename|default:document.document_type }}</td>
+                                    <td>{{ document.entity_label }} <br><small class="text-muted">{{ document.entity_type }}</small></td>
+                                    <td>{{ document.document_type }}</td>
+                                    <td>{{ document.issue_date|date:'d/m/Y'|default:'-' }}</td>
+                                    <td>{{ document.expiration_date|date:'d/m/Y'|default:'-' }}</td>
+                                    <td><span class="badge badge-light">{{ document.status }}</span></td>
+                                    <td>{{ document.reviewed_by_label|default:'-' }}</td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:document_detail' document.id %}">Abrir</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="8" class="text-center text-muted">Nenhum documento encontrado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if is_paginated %}
+                    <nav class="mt-3"><ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>{% endif %}
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a></li>{% endif %}
+                    </ul></nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

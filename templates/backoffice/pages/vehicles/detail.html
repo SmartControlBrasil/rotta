@@ -1,0 +1,188 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-5">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Identificação</h4>
+                        {% if can_update_vehicle %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:vehicle_edit' vehicle.id %}">Editar</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Placa:</strong> {{ vehicle.plate }}</p>
+                        <p><strong>RENAVAM:</strong> {{ vehicle.masked_renavam|default:'-' }}</p>
+                        <p><strong>Chassi:</strong> {% if vehicle.chassis %}{{ vehicle.chassis|slice:":4" }}***{% else %}-{% endif %}</p>
+                        <p><strong>Organização:</strong> {{ vehicle.organization }}</p>
+                        <p><strong>UF:</strong> {{ vehicle.state|default:'-' }}</p>
+                        <p><strong>Tipo:</strong> {{ vehicle.vehicle_type }}</p>
+                        <p><strong>Carroceria:</strong> {{ vehicle.body_type|default:'-' }}</p>
+                        <p><strong>Perfil de carga:</strong> <span class="badge badge-info">{{ vehicle.cargo_profile }}</span></p>
+                        <p><strong>Vínculo:</strong> {{ vehicle.ownership_type }}</p>
+                        <p><strong>Status cadastral:</strong> <span class="badge badge-light">{{ vehicle.status }}</span></p>
+                        <p><strong>Status operacional:</strong> <span class="badge badge-secondary">{{ vehicle.operational_status }}</span></p>
+
+                        {% if can_change_vehicle_status %}
+                            <hr>
+                            <form method="post" action="{% url 'backoffice:vehicle_status' vehicle.id %}" class="d-flex flex-wrap gap-2">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm" name="status" value="ACTIVE" type="submit">Ativar</button>
+                                <button class="btn btn-warning btn-sm" name="status" value="SUSPENDED" type="submit">Suspender</button>
+                                <button class="btn btn-danger btn-sm" name="status" value="BLOCKED" type="submit">Bloquear</button>
+                                <button class="btn btn-light btn-sm" name="status" value="INACTIVE" type="submit">Inativar</button>
+                            </form>
+                            <form method="post" action="{% url 'backoffice:vehicle_status' vehicle.id %}" class="d-flex flex-wrap gap-2 mt-2">
+                                {% csrf_token %}
+                                <button class="btn btn-info btn-sm" name="operational_status" value="AVAILABLE" type="submit">Disponível</button>
+                                <button class="btn btn-primary btn-sm" name="operational_status" value="ASSIGNED" type="submit">Atribuído</button>
+                                <button class="btn btn-secondary btn-sm" name="operational_status" value="MAINTENANCE" type="submit">Manutenção</button>
+                                <button class="btn btn-dark btn-sm" name="operational_status" value="UNAVAILABLE" type="submit">Indisponível</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Características</h4></div>
+                    <div class="card-body">
+                        <p><strong>Marca/modelo:</strong> {{ vehicle.brand|default:'-' }} {{ vehicle.model|default:'' }}</p>
+                        <p><strong>Ano fabricação/modelo:</strong> {{ vehicle.year|default:'-' }} / {{ vehicle.model_year|default:'-' }}</p>
+                        <p><strong>Cor:</strong> {{ vehicle.color|default:'-' }}</p>
+                        <p><strong>Odômetro:</strong> {{ vehicle.odometer_km|default:'-' }} km</p>
+                        <p><strong>Fechado / aberto:</strong> {{ vehicle.closed_box|yesno:'Sim,Não' }} / {{ vehicle.open_body|yesno:'Sim,Não' }}</p>
+                        <p><strong>Plataforma elevatória:</strong> {{ vehicle.tail_lift|yesno:'Sim,Não' }}</p>
+                        <p><strong>Ajudante disponível:</strong> {{ vehicle.helper_available|yesno:'Sim,Não' }}</p>
+                        <p><strong>Compatível com perigosa:</strong> {{ vehicle.hazardous_compatible|yesno:'Sim,Não' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-7">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Capacidade</h4></div>
+                    <div class="card-body">
+                        <p><strong>Capacidade carga:</strong> {{ vehicle.capacity_weight_kg|default:'-' }} kg</p>
+                        <p><strong>Peso bruto:</strong> {{ vehicle.gross_weight_kg|default:'-' }} kg</p>
+                        <p><strong>Volume útil:</strong> {{ vehicle.capacity_volume_m3|default:'-' }} m³</p>
+                        <p><strong>Dimensões úteis:</strong> {{ vehicle.max_length_m|default:'-' }} x {{ vehicle.max_width_m|default:'-' }} x {{ vehicle.max_height_m|default:'-' }} m</p>
+                    </div>
+                </div>
+
+                {% if vehicle.refrigeration_profile %}
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Sistema de Refrigeração</h4></div>
+                        <div class="card-body">
+                            <p><strong>Unidade frigorífica:</strong> {{ vehicle.refrigeration_profile.has_refrigeration_unit|yesno:'Sim,Não' }}</p>
+                            <p><strong>Fabricante/modelo:</strong> {{ vehicle.refrigeration_profile.unit_manufacturer|default:'-' }} {{ vehicle.refrigeration_profile.unit_model|default:'' }}</p>
+                            <p><strong>Faixa operacional:</strong> {{ vehicle.refrigeration_profile.temperature_min_c }}°C a {{ vehicle.refrigeration_profile.temperature_max_c }}°C</p>
+                            <p><strong>Setpoint padrão:</strong> {{ vehicle.refrigeration_profile.default_setpoint_c|default:'-' }}°C</p>
+                            <p><strong>Controle:</strong> {{ vehicle.refrigeration_profile.control_type }}</p>
+                            <p><strong>Última/próxima manutenção:</strong> {{ vehicle.refrigeration_profile.last_maintenance_date|date:'d/m/Y'|default:'-' }} / {{ vehicle.refrigeration_profile.next_maintenance_date|date:'d/m/Y'|default:'-' }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Transportadoras vinculadas</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Transportadora</th><th>Tipo vínculo</th><th>Ativo</th></tr></thead>
+                                <tbody>
+                                    {% for link in vehicle.carrier_links.all %}
+                                        <tr>
+                                            <td>{{ link.carrier.trade_name|default:link.carrier.organization.name }}</td>
+                                            <td>{{ link.link_type }}</td>
+                                            <td>{{ link.active|yesno:'Sim,Não' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted">Nenhuma transportadora vinculada.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Motoristas vinculados</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Motorista</th><th>Ativo</th><th>Primário</th><th>Vigência</th></tr></thead>
+                                <tbody>
+                                    {% for assignment in vehicle.driver_assignments.all %}
+                                        <tr>
+                                            <td><a href="{% url 'backoffice:driver_detail' assignment.driver.id %}">{{ assignment.driver.full_name }}</a></td>
+                                            <td>{{ assignment.active|yesno:'Sim,Não' }}</td>
+                                            <td>{{ assignment.primary|yesno:'Sim,Não' }}</td>
+                                            <td>{{ assignment.valid_from|date:'d/m/Y' }} - {{ assignment.valid_until|date:'d/m/Y'|default:'Atual' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="4" class="text-center text-muted">Nenhum motorista vinculado.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'backoffice/partials/route_intents_card.html' %}
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Documentos & Compliance</h4>
+                        {% if can_manage_documents %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:document_upload' %}">Upload</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Status compliance:</strong>
+                            {% if compliance.status == 'COMPLIANT' %}<span class="badge badge-success">{{ compliance.status }}</span>
+                            {% elif compliance.status == 'WARNING' %}<span class="badge badge-warning">{{ compliance.status }}</span>
+                            {% elif compliance.status == 'PENDING' %}<span class="badge badge-info">{{ compliance.status }}</span>
+                            {% else %}<span class="badge badge-danger">{{ compliance.status }}</span>{% endif %}
+                        </p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Tipo</th><th>Status</th><th>Expiração</th><th></th></tr></thead>
+                                <tbody>
+                                    {% for document in vehicle.documents.all %}
+                                        <tr>
+                                            <td>{{ document.document_type }}</td>
+                                            <td>{{ document.status }}</td>
+                                            <td>{{ document.expiration_date|date:'d/m/Y'|default:'-' }}</td>
+                                            <td><a class="btn btn-light btn-xs" href="{% url 'backoffice:document_detail' document.id %}">Abrir</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="4" class="text-center text-muted">Nenhum documento cadastrado.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Atividades</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Ação</th><th>Ator</th><th>Data</th></tr></thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                        <tr><td>{{ log.action }}</td><td>{{ log.actor|default:'-' }}</td><td>{{ log.created_at|date:'d/m/Y H:i' }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted">Nenhum evento relacionado.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

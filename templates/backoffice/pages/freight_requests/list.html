@@ -1,0 +1,134 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Total</p><h4 class="mb-0">{{ kpis.total }}</h4></div></div></div>
+            <div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Rascunhos</p><h4 class="mb-0">{{ kpis.drafts }}</h4></div></div></div>
+            <div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Enviadas</p><h4 class="mb-0">{{ kpis.submitted }}</h4></div></div></div>
+            <div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Em análise</p><h4 class="mb-0">{{ kpis.under_review }}</h4></div></div></div>
+            <div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Canceladas</p><h4 class="mb-0">{{ kpis.cancelled }}</h4></div></div></div>
+            <div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Refrigeradas</p><h4 class="mb-0">{{ kpis.refrigerated }}</h4></div></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Solicitações de Transporte</h4>
+                {% if can_create %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'backoffice:freight_request_create' %}">+ Nova Solicitação</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3">
+                        <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Código, cliente, cidade ou carga">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="status">
+                            <option value="">Status</option>
+                            {% for status in statuses %}
+                                <option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>
+                                    {% if status == 'DRAFT' %}Rascunho{% elif status == 'SUBMITTED' %}Enviada{% elif status == 'UNDER_REVIEW' %}Em análise{% elif status == 'CANCELLED' %}Cancelada{% else %}{{ status }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="customer">
+                            <option value="">Cliente</option>
+                            {% for customer in customers %}
+                                <option value="{{ customer.id }}" {% if filters.customer == customer.id|stringformat:'s' %}selected{% endif %}>{{ customer.legal_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="cargo_profile">
+                            <option value="">Perfil de carga</option>
+                            {% for profile in cargo_profiles %}
+                                <option value="{{ profile }}" {% if filters.cargo_profile == profile %}selected{% endif %}>
+                                    {% if profile == 'DRY_CARGO' %}Carga seca{% elif profile == 'REFRIGERATED_CARGO' %}Refrigerada{% else %}{{ profile }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <input class="form-control" name="pickup_state" value="{{ filters.pickup_state }}" placeholder="UF origem" maxlength="2">
+                    </div>
+                    <div class="col-md-1">
+                        <input class="form-control" name="delivery_state" value="{{ filters.delivery_state }}" placeholder="UF dest." maxlength="2">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="owner">
+                            <option value="">Responsável</option>
+                            {% for owner in owners %}
+                                <option value="{{ owner.id }}" {% if filters.owner == owner.id|stringformat:'s' %}selected{% endif %}>{{ owner.email }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input class="form-control" type="date" name="pickup_date" value="{{ filters.pickup_date }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+                    </div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Solicitação</th>
+                                <th>Cliente</th>
+                                <th>Origem</th>
+                                <th>Destino</th>
+                                <th>Carga</th>
+                                <th>Perfil</th>
+                                <th>Coleta</th>
+                                <th>Status</th>
+                                <th>Responsável</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in freight_requests %}
+                                <tr>
+                                    <td><strong>{{ request.reference_code }}</strong></td>
+                                    <td>{{ request.customer.legal_name }}</td>
+                                    <td>{{ request.pickup_stop.city|default:'-' }}/{{ request.pickup_stop.state|default:'-' }}</td>
+                                    <td>{{ request.delivery_stop.city|default:'-' }}/{{ request.delivery_stop.state|default:'-' }}</td>
+                                    <td>{{ request.cargo.description|default:'-'|truncatechars:40 }}</td>
+                                    <td>
+                                        {% if request.cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                                            <span class="badge badge-info light">Refrigerada</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary light">Seca</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ request.pickup_stop.scheduled_date|date:'d/m/Y'|default:'-' }}</td>
+                                    <td>
+                                        {% if request.status == 'DRAFT' %}
+                                            <span class="badge badge-warning light">Rascunho</span>
+                                        {% elif request.status == 'SUBMITTED' %}
+                                            <span class="badge badge-primary light">Enviada</span>
+                                        {% elif request.status == 'UNDER_REVIEW' %}
+                                            <span class="badge badge-info light">Em análise</span>
+                                        {% elif request.status == 'CANCELLED' %}
+                                            <span class="badge badge-danger light">Cancelada</span>
+                                        {% else %}
+                                            <span class="badge badge-light">{{ request.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ request.owner|default:'-' }}</td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:freight_request_detail' request.id %}">Abrir</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="10" class="text-center text-muted">Nenhuma solicitação encontrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

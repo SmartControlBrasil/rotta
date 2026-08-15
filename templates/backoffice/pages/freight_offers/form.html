@@ -1,0 +1,21 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">
+{% include 'backoffice/partials/breadcrumbs.html' %}
+<div class="card"><div class="card-header"><h4 class="card-title">Nova oferta — {{ freight_request.reference_code }}</h4></div>
+<div class="card-body">
+{% if not can_create_offer %}<div class="alert alert-warning">Solicitação deve estar em READY_TO_PUBLISH com cotação aprovada ou enviada.</div>{% endif %}
+<form method="post">{% csrf_token %}
+{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+<div class="row">
+<div class="col-md-6 mb-3"><label class="form-label">Cotação relacionada</label>{{ form.freight_quote }}</div>
+<div class="col-md-6 mb-3"><label class="form-label">Valor da oferta (repasse)</label>{{ form.offer_amount }}</div>
+<div class="col-md-6 mb-3"><label class="form-label">Audiência</label>{{ form.audience }}</div>
+<div class="col-md-6 mb-3"><label class="form-label">Validade</label>{{ form.expires_at }}</div>
+<div class="col-md-6 mb-3"><label class="form-label">Responsável</label>{{ form.owner }}</div>
+<div class="col-md-12 mb-3"><label class="form-label">Observações internas</label>{{ form.internal_notes }}</div>
+</div>
+<button class="btn btn-primary" type="submit" {% if not can_create_offer %}disabled{% endif %}>Criar rascunho</button>
+<a class="btn btn-light" href="{% url 'backoffice:freight_request_detail' freight_request.id %}">Voltar</a>
+</form></div></div></div></div>
+{% endblock %}

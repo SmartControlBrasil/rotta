@@ -1,0 +1,292 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">
+{% include 'backoffice/partials/breadcrumbs.html' %}
+<div class="row">
+<div class="col-xl-4"><div class="card"><div class="card-header d-flex justify-content-between"><h4 class="card-title">Resumo</h4>{% if can_edit %}<a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_offer_edit' offer.id %}">Editar</a>{% endif %}</div>
+<div class="card-body">
+<p><strong>Código:</strong> {{ offer.reference_code }}</p>
+<p><strong>Status:</strong> <span class="badge badge-light">{{ offer.status }}</span></p>
+<p><strong>Solicitação:</strong> <a href="{% url 'backoffice:freight_request_detail' offer.freight_request.id %}">{{ offer.freight_request.reference_code }}</a></p>
+<p><strong>Cotação:</strong> <a href="{% url 'backoffice:freight_quote_detail' offer.freight_quote.id %}">{{ offer.freight_quote.reference_code }}</a></p>
+<p><strong>Valor da oferta:</strong> R$ {{ offer.offer_amount }} {{ offer.currency }}</p>
+{% if can_view_margin %}<p><strong>Preço cliente:</strong> R$ {{ offer.freight_quote.customer_price }}</p><p><strong>Spread estimado:</strong> R$ {{ offer.spread_amount }} ({{ offer.spread_percent|floatformat:2 }}%) <small class="text-muted">NÃO REALIZADO</small></p>{% endif %}
+<p><strong>Audiência:</strong> {{ offer.audience }}</p>
+<p><strong>Validade:</strong> {{ offer.expires_at|date:'d/m/Y H:i'|default:'-' }}</p>
+<p><strong>Responsável:</strong> {{ offer.owner|default:'-' }}</p>
+<hr>
+{% if can_ready and offer.status == 'DRAFT' %}<form method="post" action="{% url 'backoffice:freight_offer_ready' offer.id %}">{% csrf_token %}<button class="btn btn-info btn-sm w-100 mb-2" type="submit">Marcar pronta</button></form>{% endif %}
+{% if can_publish and offer.status == 'READY' %}<form method="post" action="{% url 'backoffice:freight_offer_publish' offer.id %}">{% csrf_token %}<button class="btn btn-success btn-sm w-100 mb-2" type="submit">Publicar</button></form>{% endif %}
+{% if can_pause and offer.status == 'PUBLISHED' %}<form method="post" action="{% url 'backoffice:freight_offer_pause' offer.id %}">{% csrf_token %}<button class="btn btn-warning btn-sm w-100 mb-2" type="submit">Pausar</button></form>{% endif %}
+{% if can_pause and offer.status == 'PAUSED' %}<form method="post" action="{% url 'backoffice:freight_offer_resume' offer.id %}">{% csrf_token %}<button class="btn btn-primary btn-sm w-100 mb-2" type="submit">Retomar</button></form>{% endif %}
+{% if can_cancel and offer.status in 'DRAFT,READY,PUBLISHED,PAUSED' %}<form method="post" action="{% url 'backoffice:freight_offer_cancel' offer.id %}">{% csrf_token %}<input class="form-control mb-2" name="cancellation_reason" placeholder="Motivo do cancelamento" required><button class="btn btn-danger btn-sm w-100" type="submit">Cancelar</button></form>{% endif %}
+</div></div></div>
+<div class="col-xl-8">
+<div class="card"><div class="card-header"><h4 class="card-title">Rota e carga</h4></div><div class="card-body">
+<p><strong>Origem:</strong> {{ offer.premises_snapshot.pickup.city|default:'-' }}/{{ offer.premises_snapshot.pickup.state|default:'-' }}</p>
+<p><strong>Destino:</strong> {{ offer.premises_snapshot.delivery.city|default:'-' }}/{{ offer.premises_snapshot.delivery.state|default:'-' }}</p>
+<p><strong>Perfil:</strong> {{ offer.premises_snapshot.cargo_profile|default:'-' }} · <strong>Tipo:</strong> {{ offer.premises_snapshot.cargo_type|default:'-' }}</p>
+<p><strong>Peso:</strong> {{ offer.premises_snapshot.weight_kg|default:'-' }} kg · <strong>Volume:</strong> {{ offer.premises_snapshot.volume_m3|default:'-' }} m³</p>
+<p><strong>Veículo:</strong> {{ offer.premises_snapshot.vehicle_type_required|default:'-' }} · <strong>Carroceria:</strong> {{ offer.premises_snapshot.body_type_required|default:'-' }}</p>
+</div></div>
+{% if offer.premises_snapshot.cargo_profile == 'REFRIGERATED_CARGO' %}
+<div class="card"><div class="card-header"><h4 class="card-title">Requisitos térmicos</h4></div><div class="card-body">
+<p><strong>Mín:</strong> {{ offer.premises_snapshot.temperature_min_c|default:'-' }} °C · <strong>Máx:</strong> {{ offer.premises_snapshot.temperature_max_c|default:'-' }} °C · <strong>Setpoint:</strong> {{ offer.premises_snapshot.target_temperature_c|default:'-' }} °C</p>
+</div></div>
+{% endif %}
+{% if offer.audience == 'PRIVATE' %}
+<div class="card"><div class="card-header"><h4 class="card-title">Targets privados</h4></div><div class="card-body">
+{% if can_manage_targets %}<form method="post" action="{% url 'backoffice:freight_offer_target_add' offer.id %}" class="row g-2 mb-3">{% csrf_token %}
+<div class="col-md-5">{{ target_form.carrier }}</div>
+<div class="col-md-5">{{ target_form.driver }}</div>
+<div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Adicionar</button></div>
+</form>{% endif %}
+<table class="table table-sm"><thead><tr><th>Transportadora</th><th>Motorista</th><th></th></tr></thead><tbody>
+{% for target in offer.targets.all %}
+<tr><td>{{ target.carrier|default:'-' }}</td><td>{{ target.driver|default:'-' }}</td>
+<td>{% if can_manage_targets %}<form method="post" action="{% url 'backoffice:freight_offer_target_remove' offer.id target.id %}">{% csrf_token %}<button class="btn btn-outline-danger btn-xs" type="submit">Remover</button></form>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="3" class="text-muted">Nenhum target configurado.</td></tr>{% endfor %}
+</tbody></table>
+</div></div>
+{% endif %}
+{% if can_view_selection and active_selection %}
+<div class="card border border-warning shadow-sm mb-4">
+    <div class="card-header bg-warning-light d-flex justify-content-between align-items-center">
+        <h4 class="card-title text-warning-emphasis mb-0">Candidato Selecionado</h4>
+        <span class="badge {% if active_selection.status == 'CONFIRMED' %}badge-success{% else %}badge-warning{% endif %}">
+            {{ active_selection.status }}
+        </span>
+    </div>
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <strong>Candidato:</strong> 
+                {% if active_selection.carrier_snapshot %}
+                    {{ active_selection.carrier_snapshot.trade_name }}
+                {% elif active_selection.driver_snapshot %}
+                    {{ active_selection.driver_snapshot.full_name }}
+                {% endif %}
+                <br>
+                <strong>Veículo:</strong> {{ active_selection.vehicle_snapshot.plate|default:'-' }} ({{ active_selection.vehicle_snapshot.vehicle_type }})
+            </div>
+            <div class="col-md-4">
+                <strong>Score de Matching:</strong> 
+                {% if active_selection.match_score_snapshot %}
+                    <strong>{{ active_selection.match_score_snapshot|floatformat:0 }}</strong> / 100 
+                    (Rank #{{ active_selection.rank_snapshot }})
+                {% else %}
+                    —
+                {% endif %}
+                <br>
+                <strong>Selecionado em:</strong> {{ active_selection.selected_at|date:'d/m/Y H:i' }}
+                {% if active_selection.status == 'PENDING_CONFIRMATION' and active_selection.confirmation_expires_at %}
+                    <br><strong class="text-danger">Expira em:</strong> {{ active_selection.confirmation_expires_at|date:'d/m/Y H:i' }}
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-end">
+                {% if active_selection.status == 'PENDING_CONFIRMATION' %}
+                    {% if can_select %}
+                        <form method="post" action="{% url 'backoffice:freight_offer_selection_confirm' active_selection.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-success btn-xs" type="submit">Confirmar</button>
+                        </form>
+                        <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="collapse" data-bs-target="#declineCollapse">Recusar</button>
+                    {% endif %}
+                    {% if can_cancel_selection %}
+                        <form method="post" action="{% url 'backoffice:freight_offer_selection_cancel' active_selection.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-outline-secondary btn-xs" type="submit">Cancelar Seleção</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if active_selection.status == 'PENDING_CONFIRMATION' %}
+        <div class="collapse mt-3" id="declineCollapse">
+            <div class="card card-body bg-light mb-0">
+                <h5 class="card-title">Recusar Seleção</h5>
+                <form method="post" action="{% url 'backoffice:freight_offer_selection_decline' active_selection.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Motivo da Recusa:</label>
+                        <select name="reason" class="form-select form-select-sm" style="max-width: 300px;">
+                            <option value="VEHICLE_UNAVAILABLE">Veículo Indisponível</option>
+                            <option value="DRIVER_UNAVAILABLE">Motorista Indisponível</option>
+                            <option value="SCHEDULE_CONFLICT">Conflito de Agenda</option>
+                            <option value="PRICE_NOT_ACCEPTED">Preço Não Aceito</option>
+                            <option value="ROUTE_CHANGED">Rota Alterada</option>
+                            <option value="OPERATIONAL_ISSUE">Problema Operacional</option>
+                            <option value="OTHER">Outros</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-danger btn-xs" type="submit">Enviar Recusa</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if can_view_interests and interests %}
+<div class="card mb-4">
+    <div class="card-header bg-light"><h4 class="card-title mb-0">Interesses Manifestados</h4></div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Candidato</th>
+                        <th>Veículo</th>
+                        <th>Score</th>
+                        <th>Data/Hora</th>
+                        <th>Status</th>
+                        <th class="pe-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interest in interests %}
+                    <tr>
+                        <td class="ps-3">
+                            {% if interest.carrier %}<strong>{{ interest.carrier.trade_name }}</strong>{% endif %}
+                            {% if interest.driver %}<br>{{ interest.driver.full_name }}{% endif %}
+                        </td>
+                        <td>{{ interest.vehicle.plate|default:'-' }}</td>
+                        <td>
+                            {% if interest.match_candidate %}
+                                <strong>{{ interest.match_candidate.total_score|floatformat:0 }}</strong> / 100
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ interest.expressed_at|date:'d/m/Y H:i' }}</td>
+                        <td>
+                            <span class="badge {% if interest.status == 'ACTIVE' %}badge-info{% elif interest.status == 'SELECTED' %}badge-success{% else %}badge-secondary{% endif %}">
+                                {{ interest.status }}
+                            </span>
+                        </td>
+                        <td class="pe-3">
+                            {% if interest.status == 'ACTIVE' %}
+                                {% if can_select and not active_selection %}
+                                    <form method="post" action="{% url 'backoffice:freight_offer_interest_select' interest.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button class="btn btn-warning btn-xs" type="submit">Selecionar</button>
+                                    </form>
+                                {% endif %}
+                                <form method="post" action="{% url 'backoffice:freight_offer_interest_withdraw' interest.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-danger btn-xs" type="submit">Retirar</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if can_view_matching %}
+<div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h4 class="card-title mb-0">Matching</h4>
+<div>{% if can_generate_matching and matching_ready %}{% if match_generation %}<form method="post" action="{% url 'backoffice:freight_offer_matching_regenerate' offer.id %}" class="d-inline">{% csrf_token %}<button class="btn btn-outline-primary btn-xs" type="submit">Recalcular</button></form>{% else %}<form method="post" action="{% url 'backoffice:freight_offer_matching_generate' offer.id %}" class="d-inline">{% csrf_token %}<button class="btn btn-primary btn-xs" type="submit">Gerar matching</button></form>{% endif %}{% endif %}</div></div>
+<div class="card-body">
+<div class="row mb-3">
+<div class="col-md-2"><div class="border rounded p-2"><small class="text-muted">Candidatos</small><h5 class="mb-0">{{ matching_summary.total }}</h5></div></div>
+<div class="col-md-2"><div class="border rounded p-2"><small class="text-muted">Elegíveis</small><h5 class="mb-0 text-success">{{ matching_summary.eligible }}</h5></div></div>
+<div class="col-md-2"><div class="border rounded p-2"><small class="text-muted">Inelegíveis</small><h5 class="mb-0 text-danger">{{ matching_summary.ineligible }}</h5></div></div>
+<div class="col-md-2"><div class="border rounded p-2"><small class="text-muted">Convidados</small><h5 class="mb-0">{{ matching_summary.invited }}</h5></div></div>
+<div class="col-md-4"><div class="border rounded p-2"><small class="text-muted">Algoritmo / última geração</small><p class="mb-0">{{ matching_summary.algorithm_version }}{% if matching_summary.generated_at %} · {{ matching_summary.generated_at|date:'d/m/Y H:i' }}{% else %} · —{% endif %}</p></div></div>
+</div>
+{% if not matching_ready %}<div class="alert alert-info mb-0">Matching disponível após publicação da oferta.</div>
+{% elif not match_generation %}<div class="alert alert-warning mb-0">Nenhum ranking gerado ainda.</div>
+{% else %}
+<div class="table-responsive"><table class="table table-sm table-striped"><thead><tr><th>Rank</th><th>Candidato</th><th>Veículo</th><th>Compliance</th><th>Compat.</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>
+{% for candidate in match_candidates %}
+<tr>
+<td>{% if candidate.rank_position %}<span class="badge badge-primary">#{{ candidate.rank_position }}</span>{% else %}—{% endif %}</td>
+<td>
+{% if candidate.carrier %}<strong>{{ candidate.carrier.trade_name|default:candidate.carrier.organization.name }}</strong>{% endif %}
+{% if candidate.driver %}<br>{{ candidate.driver.full_name }}{% endif %}
+{% if candidate.score_explanation.route_intent and candidate.score_explanation.route_intent.compatibility and candidate.score_explanation.route_intent.compatibility != 'UNKNOWN' and candidate.score_explanation.route_intent.compatibility != 'INCOMPATIBLE' %}
+<div class="mt-1">
+{% with intent=candidate.score_explanation.route_intent %}
+{% if intent.compatibility == 'EXACT' %}<span class="badge badge-success badge-xs">ROTA EXATA</span>
+{% elif intent.compatibility == 'PARTIAL' %}<span class="badge badge-warning badge-xs">ROTA PARCIAL</span>{% endif %}
+{% if intent.intent_type == 'RETURN_LOAD' %}<span class="badge badge-info badge-xs">RETORNO</span>
+{% elif intent.intent_type == 'DESTINATION_PREFERENCE' %}<span class="badge badge-info badge-xs">DESTINO</span>{% endif %}
+<small class="text-muted d-block mt-1">{{ intent.origin }} &rarr; {{ intent.destination }}</small>
+{% endwith %}
+</div>
+{% endif %}
+</td>
+<td>{{ candidate.vehicle.plate|default:'-' }}</td>
+<td>{{ candidate.compliance_score|default:'-' }}</td>
+<td>{{ candidate.cargo_score|default:'-' }}</td>
+<td>{% if candidate.total_score %}<strong>{{ candidate.total_score|floatformat:0 }}</strong><small class="text-muted"> / 100</small>{% else %}—{% endif %}</td>
+<td><span class="badge badge-{% if candidate.eligibility_status == 'ELIGIBLE' %}success{% elif candidate.eligibility_status == 'INELIGIBLE' %}danger{% else %}light{% endif %}">{{ candidate.eligibility_status }}</span></td>
+<td>
+{% if can_invite_matching and candidate.eligibility_status == 'ELIGIBLE' %}
+<div class="d-flex gap-1">
+    <form method="post" action="{% url 'backoffice:freight_offer_matching_invite' offer.id candidate.id %}" class="d-inline">
+        {% csrf_token %}
+        <button class="btn btn-primary btn-xs" type="submit">Convidar</button>
+    </form>
+    
+    <form method="post" action="{% url 'backoffice:freight_offer_interest_simulate' offer.id %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="carrier_id" value="{{ candidate.carrier.id|default:'' }}">
+        <input type="hidden" name="driver_id" value="{{ candidate.driver.id|default:'' }}">
+        <input type="hidden" name="vehicle_id" value="{{ candidate.vehicle.id|default:'' }}">
+        <button class="btn btn-outline-info btn-xs" type="submit">Simular Interesse</button>
+    </form>
+</div>
+{% endif %}
+</td>
+</tr>
+{% if can_view_matching_explanation and candidate.score_explanation %}
+<tr>
+<td colspan="8" class="bg-light">
+<small>
+<strong>Explicação:</strong>
+{% for key, value in candidate.score_explanation.items %}
+{% if key != 'route_intent' and key != 'base_score' and key != 'final_score' and value.score is not None %}
+<span class="me-3">{{ key }}: {{ value.score }}{% if value.reason %} ({{ value.reason }}){% endif %}</span>
+{% endif %}
+{% endfor %}
+
+{% if candidate.score_explanation.base_score is not None %}
+<br>
+<span class="me-3">Score base: {{ candidate.score_explanation.base_score|floatformat:1 }}</span>
+<span class="me-3">Bônus de rota: {% if candidate.score_explanation.route_intent.bonus > 0 %}+{{ candidate.score_explanation.route_intent.bonus|floatformat:1 }}{% else %}0{% endif %}</span>
+<span class="me-3">Score final: {{ candidate.score_explanation.final_score|floatformat:1 }}</span>
+{% endif %}
+
+{% if candidate.score_explanation.route_intent %}
+{% with intent=candidate.score_explanation.route_intent %}
+<br>
+{% if intent.compatibility and intent.compatibility != 'UNKNOWN' and intent.compatibility != 'INCOMPATIBLE' %}
+<span class="me-3">Preferência de rota: {{ intent.origin }} &rarr; {{ intent.destination }} ({{ intent.compatibility }} - Bônus: +{{ intent.bonus|floatformat:1 }})</span>
+{% elif intent.compatibility == 'INCOMPATIBLE' %}
+<span class="me-3">Preferência de rota: Incompatível com esta oferta (Sem bônus)</span>
+{% else %}
+<span class="me-3">Preferência de rota: Sem preferência definida (Sem bônus)</span>
+{% endif %}
+{% endwith %}
+{% endif %}
+</small>
+</td>
+</tr>
+{% endif %}
+{% empty %}<tr><td colspan="8" class="text-muted text-center">Sem candidatos nesta geração.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+</div></div>
+{% endif %}
+{% if offer.internal_notes %}<div class="card"><div class="card-header"><h4 class="card-title">Observações internas</h4></div><div class="card-body">{{ offer.internal_notes }}</div></div>{% endif %}
+<div class="card"><div class="card-header"><h4 class="card-title">Snapshot operacional</h4></div><div class="card-body"><pre class="mb-0">{{ offer.premises_snapshot }}</pre></div></div>
+<div class="card"><div class="card-header"><h4 class="card-title">Auditoria</h4></div><div class="card-body"><table class="table table-sm"><thead><tr><th>Evento</th><th>Ator</th><th>Quando</th></tr></thead><tbody>{% for log in audit_logs %}<tr><td>{{ log.action }}</td><td>{{ log.actor|default:'-' }}</td><td>{{ log.created_at|date:'d/m/Y H:i' }}</td></tr>{% empty %}<tr><td colspan="3" class="text-muted">Sem eventos.</td></tr>{% endfor %}</tbody></table></div></div>
+</div></div></div></div>
+{% endblock %}

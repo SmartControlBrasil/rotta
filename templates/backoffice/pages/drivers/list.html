@@ -1,0 +1,117 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card"><div class="card-body"><h6 class="text-muted mb-2">Total</h6><h3 class="mb-0">{{ kpis.total }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card"><div class="card-body"><h6 class="text-muted mb-2">Ativos</h6><h3 class="mb-0">{{ kpis.active }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card"><div class="card-body"><h6 class="text-muted mb-2">Pendentes</h6><h3 class="mb-0">{{ kpis.pending }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card"><div class="card-body"><h6 class="text-muted mb-2">Bloqueados</h6><h3 class="mb-0">{{ kpis.blocked }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card"><div class="card-body"><h6 class="text-muted mb-2">CNH vencendo</h6><h3 class="mb-0">{{ kpis.license_expiring }}</h3></div></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Motoristas</h4>
+                {% if can_create_driver %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'backoffice:driver_create' %}">+ Novo Motorista</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3"><input class="form-control" name="q" value="{{ filters.q }}" placeholder="Nome, CPF ou CNH"></div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="status">
+                            <option value="">Status</option>
+                            {% for status in driver_statuses %}
+                                <option value="{{ status.value }}" {% if filters.status == status.value %}selected{% endif %}>{{ status.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="carrier">
+                            <option value="">Transportadora</option>
+                            {% for carrier in carriers %}
+                                <option value="{{ carrier.id }}" {% if filters.carrier == carrier.id|stringformat:'s' %}selected{% endif %}>{{ carrier.trade_name|default:carrier.organization.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="cnh_category">
+                            <option value="">Categoria CNH</option>
+                            {% for category in driver_license_categories %}
+                                <option value="{{ category.value }}" {% if filters.cnh_category == category.value %}selected{% endif %}>{{ category.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1"><input class="form-control" maxlength="2" name="state" value="{{ filters.state }}" placeholder="UF"></div>
+                    <div class="col-md-1">
+                        <select class="form-control" name="engagement_type">
+                            <option value="">Vínculo</option>
+                            {% for kind in driver_engagement_types %}
+                                <option value="{{ kind.value }}" {% if filters.engagement_type == kind.value %}selected{% endif %}>{{ kind.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Motorista</th>
+                                <th>CPF mascarado</th>
+                                <th>Transportadora</th>
+                                <th>CNH/Categoria</th>
+                                <th>Validade CNH</th>
+                                <th>Veículo atual</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for driver in drivers %}
+                                <tr>
+                                    <td><strong>{{ driver.full_name }}</strong><br><small class="text-muted">{{ driver.engagement_type }}</small></td>
+                                    <td>{{ driver.masked_document|default:'-' }}</td>
+                                    <td>
+                                        {% with active_link=driver.carrier_links.all|first %}
+                                            {% if active_link and active_link.active %}
+                                                {{ active_link.carrier.trade_name|default:active_link.carrier.organization.name }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>{{ driver.driver_license_number|default:'-' }} / {{ driver.driver_license_category|default:'-' }}</td>
+                                    <td>{{ driver.driver_license_expiration|date:'d/m/Y'|default:'-' }}</td>
+                                    <td>
+                                        {% for assignment in driver.vehicle_assignments.all %}
+                                            {% if assignment.active and assignment.primary %}{{ assignment.vehicle.plate }}{% endif %}
+                                        {% empty %}-{% endfor %}
+                                    </td>
+                                    <td><span class="badge badge-light">{{ driver.status }}</span></td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:driver_detail' driver.id %}">Abrir</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="8" class="text-center text-muted">Nenhum motorista encontrado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

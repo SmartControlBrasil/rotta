@@ -16,3 +16,8 @@ Initial glossary for Rotta. Terms are subject to refinement during discovery wit
 - Proof of Delivery: evidence that delivery happened, such as signature, photo, document, canhoto, or digital confirmation.
 - Settlement: calculation and record of amounts owed to drivers, partners, carriers, or other operational parties.
 - Subscription: recurring commercial arrangement for customer access, platform usage, or contracted services.
+- Driver Approval: registration/document decision that allows or rejects a driver as eligible supply.
+- Driver Availability: operational state used by future marketplace flows, independent from approval.
+- Vehicle Ownership Type: relationship between a vehicle and its provider organization, such as owned, aggregated, third party, autonomous, or partner.
+- Driver Vehicle Assignment: historical link between a driver and a vehicle, including active/primary flags and validity dates.
+- Location Point: future tracking record emitted by mobile/device context; not stored directly on `Driver`.

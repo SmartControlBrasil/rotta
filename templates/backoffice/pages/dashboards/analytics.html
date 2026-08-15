@@ -1,0 +1,26 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Usuários (GA4)</p><h3 class="mb-0">0</h3><small class="text-muted">PREPARADO PARA FUTURO</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Sessões</p><h3 class="mb-0">0</h3><small class="text-muted">PREPARADO PARA FUTURO</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Cliques Ads</p><h3 class="mb-0">0</h3><small class="text-muted">PREPARADO PARA FUTURO</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Cliques orgânicos</p><h3 class="mb-0">0</h3><small class="text-muted">PREPARADO PARA FUTURO</small></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Fontes de dados</h4></div><div class="card-body"><div id="overview-chart"></div></div></div></div>
+            <div class="col-xl-8"><div class="card"><div class="card-header"><h4 class="card-title">Séries temporais</h4></div><div class="card-body"><div id="updates-chart"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Aquisição por canal</h4></div><div class="card-body"><div id="visitors-chart"></div></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

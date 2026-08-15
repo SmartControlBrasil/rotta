@@ -3,7 +3,7 @@
     <div class="ca-offcanvas-wrapper">
         <div class="ca-offcanvas-header d-flex justify-content-between align-items-center mb-40">
             <div class="ca-offcanvas-logo">
-                <a href="#"><img src="{% static 'public/cargon/img/logo/ca-logo3.1.png' %}" alt=""></a>
+                <a href="{% url 'public:home' %}"><img src="{% static 'public/cargon/img/logo/rotta116.png' %}" class="rotta-public-logo" alt="Rotta 116"></a>
             </div>
             <div class="ca-offcanvas-close">
                 <button class="ca-offcanvas-close-toggle"><i class="fal fa-times"></i></button>
@@ -14,11 +14,11 @@
             </nav>
         </div>
         <div class="ca-offcanvas-contact mb-40">
-            <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Get A Quote <span><i
+            <a href="{% url 'backoffice:dashboard' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Entrar <span><i
                         class="fa-solid fa-angle-right"></i></span></a>
         </div>
         <div class="ca-offcanvas-contact-info mb-40">
-            <h3 class="ca-offcanvas-sm-title">Contact Info</h3>
+            <h3 class="ca-offcanvas-sm-title">Contato</h3>
             <!-- single item -->
             <div class="ca-sm-single-item-4 ca-sm-single-item-1 mb-20">
                 <div class="icon">
@@ -27,8 +27,7 @@
                     </span>
                 </div>
                 <div class="ca-sm-single-item-4-content">
-                    <p><a href="#">55 Street, 2nd block, 3rd Floor
-                            Melbourne, Australia</a></p>
+                    <p><a href="#">Rotta 116</a></p>
                 </div>
             </div>
 
@@ -40,7 +39,7 @@
                     </span>
                 </div>
                 <div class="ca-sm-single-item-4-content">
-                    <p><a href="tel:+0221234568806">+022 (123) 456 88 06</a></p>
+                    <p><a href="tel:+5500000000000">+55 (00) 0000-0000</a></p>
                 </div>
             </div>
 
@@ -52,12 +51,12 @@
                     </span>
                 </div>
                 <div class="ca-sm-single-item-4-content">
-                    <p><a href="mailto:infocargon@gmail.com">infocargon@gmail.com</a></p>
+                    <p><a href="mailto:contato@rotta116.com.br">contato@rotta116.com.br</a></p>
                 </div>
             </div>
         </div>
         <div class="ca-offcanvas-social mb-40">
-            <h3 class="ca-offcanvas-sm-title">Follow Us</h3>
+            <h3 class="ca-offcanvas-sm-title">Redes sociais</h3>
             <div class="ca-footer-social ca-footer-social-3">
                 <ul>
                     <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>

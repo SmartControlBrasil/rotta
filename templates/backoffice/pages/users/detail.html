@@ -1,4 +1,139 @@
 {% extends 'backoffice/base.html' %}
 {% block content %}
-<div class="content-body"><div class="container-fluid">{% include 'backoffice/partials/breadcrumbs.html' %}<div class="row"><div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">User</h4></div><div class="card-body"><p><strong>Username:</strong> {{ account.username }}</p><p><strong>Email:</strong> {{ account.email|default:'-' }}</p><p><strong>Nome:</strong> {{ account.get_full_name|default:'-' }}</p><p><strong>Active:</strong> {{ account.is_active|yesno:'Sim,Não' }}</p><p><strong>Staff:</strong> {{ account.is_staff|yesno:'Sim,Não' }}</p><p><strong>Desde:</strong> {{ account.date_joined|date:'d/m/Y H:i' }}</p></div></div></div><div class="col-xl-8"><div class="card"><div class="card-header"><h4 class="card-title">Memberships</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>Organization</th><th>Status</th><th>Roles</th></tr></thead><tbody>{% for membership in account.memberships.all %}<tr><td>{{ membership.organization }}</td><td>{{ membership.status }}</td><td>{% for binding in membership.membership_roles.all %}<span class="badge badge-primary me-1">{{ binding.role.code }}</span>{% empty %}-{% endfor %}</td></tr>{% empty %}<tr><td colspan="3">Nenhum vínculo encontrado.</td></tr>{% endfor %}</tbody></table></div></div></div></div></div></div></div>
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Cadastro de Usuário</h4>
+                        {% if can_edit_user %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:user_edit' account.id %}">Editar</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Username:</strong> {{ account.username }}</p>
+                        <p><strong>E-mail:</strong> {{ account.email|default:'-' }}</p>
+                        <p><strong>Nome completo:</strong> {{ account.get_full_name|default:'-' }}</p>
+                        <p>
+                            <strong>Status:</strong> 
+                            {% if account.is_active %}
+                                <span class="badge badge-success">Ativo</span>
+                            {% else %}
+                                <span class="badge badge-light">Inativo</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Staff:</strong> {{ account.is_staff|yesno:'Sim,Não' }}</p>
+                        <p><strong>Superusuário:</strong> {{ account.is_superuser|yesno:'Sim,Não' }}</p>
+                        <p><strong>Último login:</strong> {{ account.last_login|date:'d/m/Y H:i'|default:'Nunca' }}</p>
+                        <p><strong>Data de criação:</strong> {{ account.date_joined|date:'d/m/Y H:i' }}</p>
+
+                        {% if can_edit_user %}
+                            <hr>
+                            <form method="post" action="{% url 'backoffice:user_status' account.id %}" class="d-flex gap-2">
+                                {% csrf_token %}
+                                {% if account.is_active %}
+                                    <button class="btn btn-danger btn-sm w-100" name="action" value="deactivate" type="submit">Inativar Usuário</button>
+                                {% else %}
+                                    <button class="btn btn-success btn-sm w-100" name="action" value="activate" type="submit">Ativar Usuário</button>
+                                {% endif %}
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Vínculos & Organizações</h4>
+                        {% if can_manage_memberships %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:membership_create' %}?user={{ account.id }}">+ Adicionar Vínculo</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Organização</th>
+                                        <th>Estrutura (BU/Branch/Dept/Team)</th>
+                                        <th>Função / Escopo</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for membership in account.memberships.all %}
+                                        <tr>
+                                            <td><strong>{{ membership.organization.name }}</strong></td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    BU: {{ membership.business_unit.name|default:'-' }}<br>
+                                                    Filial: {{ membership.branch.name|default:'-' }}<br>
+                                                    Depto: {{ membership.department.name|default:'-' }}<br>
+                                                    Equipe: {{ membership.team.name|default:'-' }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {% for binding in membership.membership_roles.all %}
+                                                    <span class="badge badge-primary me-1">{{ binding.role.code }} ({{ binding.scope }})</span>
+                                                {% empty %}
+                                                    -
+                                                {% endfor %}
+                                            </td>
+                                            <td>{{ membership.status }}</td>
+                                            <td>
+                                                {% if can_manage_memberships %}
+                                                    <a class="btn btn-light btn-xs" href="{% url 'backoffice:membership_edit' membership.id %}">Editar</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">Nenhum vínculo ou papel atribuído.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Atividades Recentes do Usuário</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ação</th>
+                                        <th>Autor</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                        <tr>
+                                            <td>{{ log.action }}</td>
+                                            <td>{{ log.actor|default:'-' }}</td>
+                                            <td>{{ log.created_at|date:'d/m/Y H:i' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">Nenhum evento registrado.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

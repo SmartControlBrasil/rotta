@@ -1,0 +1,66 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Organização{% else %}Nova Organização{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nome de exibição</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Razão Social</label>
+                        {{ form.legal_name }}
+                        {{ form.legal_name.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Documento (CNPJ)</label>
+                        {{ form.document }}
+                        {{ form.document.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo</label>
+                        {{ form.type }}
+                        {{ form.type.errors }}
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label">Organização Ativa</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        {% if is_edit %}
+                            <a href="{% url 'backoffice:organization_detail' form.instance.id %}" class="btn btn-light">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'backoffice:organizations' %}" class="btn btn-light">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

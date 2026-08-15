@@ -1,0 +1,41 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">
+{% include 'backoffice/partials/breadcrumbs.html' %}
+<form method="post">{% csrf_token %}
+{% if header_form.non_field_errors %}<div class="alert alert-danger">{{ header_form.non_field_errors }}</div>{% endif %}
+<div class="row">
+<div class="col-xl-5">
+<div class="card"><div class="card-header"><h4 class="card-title">Solicitação</h4></div><div class="card-body">
+<p><strong>Código:</strong> {{ freight_request.reference_code }}</p>
+<p><strong>Cliente:</strong> {{ freight_request.customer.legal_name }}</p>
+<p><strong>Origem:</strong> {{ freight_request.pickup_stop.city|default:'-' }}/{{ freight_request.pickup_stop.state|default:'-' }}</p>
+<p><strong>Destino:</strong> {{ freight_request.delivery_stop.city|default:'-' }}/{{ freight_request.delivery_stop.state|default:'-' }}</p>
+</div></div>
+<div class="card"><div class="card-header"><h4 class="card-title">Validade e notas</h4></div><div class="card-body">
+<div class="mb-3">{{ header_form.valid_until.label_tag }}{{ header_form.valid_until }}</div>
+<div class="mb-3">{{ header_form.tax_amount.label_tag }}{{ header_form.tax_amount }}</div>
+{% if can_view_margin %}<div class="mb-3">{{ header_form.estimated_cost.label_tag }}{{ header_form.estimated_cost }}</div>{% endif %}
+<div class="mb-3">{{ header_form.estimated_distance_km.label_tag }}{{ header_form.estimated_distance_km }}</div>
+<div class="mb-3">{{ header_form.customer_notes.label_tag }}{{ header_form.customer_notes }}</div>
+<div class="mb-3">{{ header_form.internal_notes.label_tag }}{{ header_form.internal_notes }}</div>
+<div class="mb-3">{{ header_form.owner.label_tag }}{{ header_form.owner }}</div>
+</div></div>
+</div>
+<div class="col-xl-7">
+<div class="card"><div class="card-header"><h4 class="card-title">Itens de cobrança</h4></div><div class="card-body">
+{{ charge_formset.management_form }}
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Tipo</th><th>Descrição</th><th>Qtd</th><th>Unit.</th><th>Remover</th></tr></thead><tbody>
+{% for form in charge_formset %}
+<tr>
+<td>{{ form.charge_type }}</td><td>{{ form.description }}</td><td>{{ form.quantity }}</td><td>{{ form.unit_amount }}</td><td>{% if form.DELETE %}{{ form.DELETE }}{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+<p class="text-muted mb-0">Total calculado automaticamente ao salvar com base nos itens e impostos.</p>
+</div></div>
+<button class="btn btn-primary" type="submit">Salvar cotação</button>
+<a class="btn btn-light" href="{% if is_edit %}{% url 'backoffice:freight_quote_detail' quote.id %}{% else %}{% url 'backoffice:freight_request_detail' freight_request.id %}{% endif %}">Cancelar</a>
+</div></div>
+</form></div></div>
+{% endblock %}

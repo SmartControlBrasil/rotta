@@ -5,11 +5,52 @@
     <div class="container-fluid">
         {% include 'backoffice/partials/breadcrumbs.html' %}
         <div class="row">
-            {% for metric in metrics %}
-                <div class="col-xl-3 col-sm-6"><div class="card text-center"><div class="card-body carning-card"><span class="text-primary font-w500">{{ metric.label }}</span><h3>{{ metric.value }}</h3><a href="{{ metric.url }}" class="btn btn-primary btn-sm w-75">Abrir</a></div></div></div>
-            {% empty %}
-                <div class="col-xl-12"><div class="card"><div class="card-body"><h4 class="card-title">Backoffice disponível</h4><p class="mb-0">Seu usuário está autenticado, mas ainda não possui permissões para visualizar métricas da fundação.</p></div></div></div>
-            {% endfor %}
+            <div class="col-xl-2 col-sm-6">
+                <div class="card"><div class="card-body"><p class="mb-1">Clientes</p><h3 class="mb-0">{{ snapshot.customers_total }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-sm-6">
+                <div class="card"><div class="card-body"><p class="mb-1">Transportadoras</p><h3 class="mb-0">{{ snapshot.carriers_total }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-sm-6">
+                <div class="card"><div class="card-body"><p class="mb-1">Motoristas</p><h3 class="mb-0">{{ snapshot.drivers_total }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-sm-6">
+                <div class="card"><div class="card-body"><p class="mb-1">Veículos</p><h3 class="mb-0">{{ snapshot.vehicles_total }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-sm-6">
+                <div class="card"><div class="card-body"><p class="mb-1">Refrigerados</p><h3 class="mb-0">{{ snapshot.vehicles_refrigerated }}</h3></div></div>
+            </div>
+            <div class="col-xl-2 col-sm-6">
+                <div class="card"><div class="card-body"><p class="mb-1">Usuários</p><h3 class="mb-0">{{ snapshot.users_total }}</h3></div></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Base operacional consolidada</h4></div>
+                    <div class="card-body"><div id="chartBar"></div></div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Perfil de carga da frota</h4></div>
+                    <div class="card-body"><div id="pieChart1"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Evolução da capacidade ativa</h4></div>
+                    <div class="card-body"><div id="chartTimeline"></div></div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Motoristas x Veículos</h4></div>
+                    <div class="card-body"><div id="NewCustomers"></div></div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-xl-8"><div class="card"><div class="card-header"><h4 class="card-title">Audit events - últimos 7 dias</h4></div><div class="card-body">{% if audit_by_day %}<div class="table-responsive"><table class="table table-responsive-md"><thead><tr><th>Dia</th><th>Total</th></tr></thead><tbody>{% for item in audit_by_day %}<tr><td>{{ item.day }}</td><td><span class="badge badge-primary">{{ item.total }}</span></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="mb-0">Nenhum evento de auditoria recente disponível para o seu acesso.</p>{% endif %}</div></div></div>
@@ -17,4 +58,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
 {% endblock %}

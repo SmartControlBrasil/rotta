@@ -32,7 +32,12 @@ INSTALLED_APPS = [
     "src.shared.infrastructure.django.apps.SharedConfig",
     "src.identity.infrastructure.django.apps.IdentityConfig",
     "src.organizations.infrastructure.django.apps.OrganizationsConfig",
+    "src.drivers.infrastructure.django.apps.DriversConfig",
+    "src.vehicles.infrastructure.django.apps.VehiclesConfig",
     "src.audit.infrastructure.django.apps.AuditConfig",
+    "src.customers.infrastructure.django.apps.CustomersConfig",
+    "src.carriers.infrastructure.django.apps.CarriersConfig",
+    "src.freights.infrastructure.django.apps.FreightsConfig",
 ]
 
 MIDDLEWARE = [
@@ -97,6 +102,8 @@ PRIVATE_DOCUMENT_STORAGE_ROOT = env.path(
     "PRIVATE_DOCUMENT_STORAGE_ROOT",
     default=BASE_DIR / "private_documents",
 )
+
+DOCUMENT_UPLOAD_MAX_BYTES = env.int("DOCUMENT_UPLOAD_MAX_BYTES", default=10 * 1024 * 1024)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

@@ -1,7 +1,12 @@
 {% extends 'public/landing.html' %}
 {% load static %}
 
-{% block title %}Cargon-Contact{% endblock %}
+{% block title %}Contato | Rotta 116 — Transporte e Logística{% endblock %}
+
+{% block logo %}
+<meta name="description" content="Entre em contato com a Rotta 116 para transporte de cargas, cadastro de motoristas e veículos, transportadoras, parcerias e oportunidades comerciais.">
+<link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fav-3.svg' %}">
+{% endblock %}
 
 {% block page_content %}
 
@@ -16,11 +21,12 @@
       </div>
       <div class="container">
          <div class="ca-breadcrumb-content text-center">
-            <h2 class="ca-breadcrumb-title fnw-600">Contact Us </h2>
+            <h2 class="ca-breadcrumb-title fnw-600">Fale com a Rotta 116</h2>
+            <p class="pt-16">Quer transportar uma carga, cadastrar seu veículo, operar como motorista parceiro ou conhecer oportunidades de parceria com a Rotta 116? Entre em contato com nossa equipe.</p>
             <div class="it-breadcum-link">
                <a href="{% url 'public:home' %}">Home</a>
                <span><i class="fa-solid fa-angle-right"></i></span>
-               <a class="active" href="#">Contact Us </a>
+               <a class="active" href="#">Contato</a>
             </div>
          </div>
       </div>
@@ -37,9 +43,10 @@
                         <span><img src="{% static 'public/cargon/img/icon/ca-map3.1.svg' %}" alt=""></span>
                      </div>
                      <div class="ca-location-icbox-text">
-                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Our Address</h4>
-                        <p>55 Street, 2nd block, 3rd Floor<br>
-                           Melbourne, Australia
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Onde estamos</h4>
+                        <p>R. Agnaldo Alves Silva<br>
+                           Jardim Maristela — Itapevi/SP<br>
+                           CEP 06663-160
                         </p>
                      </div>
                   </div>
@@ -53,9 +60,8 @@
                         <span><img src="{% static 'public/cargon/img/icon/ca-ph3.2.svg' %}" alt=""></span>
                      </div>
                      <div class="ca-location-icbox-text">
-                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Contact Us</h4>
-                        <a href="tel:+0221234568806">+022 (123) 456 88 06</a> <br>
-                        <a href="tel:+47122109878">(+47) 1221 09 878</a>
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Precisa transportar?</h4>
+                        <p>Solicite atendimento para sua operação e conheça uma nova forma de encontrar capacidade de transporte com mais agilidade e visibilidade.</p>
                      </div>
                   </div>
                </div>
@@ -68,9 +74,8 @@
                         <span><img src="{% static 'public/cargon/img/icon/ca-envelop3.3.svg' %}" alt=""></span>
                      </div>
                      <div class="ca-location-icbox-text">
-                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Email Us</h4>
-                        <a href="mailto:">infocargon@gmail.com</a>
-                        <a href="mailto:">drmtech99.com</a>
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Quer transportar com a Rotta 116?</h4>
+                        <p>Motoristas, proprietários de veículos, transportadores e parceiros estratégicos poderão fazer parte da rede Rotta 116.</p>
                      </div>
                   </div>
                </div>
@@ -81,8 +86,14 @@
    <!-- map area -->
    <div class="ca-maps">
       <iframe
-         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13879239.529449532!2d43.044947896897405!3d31.866193584077507!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ef7ec2ec16b1df1%3A0x40b095d39e51face!2sIran!5e0!3m2!1sen!2sbd!4v1723948083378!5m2!1sen!2sbd"
-         class="contact-page__google-map" allowfullscreen=""></iframe>
+         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.4111052983035!2d-46.94539379163859!3d-23.553674178716662!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cf066220df7097%3A0x5b277a33795a3ae1!2sR.%20Agnaldo%20Alves%20Silva%20-%20Jardim%20Maristela%2C%20Itapevi%20-%20SP%2C%2006663-160!5e0!3m2!1spt-PT!2sbr!4v1786801817043!5m2!1spt-PT!2sbr"
+         width="600"
+         height="450"
+         style="border:0; width: 100%;"
+         class="contact-page__google-map"
+         allowfullscreen=""
+         loading="lazy"
+         referrerpolicy="strict-origin-when-cross-origin"></iframe>
    </div>
    <!-- map area end -->
    <!-- contact form start-->
@@ -90,39 +101,42 @@
       <div class="container">
          <div class="row">
             <div class="ca-con-rep-form cream-bg-3 text-center">
-               <h4 class="ca-title fnw-600 theme-black-3 pb-16">Send Us Message</h4>
-               <p class="pb-32">Your email address will not be published. Required fields are marked *</p>
+               <h4 class="ca-title fnw-600 theme-black-3 pb-16">Envie uma mensagem</h4>
+               <p class="pb-32">Preencha seus dados e conte como podemos ajudar. A Rotta 116 aproxima empresas que precisam transportar de motoristas e transportadores disponíveis para realizar a operação.</p>
                <div class="ca-cmt-from">
                   <form action="#">
                      <div class="row">
                         <div class="col-lg-6 mb-20">
-                           <input type="text" placeholder="First Name">
+                           <input type="text" placeholder="Nome">
                         </div>
                         <div class="col-lg-6 mb-20">
-                           <input type="text" placeholder="Last Name">
+                           <input type="text" placeholder="Empresa">
                         </div>
                         <div class="col-lg-6 mb-20">
-                           <input type="email" placeholder="Email">
+                           <input type="email" placeholder="E-mail">
                         </div>
                         <div class="col-lg-6 mb-20">
                            <select class="nice-select wide ca-select" style="display: none;">
-                              <option data-display="Service Type">Nothing</option>
-                              <option value="1">01</option>
-                              <option value="2">02</option>
-                              <option value="3">03</option>
-                              <option value="4">04</option>
+                              <option data-display="Assunto">Outro</option>
+                              <option value="transportar">Quero contratar um transporte</option>
+                              <option value="veiculo">Quero cadastrar meu veículo</option>
+                              <option value="motorista">Quero ser motorista parceiro</option>
+                              <option value="transportadora">Sou transportadora</option>
+                              <option value="parcerias">Parcerias comerciais</option>
+                              <option value="investimento">Investimento / parceria estratégica</option>
+                              <option value="suporte">Suporte</option>
                            </select>
                         </div>
                         <div class="col-lg-12 mb-20">
-                           <textarea name="message" id="message" placeholder="Message"></textarea>
+                           <textarea name="message" id="message" placeholder="Mensagem"></textarea>
                         </div>
                      </div>
                      <div class="ca-radion-btn">
                         <input type="radio" id="saveinfo" name="fav_language" value="saveinfo">
-                        <label for="saveinfo">Save the information's in this browser for next time use</label>
+                        <label for="saveinfo">Quero receber retorno sobre transporte, cadastro de veículo, operação como motorista ou parcerias com a Rotta 116</label>
                      </div>
                      <div class="ca-blg-sen-btn text-start">
-                        <button type="submit" class="ca-btn-primary-3 theme-bg-3 text-white br-50"> Submit Now <span><i
+                        <button type="submit" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Enviar mensagem <span><i
                                  class="fa-solid fa-angle-right"></i></span></button>
                      </div>
                   </form>

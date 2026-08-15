@@ -1,0 +1,33 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Entidades regulares</p><h3 class="mb-0">{{ snapshot.entities_driver_compliant|add:snapshot.entities_vehicle_compliant|add:snapshot.entities_carrier_compliant }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Aguardando análise</p><h3 class="mb-0">{{ snapshot.documents_pending_review|add:snapshot.documents_pending }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Aprovados</p><h3 class="mb-0">{{ snapshot.documents_approved }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Rejeitados</p><h3 class="mb-0">{{ snapshot.documents_rejected }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Vencendo 30d</p><h3 class="mb-0">{{ snapshot.documents_expiring_30 }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Vencidos</p><h3 class="mb-0">{{ snapshot.documents_expired }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Motoristas</h4></div><div class="card-body"><p class="mb-1">Regulares: {{ snapshot.entities_driver_compliant }}</p><p class="mb-1">Pendentes: {{ snapshot.documents_driver_pending }}</p><p class="mb-1">Em análise: {{ snapshot.documents_driver_under_review }}</p><p class="mb-0">Vencidos: {{ snapshot.documents_driver_expired }}</p></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Veículos</h4></div><div class="card-body"><p class="mb-1">Regulares: {{ snapshot.entities_vehicle_compliant }}</p><p class="mb-1">Pendentes: {{ snapshot.documents_vehicle_pending }}</p><p class="mb-1">Em análise: {{ snapshot.documents_vehicle_under_review }}</p><p class="mb-0">Vencidos: {{ snapshot.documents_vehicle_expired }}</p></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Transportadoras</h4></div><div class="card-body"><p class="mb-1">Regulares: {{ snapshot.entities_carrier_compliant }}</p><p class="mb-1">Pendentes: {{ snapshot.documents_carrier_pending }}</p><p class="mb-1">Em análise: {{ snapshot.documents_carrier_under_review }}</p><p class="mb-0">Vencidos: {{ snapshot.documents_carrier_expired }}</p></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6"><div class="card"><div class="card-header"><h4 class="card-title">Motoristas - status documental</h4></div><div class="card-body"><div id="chartBar"></div></div></div></div>
+            <div class="col-xl-6"><div class="card"><div class="card-header"><h4 class="card-title">Veículos - status documental</h4></div><div class="card-body"><div id="projectChart"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Backlog de compliance</h4></div><div class="card-body"><div id="activity"></div></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

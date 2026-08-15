@@ -33,17 +33,17 @@ function getUrlParams(dParam)
     } */
 	
 	dzSettingsOptions = {
-		typography: "poppins",
-		version: "light",
-		layout: "vertical",
-		primary: "color_1",
-		headerBg: "color_1",
-		navheaderBg: "color_1",
-		sidebarBg: "color_1",
-		sidebarStyle: "full",
-		sidebarPosition: "fixed",
-		headerPosition: "fixed",
-		containerLayout: "full",
+		typography: localStorage.getItem('dz-typography') || "poppins",
+		version: localStorage.getItem('dz-version') || "light",
+		layout: localStorage.getItem('dz-layout') || "vertical",
+		primary: localStorage.getItem('dz-primary') || "color_1",
+		headerBg: localStorage.getItem('dz-headerBg') || "color_1",
+		navheaderBg: localStorage.getItem('dz-navheaderBg') || "color_1",
+		sidebarBg: localStorage.getItem('dz-sidebarBg') || "color_1",
+		sidebarStyle: localStorage.getItem('dz-sidebarStyle') || "full",
+		sidebarPosition: localStorage.getItem('dz-sidebarPosition') || "fixed",
+		headerPosition: localStorage.getItem('dz-headerPosition') || "fixed",
+		containerLayout: localStorage.getItem('dz-containerLayout') || "full",
 	};
 
 	

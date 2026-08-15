@@ -1,0 +1,28 @@
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Route Intent / Próximos destinos</h4>
+        {% if can_manage_route_intents %}
+            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:driver_route_intent_create' %}?{% if driver %}driver={{ driver.id }}&{% endif %}{% if vehicle %}vehicle={{ vehicle.id }}{% endif %}">+ Nova</a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% for intent in active_route_intents %}
+            <div class="border rounded p-3 mb-3">
+                <p class="h6 mb-1">{{ intent.origin_city }}/{{ intent.origin_state }} <span class="text-primary mx-1">→</span> {{ intent.destination_city }}/{{ intent.destination_state }}</p>
+                <p class="mb-1">
+                    {% if intent.intent_type == 'RETURN_LOAD' %}
+                        <span class="badge badge-info">Retorno</span>
+                    {% else %}
+                        <span class="badge badge-primary">Destino</span>
+                    {% endif %}
+                    <span class="badge badge-success">Ativa</span>
+                </p>
+                <p class="mb-1 text-muted small">Disponível: {{ intent.available_from|date:'d/m H:i' }} – {{ intent.available_until|date:'d/m H:i' }}</p>
+                {% if intent.vehicle %}<p class="mb-1 small">Veículo: {{ intent.vehicle.plate }}</p>{% endif %}
+                <a class="btn btn-light btn-xs" href="{% url 'backoffice:driver_route_intent_detail' intent.id %}">Detalhes</a>
+            </div>
+        {% empty %}
+            <p class="text-muted mb-0">Nenhuma intenção ativa.</p>
+        {% endfor %}
+    </div>
+</div>

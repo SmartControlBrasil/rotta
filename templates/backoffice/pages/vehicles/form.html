@@ -1,0 +1,77 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Veículo{% else %}Novo Veículo{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="col-12"><div class="alert alert-danger">{% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}</div></div>
+                    {% endif %}
+
+                    <h5 class="col-12 mt-3 text-primary">Identificação</h5>
+                    <div class="col-md-3"><label class="form-label">Placa</label>{{ form.plate }}{{ form.plate.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">RENAVAM</label>{{ form.renavam }}{{ form.renavam.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Chassi</label>{{ form.chassis }}{{ form.chassis.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Organização</label>{{ form.organization }}{{ form.organization.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">Características</h5>
+                    <div class="col-md-2"><label class="form-label">Tipo</label>{{ form.vehicle_type }}{{ form.vehicle_type.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Carroceria</label>{{ form.body_type }}{{ form.body_type.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Perfil de carga</label>{{ form.cargo_profile }}{{ form.cargo_profile.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Vínculo</label>{{ form.ownership_type }}{{ form.ownership_type.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">UF</label>{{ form.state }}{{ form.state.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Cor</label>{{ form.color }}{{ form.color.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Marca</label>{{ form.brand }}{{ form.brand.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Modelo</label>{{ form.model }}{{ form.model.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Ano fabricação</label>{{ form.year }}{{ form.year.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Ano modelo</label>{{ form.model_year }}{{ form.model_year.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Odômetro (km)</label>{{ form.odometer_km }}{{ form.odometer_km.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">Capacidade</h5>
+                    <div class="col-md-2"><label class="form-label">Carga (kg)</label>{{ form.capacity_weight_kg }}{{ form.capacity_weight_kg.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Peso bruto (kg)</label>{{ form.gross_weight_kg }}{{ form.gross_weight_kg.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Volume (m³)</label>{{ form.capacity_volume_m3 }}{{ form.capacity_volume_m3.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Comprimento (m)</label>{{ form.max_length_m }}{{ form.max_length_m.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Largura (m)</label>{{ form.max_width_m }}{{ form.max_width_m.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Altura (m)</label>{{ form.max_height_m }}{{ form.max_height_m.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">Operação</h5>
+                    <div class="col-md-3"><label class="form-label">Status cadastral</label>{{ form.status }}{{ form.status.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Status operacional</label>{{ form.operational_status }}{{ form.operational_status.errors }}</div>
+                    <div class="col-md-2 form-check mt-4">{{ form.refrigerated }} <label class="form-check-label" for="{{ form.refrigerated.id_for_label }}">Refrigerado</label></div>
+                    <div class="col-md-2 form-check mt-4">{{ form.closed_box }} <label class="form-check-label" for="{{ form.closed_box.id_for_label }}">Baú fechado</label></div>
+                    <div class="col-md-2 form-check mt-4">{{ form.open_body }} <label class="form-check-label" for="{{ form.open_body.id_for_label }}">Carroceria aberta</label></div>
+                    <div class="col-md-2 form-check mt-4">{{ form.tail_lift }} <label class="form-check-label" for="{{ form.tail_lift.id_for_label }}">Plataforma elevatória</label></div>
+                    <div class="col-md-2 form-check mt-4">{{ form.helper_available }} <label class="form-check-label" for="{{ form.helper_available.id_for_label }}">Ajudante</label></div>
+                    <div class="col-md-2 form-check mt-4">{{ form.hazardous_compatible }} <label class="form-check-label" for="{{ form.hazardous_compatible.id_for_label }}">Carga perigosa</label></div>
+
+                    <h5 class="col-12 mt-4 text-primary">Refrigeração</h5>
+                    <div class="col-md-3"><label class="form-label">Fabricante</label>{{ form.refrigeration_unit_manufacturer }}{{ form.refrigeration_unit_manufacturer.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Modelo unidade</label>{{ form.refrigeration_unit_model }}{{ form.refrigeration_unit_model.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Temp. mín (°C)</label>{{ form.temperature_min_c }}{{ form.temperature_min_c.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Temp. máx (°C)</label>{{ form.temperature_max_c }}{{ form.temperature_max_c.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Setpoint padrão (°C)</label>{{ form.default_setpoint_c }}{{ form.default_setpoint_c.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Controle</label>{{ form.refrigeration_control_type }}{{ form.refrigeration_control_type.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Última manutenção</label>{{ form.refrigeration_last_maintenance_date }}{{ form.refrigeration_last_maintenance_date.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Próxima manutenção</label>{{ form.refrigeration_next_maintenance_date }}{{ form.refrigeration_next_maintenance_date.errors }}</div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        {% if is_edit %}
+                            <a href="{% url 'backoffice:vehicle_detail' form.instance.id %}" class="btn btn-light">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'backoffice:vehicles' %}" class="btn btn-light">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

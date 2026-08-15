@@ -1,0 +1,44 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Documentos aguardando análise</h4>
+                <a class="btn btn-light btn-sm" href="{% url 'backoffice:documents' %}">Todos os documentos</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Documento</th>
+                                <th>Entidade</th>
+                                <th>Tipo</th>
+                                <th>Validade</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for document in documents %}
+                                <tr>
+                                    <td>{{ document.original_filename|default:document.document_type }}</td>
+                                    <td>{{ document.entity_label }}</td>
+                                    <td>{{ document.document_type }}</td>
+                                    <td>{{ document.expiration_date|date:'d/m/Y'|default:'-' }}</td>
+                                    <td><span class="badge badge-warning">{{ document.status }}</span></td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:document_detail' document.id %}">Analisar</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="6" class="text-center text-muted">Nenhum documento aguardando análise.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

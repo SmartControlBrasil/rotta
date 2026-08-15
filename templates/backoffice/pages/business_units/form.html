@@ -1,0 +1,52 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Unidade de Negócio{% else %}Nova Unidade de Negócio{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-md-6">
+                        <label class="form-label">Organização</label>
+                        {{ form.organization }}
+                        {{ form.organization.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nome da Unidade</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label">Unidade Ativa</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <a href="{% url 'backoffice:business_units' %}" class="btn btn-light">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

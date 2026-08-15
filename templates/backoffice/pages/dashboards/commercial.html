@@ -1,0 +1,29 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Clientes totais</p><h3 class="mb-0">{{ snapshot.customers_total }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Cotações em análise</p><h3 class="mb-0">{{ snapshot.freight_quotes_under_review }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Cotações aprovadas</p><h3 class="mb-0">{{ snapshot.freight_quotes_approved }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Cotações enviadas</p><h3 class="mb-0">{{ snapshot.freight_quotes_sent }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Valor cotado</p><h3 class="mb-0">R$ {{ snapshot.freight_quotes_value_total }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas publicadas</p><h3 class="mb-0">{{ snapshot.freight_offers_published }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Novos clientes</h4></div><div class="card-body"><div id="NewCustomers"></div></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Ativos x prospects</h4></div><div class="card-body"><div id="NewExperience"></div></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Foto atual</h4></div><div class="card-body"><div id="projectChart"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Pipeline comercial</h4></div><div class="card-body"><p class="mb-2">Solicitações totais: <strong>{{ snapshot.freight_requests_total }}</strong> · Novas hoje: <strong>{{ snapshot.freight_requests_today }}</strong></p><p class="mb-0 text-muted">Próxima fase: cotação, propostas e conversão comercial.</p></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

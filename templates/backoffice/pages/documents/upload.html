@@ -1,0 +1,56 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header"><h4 class="card-title">Upload de documento</h4></div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de entidade</label>
+                        <select class="form-control" name="entity_type" required>
+                            <option value="">Selecione</option>
+                            {% for entity_type in entity_types %}<option value="{{ entity_type }}">{{ entity_type }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Entidade</label>
+                        <select class="form-control" name="entity_id" required>
+                            <option value="">Selecione após escolher o tipo</option>
+                            {% for driver in drivers %}<option value="{{ driver.id }}">Motorista: {{ driver.full_name }}</option>{% endfor %}
+                            {% for vehicle in vehicles %}<option value="{{ vehicle.id }}">Veículo: {{ vehicle.plate }}</option>{% endfor %}
+                            {% for carrier in carriers %}<option value="{{ carrier.id }}">Transportadora: {{ carrier.trade_name|default:carrier.organization.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo documental</label>
+                        <input class="form-control" name="document_type" placeholder="Ex.: DRIVER_LICENSE, CRLV, RNTRC_ANTT" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Emissão</label>
+                        <input class="form-control" type="date" name="issue_date">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Validade</label>
+                        <input class="form-control" type="date" name="expiration_date">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Arquivo (PDF, JPEG, PNG)</label>
+                        <input class="form-control" type="file" name="file" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Observações</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary" type="submit">Enviar documento</button>
+                        <a class="btn btn-light" href="{% url 'backoffice:documents' %}">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

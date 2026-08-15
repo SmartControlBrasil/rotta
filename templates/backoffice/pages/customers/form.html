@@ -1,0 +1,141 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Cliente{% else %}Novo Cliente{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <h5 class="col-12 mt-4 text-primary">Dados Principais</h5>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Cliente</label>
+                        {{ form.customer_type }}
+                        {{ form.customer_type.errors }}
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Razão Social / Nome Completo</label>
+                        {{ form.legal_name }}
+                        {{ form.legal_name.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nome Fantasia</label>
+                        {{ form.trade_name }}
+                        {{ form.trade_name.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Documento (CPF ou CNPJ)</label>
+                        {{ form.document_number }}
+                        {{ form.document_number.errors }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Inscrição Estadual</label>
+                        {{ form.state_registration }}
+                        {{ form.state_registration.errors }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Inscrição Municipal</label>
+                        {{ form.municipal_registration }}
+                        {{ form.municipal_registration.errors }}
+                    </div>
+
+                    <h5 class="col-12 mt-4 text-primary">Contato</h5>
+                    <div class="col-md-4">
+                        <label class="form-label">E-mail</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Telefone</label>
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Celular</label>
+                        {{ form.mobile_phone }}
+                        {{ form.mobile_phone.errors }}
+                    </div>
+
+                    <h5 class="col-12 mt-4 text-primary">Endereço</h5>
+                    <div class="col-md-3">
+                        <label class="form-label">CEP</label>
+                        {{ form.postal_code }}
+                        {{ form.postal_code.errors }}
+                    </div>
+                    <div class="col-md-7">
+                        <label class="form-label">Rua</label>
+                        {{ form.street }}
+                        {{ form.street.errors }}
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Número</label>
+                        {{ form.number }}
+                        {{ form.number.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Complemento</label>
+                        {{ form.complement }}
+                        {{ form.complement.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Bairro</label>
+                        {{ form.district }}
+                        {{ form.district.errors }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Cidade</label>
+                        {{ form.city }}
+                        {{ form.city.errors }}
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">UF</label>
+                        {{ form.state }}
+                        {{ form.state.errors }}
+                    </div>
+
+                    <h5 class="col-12 mt-4 text-primary">Gestão Comercial</h5>
+                    <div class="col-md-4">
+                        <label class="form-label">Organização Administradora</label>
+                        {{ form.organization }}
+                        {{ form.organization.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Unidade Comercial</label>
+                        {{ form.business_unit }}
+                        {{ form.business_unit.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Responsável Comercial</label>
+                        {{ form.owner }}
+                        {{ form.owner.errors }}
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        {% if is_edit %}
+                            <a href="{% url 'backoffice:customer_detail' form.instance.id %}" class="btn btn-light">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'backoffice:customers' %}" class="btn btn-light">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

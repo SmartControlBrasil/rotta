@@ -1,0 +1,33 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas publicadas</p><h3 class="mb-0">{{ snapshot.freight_offers_published }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas prontas</p><h3 class="mb-0">{{ snapshot.freight_offers_ready }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas pausadas</p><h3 class="mb-0">{{ snapshot.freight_offers_paused }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas expiradas</p><h3 class="mb-0">{{ snapshot.freight_offers_expired }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas refrigeradas</p><h3 class="mb-0">{{ snapshot.freight_offers_refrigerated }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Valor total ofertado</p><h3 class="mb-0">R$ {{ snapshot.freight_offers_value_total }}</h3><small class="text-muted">Publicadas · permissão financeira para total completo</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Solicitações prontas</p><h3 class="mb-0">{{ snapshot.freight_requests_ready_to_publish }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Transportadoras ativas</p><h3 class="mb-0">{{ snapshot.carriers_active }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Oferta semanal</h4></div><div class="card-body"><div id="handleWeeklySales"></div></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Base de motoristas</h4></div><div class="card-body"><div id="handleOrderChart"></div></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Share da rede</h4></div><div class="card-body"><div id="handleMarketShare"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Pipeline de marketplace</h4></div><div class="card-body"><div class="table-responsive"><table class="table table-striped"><thead><tr><th>Indicador</th><th>Classificação</th><th>Valor</th></tr></thead><tbody><tr><td>Solicitações em cotação</td><td><span class="badge badge-success light">DADO REAL</span></td><td>{{ snapshot.freight_quotes_open }}</td></tr><tr><td>Solicitações prontas para publicação</td><td><span class="badge badge-success light">DADO REAL</span></td><td>{{ snapshot.freight_requests_ready_to_publish }}</td></tr><tr><td>Ofertas publicadas</td><td><span class="badge badge-success light">DADO REAL</span></td><td>{{ snapshot.freight_offers_published }}</td></tr><tr><td>Ofertas recebidas (bidding)</td><td><span class="badge badge-warning light">PREPARADO PARA FUTURO</span></td><td>0</td></tr></tbody></table></div></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

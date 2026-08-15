@@ -1,0 +1,157 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total</h6>
+                        <h3 class="mb-0">{{ kpis.total }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Ativas</h6>
+                        <h3 class="mb-0">{{ kpis.active }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Pendentes</h6>
+                        <h3 class="mb-0">{{ kpis.pending }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Suspensas/Bloqueadas</h6>
+                        <h3 class="mb-0">{{ kpis.suspended_or_blocked }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Carga Seca</h6>
+                        <h3 class="mb-0">{{ kpis.dry_cargo }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Refrigeradas</h6>
+                        <h3 class="mb-0">{{ kpis.refrigerated_cargo }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Transportadoras</h4>
+                {% if can_create_carrier %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'backoffice:carrier_create' %}">+ Nova Transportadora</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3">
+                        <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Razão social, fantasia, CNPJ ou RNTRC">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="status">
+                            <option value="">Status</option>
+                            {% for status in carrier_statuses %}
+                                <option value="{{ status.value }}" {% if filters.status == status.value %}selected{% endif %}>{{ status.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="cargo_profile">
+                            <option value="">Perfil operacional</option>
+                            {% for profile in carrier_cargo_profiles %}
+                                <option value="{{ profile.value }}" {% if filters.cargo_profile == profile.value %}selected{% endif %}>{{ profile.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <input class="form-control" maxlength="2" name="state" value="{{ filters.state }}" placeholder="UF">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" name="owner">
+                            <option value="">Responsável</option>
+                            {% for user in owners %}
+                                <option value="{{ user.id }}" {% if filters.owner == user.id|stringformat:'s' %}selected{% endif %}>{{ user.get_full_name|default:user.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Transportadora</th>
+                                <th>CNPJ</th>
+                                <th>Perfil Operacional</th>
+                                <th>Cidade/UF</th>
+                                <th>Frota</th>
+                                <th>Motoristas</th>
+                                <th>Status</th>
+                                <th>Responsável</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for carrier in carriers %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ carrier.trade_name|default:carrier.organization.name }}</strong>
+                                        <br><small class="text-muted">{{ carrier.organization.legal_name|default:carrier.organization.name }}</small>
+                                    </td>
+                                    <td>{{ carrier.organization.document|default:'-' }}</td>
+                                    <td>{{ carrier.cargo_profile }}</td>
+                                    <td>{{ carrier.city|default:'-' }}/{{ carrier.state|default:'-' }}</td>
+                                    <td>{{ carrier.vehicles_count }}</td>
+                                    <td>{{ carrier.drivers_count }}</td>
+                                    <td>
+                                        {% if carrier.status == 'ACTIVE' %}
+                                            <span class="badge badge-success">{{ carrier.status }}</span>
+                                        {% elif carrier.status == 'SUSPENDED' or carrier.status == 'BLOCKED' %}
+                                            <span class="badge badge-danger">{{ carrier.status }}</span>
+                                        {% elif carrier.status == 'INACTIVE' %}
+                                            <span class="badge badge-light">{{ carrier.status }}</span>
+                                        {% else %}
+                                            <span class="badge badge-warning">{{ carrier.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ carrier.owner|default:'-' }}</td>
+                                    <td>
+                                        <a class="btn btn-primary btn-sm" href="{% url 'backoffice:carrier_detail' carrier.id %}">Abrir</a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">Nenhuma transportadora encontrada.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

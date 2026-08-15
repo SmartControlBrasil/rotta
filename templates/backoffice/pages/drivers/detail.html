@@ -1,0 +1,157 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-5">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Dados pessoais</h4>
+                        {% if can_update_driver %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:driver_edit' driver.id %}">Editar</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Nome:</strong> {{ driver.full_name }}</p>
+                        <p><strong>CPF:</strong> {{ driver.masked_document|default:'-' }}</p>
+                        <p><strong>Nascimento:</strong> {{ driver.birth_date|date:'d/m/Y'|default:'-' }}</p>
+                        <p><strong>Tipo de vínculo:</strong> {{ driver.engagement_type }}</p>
+                        <p><strong>Usuário:</strong> {{ driver.user|default:'-' }}</p>
+
+                        <hr>
+                        <h5 class="text-primary mb-3">Contato</h5>
+                        <p><strong>E-mail:</strong> {{ driver.email|default:'-' }}</p>
+                        <p><strong>Telefone:</strong> {{ driver.phone|default:'-' }}</p>
+                        <p><strong>Celular:</strong> {{ driver.mobile_phone|default:'-' }}</p>
+
+                        <hr>
+                        <h5 class="text-primary mb-3">CNH</h5>
+                        <p><strong>Número:</strong> {{ driver.driver_license_number|default:'-' }}</p>
+                        <p><strong>Categoria:</strong> {{ driver.driver_license_category|default:'-' }}</p>
+                        <p><strong>UF emissão:</strong> {{ driver.driver_license_issue_state|default:'-' }}</p>
+                        <p><strong>Validade:</strong> {{ driver.driver_license_expiration|date:'d/m/Y'|default:'-' }}</p>
+
+                        <hr>
+                        <p><strong>Status cadastral:</strong> <span class="badge badge-light">{{ driver.status }}</span></p>
+                        <p><strong>Disponibilidade operacional:</strong> <span class="badge badge-info">{{ driver.availability_status }}</span></p>
+
+                        {% if can_change_driver_status %}
+                            <hr>
+                            <form method="post" action="{% url 'backoffice:driver_status' driver.id %}" class="d-flex flex-wrap gap-2">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm" name="status" value="ACTIVE" type="submit">Ativar</button>
+                                <button class="btn btn-warning btn-sm" name="status" value="SUSPENDED" type="submit">Suspender</button>
+                                <button class="btn btn-danger btn-sm" name="status" value="BLOCKED" type="submit">Bloquear</button>
+                                <button class="btn btn-light btn-sm" name="status" value="INACTIVE" type="submit">Inativar</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-7">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Transportadoras vinculadas</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Transportadora</th><th>Tenant</th><th>Ativo</th></tr></thead>
+                                <tbody>
+                                    {% for link in driver.carrier_links.all %}
+                                        <tr>
+                                            <td>{{ link.carrier.trade_name|default:link.carrier.organization.name }}</td>
+                                            <td>{{ link.carrier.tenant }}</td>
+                                            <td>{{ link.active|yesno:'Sim,Não' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted">Nenhuma transportadora vinculada.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Veículos vinculados</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Placa</th><th>Tipo</th><th>Ativo</th><th>Primário</th><th>Vigência</th></tr></thead>
+                                <tbody>
+                                    {% for assignment in driver.vehicle_assignments.all %}
+                                        <tr>
+                                            <td><a href="{% url 'backoffice:vehicle_detail' assignment.vehicle.id %}">{{ assignment.vehicle.plate }}</a></td>
+                                            <td>{{ assignment.vehicle.vehicle_type }}</td>
+                                            <td>{{ assignment.active|yesno:'Sim,Não' }}</td>
+                                            <td>{{ assignment.primary|yesno:'Sim,Não' }}</td>
+                                            <td>{{ assignment.valid_from|date:'d/m/Y' }} - {{ assignment.valid_until|date:'d/m/Y'|default:'Atual' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="5" class="text-center text-muted">Nenhum veículo vinculado.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'backoffice/partials/route_intents_card.html' %}
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Documentos & Compliance</h4>
+                        {% if can_manage_documents %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:document_upload' %}">Upload</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Status compliance:</strong>
+                            {% if compliance.status == 'COMPLIANT' %}<span class="badge badge-success">{{ compliance.status }}</span>
+                            {% elif compliance.status == 'WARNING' %}<span class="badge badge-warning">{{ compliance.status }}</span>
+                            {% elif compliance.status == 'PENDING' %}<span class="badge badge-info">{{ compliance.status }}</span>
+                            {% else %}<span class="badge badge-danger">{{ compliance.status }}</span>{% endif %}
+                        </p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Tipo</th><th>Status</th><th>Expiração</th><th>Revisado em</th><th></th></tr></thead>
+                                <tbody>
+                                    {% for document in driver.documents.all %}
+                                        <tr>
+                                            <td>{{ document.document_type }}</td>
+                                            <td>{{ document.status }}</td>
+                                            <td>{{ document.expiration_date|date:'d/m/Y'|default:'-' }}</td>
+                                            <td>{{ document.reviewed_at|date:'d/m/Y H:i'|default:'-' }}</td>
+                                            <td><a class="btn btn-light btn-xs" href="{% url 'backoffice:document_detail' document.id %}">Abrir</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="5" class="text-center text-muted">Nenhum documento cadastrado.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Atividades</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead><tr><th>Ação</th><th>Ator</th><th>Data</th></tr></thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                        <tr><td>{{ log.action }}</td><td>{{ log.actor|default:'-' }}</td><td>{{ log.created_at|date:'d/m/Y H:i' }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted">Nenhum evento relacionado.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

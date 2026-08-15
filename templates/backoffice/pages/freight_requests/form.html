@@ -1,0 +1,143 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Cliente</h4></div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Cliente</label>
+                                {{ form.customer }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Responsável</label>
+                                {{ form.owner }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prioridade</label>
+                                {{ form.priority }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Origem</h4></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">{{ form.pickup_postal_code.label_tag }}{{ form.pickup_postal_code }}</div>
+                                <div class="col-md-8 mb-3">{{ form.pickup_street.label_tag }}{{ form.pickup_street }}</div>
+                                <div class="col-md-3 mb-3">{{ form.pickup_number.label_tag }}{{ form.pickup_number }}</div>
+                                <div class="col-md-5 mb-3">{{ form.pickup_complement.label_tag }}{{ form.pickup_complement }}</div>
+                                <div class="col-md-4 mb-3">{{ form.pickup_district.label_tag }}{{ form.pickup_district }}</div>
+                                <div class="col-md-6 mb-3">{{ form.pickup_city.label_tag }}{{ form.pickup_city }}</div>
+                                <div class="col-md-2 mb-3">{{ form.pickup_state.label_tag }}{{ form.pickup_state }}</div>
+                                <div class="col-md-4 mb-3">{{ form.pickup_country.label_tag }}{{ form.pickup_country }}</div>
+                                <div class="col-md-12 mb-3">{{ form.pickup_instructions.label_tag }}{{ form.pickup_instructions }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Destino</h4></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">{{ form.delivery_postal_code.label_tag }}{{ form.delivery_postal_code }}</div>
+                                <div class="col-md-8 mb-3">{{ form.delivery_street.label_tag }}{{ form.delivery_street }}</div>
+                                <div class="col-md-3 mb-3">{{ form.delivery_number.label_tag }}{{ form.delivery_number }}</div>
+                                <div class="col-md-5 mb-3">{{ form.delivery_complement.label_tag }}{{ form.delivery_complement }}</div>
+                                <div class="col-md-4 mb-3">{{ form.delivery_district.label_tag }}{{ form.delivery_district }}</div>
+                                <div class="col-md-6 mb-3">{{ form.delivery_city.label_tag }}{{ form.delivery_city }}</div>
+                                <div class="col-md-2 mb-3">{{ form.delivery_state.label_tag }}{{ form.delivery_state }}</div>
+                                <div class="col-md-4 mb-3">{{ form.delivery_country.label_tag }}{{ form.delivery_country }}</div>
+                                <div class="col-md-12 mb-3">{{ form.delivery_instructions.label_tag }}{{ form.delivery_instructions }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Carga</h4></div>
+                        <div class="card-body">
+                            <div class="mb-3">{{ form.cargo_description.label_tag }}{{ form.cargo_description }}</div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">{{ form.cargo_type.label_tag }}{{ form.cargo_type }}</div>
+                                <div class="col-md-6 mb-3">{{ form.cargo_profile.label_tag }}{{ form.cargo_profile }}</div>
+                                <div class="col-md-4 mb-3">{{ form.weight_kg.label_tag }}{{ form.weight_kg }}</div>
+                                <div class="col-md-4 mb-3">{{ form.volume_m3.label_tag }}{{ form.volume_m3 }}</div>
+                                <div class="col-md-4 mb-3">{{ form.package_count.label_tag }}{{ form.package_count }}</div>
+                                <div class="col-md-12 mb-3">{{ form.package_type.label_tag }}{{ form.package_type }}</div>
+                            </div>
+                            <div id="refrigeration-fields" class="row">
+                                <div class="col-md-4 mb-3">{{ form.temperature_min_c.label_tag }}{{ form.temperature_min_c }}</div>
+                                <div class="col-md-4 mb-3">{{ form.temperature_max_c.label_tag }}{{ form.temperature_max_c }}</div>
+                                <div class="col-md-4 mb-3">{{ form.target_temperature_c.label_tag }}{{ form.target_temperature_c }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Requisitos do veículo</h4></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">{{ form.vehicle_type_required.label_tag }}{{ form.vehicle_type_required }}</div>
+                                <div class="col-md-6 mb-3">{{ form.body_type_required.label_tag }}{{ form.body_type_required }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Agenda</h4></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">{{ form.pickup_date.label_tag }}{{ form.pickup_date }}</div>
+                                <div class="col-md-4 mb-3">{{ form.pickup_window_start.label_tag }}{{ form.pickup_window_start }}</div>
+                                <div class="col-md-4 mb-3">{{ form.pickup_window_end.label_tag }}{{ form.pickup_window_end }}</div>
+                                <div class="col-md-4 mb-3">{{ form.delivery_date.label_tag }}{{ form.delivery_date }}</div>
+                                <div class="col-md-4 mb-3">{{ form.delivery_window_start.label_tag }}{{ form.delivery_window_start }}</div>
+                                <div class="col-md-4 mb-3">{{ form.delivery_window_end.label_tag }}{{ form.delivery_window_end }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h4 class="card-title">Requisitos especiais</h4></div>
+                        <div class="card-body">
+                            <div class="mb-3">{{ form.instructions.label_tag }}{{ form.instructions }}</div>
+                            <div class="mb-3">{{ form.handling_requirements.label_tag }}{{ form.handling_requirements }}</div>
+                            <div class="form-check mb-3">{{ form.hazardous_material }} <label class="form-check-label">Material perigoso (expansão futura)</label></div>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">{{ form.declared_cargo_value.label_tag }}{{ form.declared_cargo_value }}</div>
+                                <div class="col-md-4 mb-3">{{ form.currency.label_tag }}{{ form.currency }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">Salvar rascunho</button>
+                        <a class="btn btn-light" href="{% url 'backoffice:freight_requests' %}">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script>
+(function () {
+    const profileField = document.getElementById('id_cargo_profile');
+    const refrigerationBlock = document.getElementById('refrigeration-fields');
+    function toggleRefrigeration() {
+        if (!profileField || !refrigerationBlock) return;
+        refrigerationBlock.style.display = profileField.value === 'REFRIGERATED_CARGO' ? '' : 'none';
+    }
+    if (profileField) {
+        profileField.addEventListener('change', toggleRefrigeration);
+        toggleRefrigeration();
+    }
+})();
+</script>
+{% endblock %}

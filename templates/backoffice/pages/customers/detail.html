@@ -1,0 +1,142 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-5">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Cliente</h4>
+                        {% if can_edit_customer %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:customer_edit' customer.id %}">Editar</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Razão Social/Nome:</strong> {{ customer.legal_name }}</p>
+                        {% if customer.trade_name %}
+                            <p><strong>Nome Fantasia:</strong> {{ customer.trade_name }}</p>
+                        {% endif %}
+                        <p><strong>Tipo:</strong> {{ customer.customer_type }}</p>
+                        <p><strong>Documento:</strong> {{ customer.document_number }}</p>
+                        {% if customer.state_registration %}
+                            <p><strong>Inscrição Estadual:</strong> {{ customer.state_registration }}</p>
+                        {% endif %}
+                        {% if customer.municipal_registration %}
+                            <p><strong>Inscrição Municipal:</strong> {{ customer.municipal_registration }}</p>
+                        {% endif %}
+                        <p><strong>E-mail:</strong> {{ customer.email }}</p>
+                        <p><strong>Telefone:</strong> {{ customer.phone|default:'-' }}</p>
+                        <p><strong>Celular:</strong> {{ customer.mobile_phone|default:'-' }}</p>
+                        
+                        <hr>
+                        <h5 class="text-primary mb-3">Endereço</h5>
+                        <p><strong>CEP:</strong> {{ customer.postal_code|default:'-' }}</p>
+                        <p><strong>Logradouro:</strong> {{ customer.street|default:'-' }}, {{ customer.number|default:'-' }}</p>
+                        {% if customer.complement %}
+                            <p><strong>Complemento:</strong> {{ customer.complement }}</p>
+                        {% endif %}
+                        <p><strong>Bairro:</strong> {{ customer.district|default:'-' }}</p>
+                        <p><strong>Cidade/UF:</strong> {{ customer.city|default:'-' }}/{{ customer.state|default:'-' }}</p>
+                        <p><strong>País:</strong> {{ customer.country }}</p>
+
+                        <hr>
+                        <h5 class="text-primary mb-3">Gestão Comercial</h5>
+                        <p><strong>Organização:</strong> {{ customer.organization }}</p>
+                        <p><strong>Unidade:</strong> {{ customer.business_unit|default:'-' }}</p>
+                        <p><strong>Responsável:</strong> {{ customer.owner|default:'-' }}</p>
+                        <p>
+                            <strong>Status:</strong> 
+                            {% if customer.status == 'ACTIVE' %}
+                                <span class="badge badge-success">{{ customer.status }}</span>
+                            {% elif customer.status == 'BLOCKED' %}
+                                <span class="badge badge-danger">{{ customer.status }}</span>
+                            {% elif customer.status == 'INACTIVE' %}
+                                <span class="badge badge-light">{{ customer.status }}</span>
+                            {% else %}
+                                <span class="badge badge-warning">{{ customer.status }}</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Criado em:</strong> {{ customer.created_at|date:'d/m/Y H:i' }}</p>
+                        <p><strong>Atualizado em:</strong> {{ customer.updated_at|date:'d/m/Y H:i' }}</p>
+
+                        {% if can_change_status %}
+                            <hr>
+                            <form method="post" action="{% url 'backoffice:customer_status' customer.id %}" class="d-flex flex-wrap gap-2">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm" name="action" value="ACTIVE" type="submit">Ativar</button>
+                                <button class="btn btn-warning btn-sm" name="action" value="INACTIVE" type="submit">Inativar</button>
+                                <button class="btn btn-danger btn-sm" name="action" value="BLOCKED" type="submit">Bloquear</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-7">
+                <!-- Futuras Áreas Visual (Desabilitadas) -->
+                <div class="card opacity-75">
+                    <div class="card-header">
+                        <h4 class="card-title">Operações futuras <small class="text-muted">(Em desenvolvimento)</small></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 border rounded bg-light text-muted">
+                                    <i class="flaticon-381-networking d-block fs-3 mb-2"></i>
+                                    <strong>Fretes & Cargas</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 border rounded bg-light text-muted">
+                                    <i class="flaticon-381-notepad d-block fs-3 mb-2"></i>
+                                    <strong>Financeiro</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 border rounded bg-light text-muted">
+                                    <i class="flaticon-381-file d-block fs-3 mb-2"></i>
+                                    <strong>Documentos</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auditoria Recente -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Auditoria Recente</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ação</th>
+                                        <th>Autor</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                        <tr>
+                                            <td>{{ log.action }}</td>
+                                            <td>{{ log.actor|default:'-' }}</td>
+                                            <td>{{ log.created_at|date:'d/m/Y H:i' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">Nenhum evento relacionado.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

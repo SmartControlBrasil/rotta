@@ -7,6 +7,32 @@
         {% block extra_css %}{% endblock %}
     </head>
     <body>
+        <script>
+            (function() {
+                var version = localStorage.getItem('dz-version') || 'light';
+                var layout = localStorage.getItem('dz-layout') || 'vertical';
+                var primary = localStorage.getItem('dz-primary') || 'color_1';
+                var headerBg = localStorage.getItem('dz-headerBg') || 'color_1';
+                var navheaderBg = localStorage.getItem('dz-navheaderBg') || 'color_1';
+                var sidebarBg = localStorage.getItem('dz-sidebarBg') || 'color_1';
+                var sidebarStyle = localStorage.getItem('dz-sidebarStyle') || 'full';
+                var sidebarPosition = localStorage.getItem('dz-sidebarPosition') || 'fixed';
+                var headerPosition = localStorage.getItem('dz-headerPosition') || 'fixed';
+                var containerLayout = localStorage.getItem('dz-containerLayout') || 'full';
+
+                var body = document.body;
+                body.setAttribute('data-theme-version', version);
+                body.setAttribute('data-layout', layout);
+                body.setAttribute('data-primary', primary);
+                body.setAttribute('data-headerbg', headerBg);
+                body.setAttribute('data-nav-headerbg', navheaderBg);
+                body.setAttribute('data-sibebarbg', sidebarBg);
+                body.setAttribute('data-sidebar-style', sidebarStyle);
+                body.setAttribute('data-sidebar-position', sidebarPosition);
+                body.setAttribute('data-header-position', headerPosition);
+                body.setAttribute('data-container', containerLayout);
+            })();
+        </script>
         <div id="preloader">
             <div class="lds-ripple">
                 <div></div>
@@ -23,6 +49,7 @@
             {% block content %}{% endblock %}
 
             {% include 'backoffice/partials/footer.html' %}
+            {% include 'backoffice/partials/customizer.html' %}
         </div>
 
         {% include 'backoffice/partials/scripts.html' %}

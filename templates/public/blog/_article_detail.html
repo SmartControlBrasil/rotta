@@ -1,0 +1,123 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }} | Rotta 116{% endblock %}
+
+{% block logo %}
+<meta name="description" content="{{ article.description }}">
+<link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% url 'public:blog_article' slug=article.slug %}">
+<link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fav-3.svg' %}">
+<script type="application/ld+json">
+{
+   "@context": "https://schema.org",
+   "@type": "BlogPosting",
+   "headline": "{{ article.title|escapejs }}",
+   "description": "{{ article.description|escapejs }}",
+   "author": {"@type": "Organization", "name": "Rotta 116"},
+   "publisher": {"@type": "Organization", "name": "Rotta 116"},
+   "mainEntityOfPage": "{{ request.scheme }}://{{ request.get_host }}{% url 'public:blog_article' slug=article.slug %}"
+}
+</script>
+{% endblock %}
+
+{% block page_content %}
+
+<main>
+   <!-- breadcrumb area start -->
+   <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+         <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+      </div>
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+         <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="ca-breadcrumb-content text-center">
+            <h1 class="ca-breadcrumb-title fnw-600">{{ article.title }}</h1>
+            <div class="it-breadcum-link">
+               <a href="{% url 'public:home' %}">Home</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a href="{% url 'public:blog' %}">Blog</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a class="active" href="#">{{ article.topic }}</a>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- breadcrumb area end -->
+   <!-- service left -->
+   <div class="ca-service-lft-area pt-100 pb-70">
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-8 mb-30 mx-auto">
+               <div class="ca-project-content-area">
+                  <div class="ca-pro-thumb-content ca-service-left-content">
+                     <h2 class="ca-project-thumb-title theme-black-3 fnw-600 ca-text-cap">{{ article.title }}</h2>
+                     <p class="pt-16 pb-32">{{ article.introduction }}</p>
+                     <div class="ca-servic-cat">
+                        <div class="ca-servic-cat-item mb-30">
+                           <div class="ca-servic-cat-item-img">
+                              <img src="{% static 'public/cargon/img/blog/ca-blog-cat1.1.png' %}" alt="">
+                           </div>
+                           <div class="ca-servic-cat-item-content">
+                              <h3 class="ca-blog-cat-ttitle"><a href="#">Rotta 116</a></h3>
+                           </div>
+                        </div>
+                        <div class="ca-servic-cat-item mb-30">
+                           <div class="ca-servic-cat-item-ic">
+                              <span><img src="{% static 'public/cargon/img/icon/ca-ser-cat-tag.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-servic-cat-item-content">
+                              <h3 class="ca-blog-cat-ttitle"><a href="#">{{ article.topic }}</a></h3>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="ca-servic-thumb br-7">
+                        <img class="w-100" src="{% static article.image %}" alt="{{ article.title }}">
+                     </div>
+                     <h2 class="ca-project-thumb-title-2 theme-black-3 fnw-600 pt-32 ca-text-cap">Conteúdo em preparação</h2>
+                     <p class="pt-20">Este artigo faz parte do Blog da Rotta 116 e está preparado para receber uma análise completa em uma próxima etapa.</p>
+                     <p class="pt-20 pb-32">A proposta é aprofundar o tema com orientações práticas para empresas, embarcadores, motoristas, transportadores e parceiros logísticos.</p>
+                     <div class="ca-about-item3 cream-bg-3 p-relative">
+                        <p>A Rotta 116 é uma plataforma digital de transporte e logística. O conteúdo editorial do blog acompanha essa visão: conectar demanda, capacidade operacional e tecnologia em uma experiência mais simples e transparente.</p>
+                     </div>
+                     <div class="ca-ab-item-check ca-ab-item-check-2 ca-ab-item-check-3 caborder-top">
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic"><span><i class="fa-solid fa-check"></i></span></div>
+                           <div class="ca-ab-sngle-item-content"><h4 class="ca-item-ch-title">Transporte e logística</h4></div>
+                        </div>
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic"><span><i class="fa-solid fa-check"></i></span></div>
+                           <div class="ca-ab-sngle-item-content"><h4 class="ca-item-ch-title">Tecnologia aplicada</h4></div>
+                        </div>
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic"><span><i class="fa-solid fa-check"></i></span></div>
+                           <div class="ca-ab-sngle-item-content"><h4 class="ca-item-ch-title">Operações conectadas</h4></div>
+                        </div>
+                     </div>
+                     <div class="ca-blog-tags-section">
+                        <div class="ca-blog-tag-section">
+                           <div class="ca-blg-tag-taile">
+                              <h4 class="ca-title fnw-600 theme-black-3">Tags:</h4>
+                           </div>
+                           <div class="ca-blg-tag-list">
+                              <ul>
+                                 <li><a href="#">Rotta 116</a></li>
+                                 <li><a href="#">Transporte</a></li>
+                                 <li><a href="#">Logística</a></li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="ca-blg-sen-btn text-start pt-32">
+                        <a href="{% url 'public:blog' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Voltar ao Blog <span><i class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</main>
+
+{% endblock page_content %}

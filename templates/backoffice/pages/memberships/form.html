@@ -1,0 +1,84 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Vínculo{% else %}Novo Vínculo{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-md-6">
+                        <label class="form-label">Usuário</label>
+                        {{ form.user }}
+                        {{ form.user.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Organização</label>
+                        {{ form.organization }}
+                        {{ form.organization.errors }}
+                    </div>
+
+                    <h5 class="col-12 mt-4 text-primary">Papéis & Acesso</h5>
+                    <div class="col-md-4">
+                        <label class="form-label">Função (Role)</label>
+                        {{ form.role }}
+                        {{ form.role.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Escopo de Acesso</label>
+                        {{ form.scope }}
+                        {{ form.scope.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Status do Vínculo</label>
+                        {{ form.status }}
+                        {{ form.status.errors }}
+                    </div>
+
+                    <h5 class="col-12 mt-4 text-primary">Estrutura Interna (Opcional)</h5>
+                    <div class="col-md-3">
+                        <label class="form-label">Unidade de Negócio</label>
+                        {{ form.business_unit }}
+                        {{ form.business_unit.errors }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filial (Branch)</label>
+                        {{ form.branch }}
+                        {{ form.branch.errors }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Departamento</label>
+                        {{ form.department }}
+                        {{ form.department.errors }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Equipe (Team)</label>
+                        {{ form.team }}
+                        {{ form.team.errors }}
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <a href="{% url 'backoffice:memberships' %}" class="btn btn-light">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

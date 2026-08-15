@@ -1,0 +1,41 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">
+{% include 'backoffice/partials/breadcrumbs.html' %}
+<div class="row">
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Total</p><h4>{{ kpis.total }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Rascunhos</p><h4>{{ kpis.drafts }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Em análise</p><h4>{{ kpis.under_review }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Aprovadas</p><h4>{{ kpis.approved }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Enviadas</p><h4>{{ kpis.sent }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Vencidas</p><h4>{{ kpis.expired }}</h4></div></div></div>
+</div>
+{% if can_view_margin %}<div class="row"><div class="col-xl-12"><div class="card"><div class="card-body"><p class="mb-1">Valor total cotado</p><h3>R$ {{ quoted_total }}</h3></div></div></div></div>{% endif %}
+<div class="card"><div class="card-header d-flex justify-content-between"><h4 class="card-title">Cotações de Frete</h4></div>
+<div class="card-body">
+<form class="row g-3 mb-4" method="get">
+<div class="col-md-3"><input class="form-control" name="q" value="{{ filters.q }}" placeholder="Código, solicitação, cliente ou rota"></div>
+<div class="col-md-2"><select class="form-control" name="status"><option value="">Status</option>{% for status in statuses %}<option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>{{ status_labels|default_if_none:status }}{% if status == 'DRAFT' %}Rascunho{% elif status == 'UNDER_REVIEW' %}Em análise{% elif status == 'APPROVED' %}Aprovada{% elif status == 'SENT' %}Enviada{% elif status == 'EXPIRED' %}Vencida{% elif status == 'CANCELLED' %}Cancelada{% else %}{{ status }}{% endif %}</option>{% endfor %}</select></div>
+<div class="col-md-2"><select class="form-control" name="owner"><option value="">Responsável</option>{% for owner in owners %}<option value="{{ owner.id }}" {% if filters.owner == owner.id|stringformat:'s' %}selected{% endif %}>{{ owner.email }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><input class="form-control" type="date" name="created_from" value="{{ filters.created_from }}"></div>
+<div class="col-md-2"><input class="form-control" type="date" name="valid_until" value="{{ filters.valid_until }}"></div>
+<div class="col-md-1"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+</form>
+<div class="table-responsive"><table class="table table-responsive-md"><thead><tr><th>Cotação</th><th>Solicitação</th><th>Cliente</th><th>Rota</th><th>Valor</th><th>Validade</th><th>Status</th><th>Responsável</th><th></th></tr></thead><tbody>
+{% for quote in freight_quotes %}
+<tr>
+<td><strong>{{ quote.reference_code }}</strong><br><small>v{{ quote.version }}</small></td>
+<td>{{ quote.freight_request.reference_code }}</td>
+<td>{{ quote.freight_request.customer.legal_name }}</td>
+<td>{{ quote.premises_snapshot.pickup.city|default:'-' }}/{{ quote.premises_snapshot.pickup.state|default:'-' }} → {{ quote.premises_snapshot.delivery.city|default:'-' }}/{{ quote.premises_snapshot.delivery.state|default:'-' }}</td>
+<td>R$ {{ quote.total_amount }}</td>
+<td>{{ quote.valid_until|date:'d/m/Y'|default:'-' }}</td>
+<td><span class="badge badge-light">{{ quote.status }}</span></td>
+<td>{{ quote.owner|default:'-' }}</td>
+<td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:freight_quote_detail' quote.id %}">Abrir</a></td>
+</tr>
+{% empty %}<tr><td colspan="9" class="text-center text-muted">Nenhuma cotação encontrada.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include 'backoffice/partials/pagination.html' %}
+</div></div></div></div>
+{% endblock %}

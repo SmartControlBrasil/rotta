@@ -1,0 +1,63 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Motorista{% else %}Novo Motorista{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="col-12"><div class="alert alert-danger">{% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}</div></div>
+                    {% endif %}
+
+                    <h5 class="col-12 mt-3 text-primary">Dados pessoais</h5>
+                    <div class="col-md-4"><label class="form-label">Nome</label>{{ form.full_name }}{{ form.full_name.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Nascimento</label>{{ form.birth_date }}{{ form.birth_date.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">CPF</label>{{ form.document }}{{ form.document.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Tipo de vínculo</label>{{ form.engagement_type }}{{ form.engagement_type.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">Contato</h5>
+                    <div class="col-md-4"><label class="form-label">E-mail</label>{{ form.email }}{{ form.email.errors }}</div>
+                    <div class="col-md-4"><label class="form-label">Telefone</label>{{ form.phone }}{{ form.phone.errors }}</div>
+                    <div class="col-md-4"><label class="form-label">Celular</label>{{ form.mobile_phone }}{{ form.mobile_phone.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">Endereço</h5>
+                    <div class="col-md-2"><label class="form-label">CEP</label>{{ form.postal_code }}{{ form.postal_code.errors }}</div>
+                    <div class="col-md-5"><label class="form-label">Rua</label>{{ form.street }}{{ form.street.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Número</label>{{ form.number }}{{ form.number.errors }}</div>
+                    <div class="col-md-3"><label class="form-label">Complemento</label>{{ form.complement }}{{ form.complement.errors }}</div>
+                    <div class="col-md-4"><label class="form-label">Bairro</label>{{ form.district }}{{ form.district.errors }}</div>
+                    <div class="col-md-4"><label class="form-label">Cidade</label>{{ form.city }}{{ form.city.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">UF</label>{{ form.state }}{{ form.state.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">País</label>{{ form.country }}{{ form.country.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">CNH</h5>
+                    <div class="col-md-4"><label class="form-label">Número CNH</label>{{ form.driver_license_number }}{{ form.driver_license_number.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Categoria</label>{{ form.driver_license_category }}{{ form.driver_license_category.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">UF emissão</label>{{ form.driver_license_issue_state }}{{ form.driver_license_issue_state.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Validade</label>{{ form.driver_license_expiration }}{{ form.driver_license_expiration.errors }}</div>
+
+                    <h5 class="col-12 mt-4 text-primary">Vínculos e status</h5>
+                    <div class="col-md-4"><label class="form-label">Organização</label>{{ form.organization }}{{ form.organization.errors }}</div>
+                    <div class="col-md-4"><label class="form-label">Usuário</label>{{ form.user }}{{ form.user.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Status</label>{{ form.status }}{{ form.status.errors }}</div>
+                    <div class="col-md-2"><label class="form-label">Disponibilidade</label>{{ form.availability_status }}{{ form.availability_status.errors }}</div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        {% if is_edit %}
+                            <a href="{% url 'backoffice:driver_detail' form.instance.id %}" class="btn btn-light">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'backoffice:drivers' %}" class="btn btn-light">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

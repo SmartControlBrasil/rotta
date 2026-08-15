@@ -1,0 +1,28 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Clientes cadastrados</p><h3 class="mb-0">{{ snapshot.customers_total }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Clientes ativos</p><h3 class="mb-0">{{ snapshot.customers_active }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Prospects</p><h3 class="mb-0">{{ snapshot.customers_prospects }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Transportadoras</p><h3 class="mb-0">{{ snapshot.carriers_total }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Pendentes</p><h3 class="mb-0">{{ snapshot.carriers_pending }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Responsáveis</p><h3 class="mb-0">{{ snapshot.users_total }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-5"><div class="card"><div class="card-header"><h4 class="card-title">Composição da base</h4></div><div class="card-body"><div id="overview-chart"></div></div></div></div>
+            <div class="col-xl-7"><div class="card"><div class="card-header"><h4 class="card-title">Volume por entidade</h4></div><div class="card-body"><div id="visitors-chart"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Pipeline comercial (preparado para futuro)</h4></div><div class="card-body"><div class="table-responsive"><table class="table table-borderless"><thead><tr><th>Etapa</th><th>Status</th><th>Quantidade</th></tr></thead><tbody><tr><td>Leads</td><td><span class="badge light badge-warning">PREPARADO PARA FUTURO</span></td><td>0</td></tr><tr><td>Follow-ups</td><td><span class="badge light badge-warning">PREPARADO PARA FUTURO</span></td><td>0</td></tr><tr><td>Oportunidades</td><td><span class="badge light badge-warning">PREPARADO PARA FUTURO</span></td><td>0</td></tr></tbody></table></div></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

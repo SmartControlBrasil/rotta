@@ -158,9 +158,12 @@ def test_bootstrap_role_permission_matrix_uses_least_privilege():
     assert set(viewer.permissions.values_list("code", flat=True)) == {
         PermissionCode.ORGANIZATIONS_VIEW,
         PermissionCode.MEMBERSHIPS_VIEW,
+        PermissionCode.DRIVERS_VIEW,
+        PermissionCode.VEHICLES_VIEW,
     }
     assert not driver.permissions.filter(code=PermissionCode.AUDIT_VIEW).exists()
     assert not viewer.permissions.filter(code=PermissionCode.ROLES_MANAGE).exists()
+    assert not viewer.permissions.filter(code=PermissionCode.DRIVERS_UPDATE).exists()
 
 
 @pytest.mark.django_db(transaction=True)

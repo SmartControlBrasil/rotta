@@ -1,0 +1,30 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Margem estimada (cotação)</p><h3 class="mb-0">R$ {{ snapshot.freight_quotes_margin_total }}</h3><small class="text-muted">ESTIMADO · NÃO REALIZADO</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Valor cotado ao cliente</p><h3 class="mb-0">R$ {{ snapshot.freight_quotes_value_total }}</h3><small class="text-muted">Comercial · cotações</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Valor ofertado ao mercado</p><h3 class="mb-0">R$ {{ snapshot.freight_offers_value_total }}</h3><small class="text-muted">ESTIMADO · NÃO REALIZADO</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Spread estimado</p><h3 class="mb-0">R$ {{ snapshot.freight_offers_spread_total }}</h3><small class="text-muted">ESTIMADO · NÃO REALIZADO · customer_price − offer_amount</small></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Receita realizada</p><h3 class="mb-0">0</h3><small class="text-muted">Domínio financeiro pendente</small></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Faturamento</p><h3 class="mb-0">0</h3><small class="text-muted">Domínio financeiro pendente</small></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-8"><div class="card"><div class="card-header"><h4 class="card-title">Comparativo trimestral</h4></div><div class="card-body"><div id="chartBar"></div></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Prontidão financeira</h4></div><div class="card-body"><div id="redial"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Fluxo de caixa (preparação)</h4></div><div class="card-body"><div id="expensesChart"></div></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

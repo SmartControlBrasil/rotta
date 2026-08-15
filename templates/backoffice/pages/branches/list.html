@@ -1,0 +1,77 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Filiais</h4>
+                {% if can_manage_organizations %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'backoffice:branch_create' %}">+ Nova Filial</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-5">
+                        <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Nome">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" name="organization">
+                            <option value="">Organização</option>
+                            {% for org in organizations %}
+                                <option value="{{ org.id }}" {% if filters.organization == org.id|stringformat:"s" %}selected{% endif %}>{{ org.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+                    </div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Código</th>
+                                <th>Unidade de Negócio</th>
+                                <th>Organização</th>
+                                <th>Status</th>
+                                <th>Criada em</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for branch in branches %}
+                                <tr>
+                                    <td><strong>{{ branch.name }}</strong></td>
+                                    <td>{{ branch.code|default:'-' }}</td>
+                                    <td>{{ branch.business_unit.name|default:'-' }}</td>
+                                    <td>{{ branch.organization.name }}</td>
+                                    <td>
+                                        {% if branch.is_active %}
+                                            <span class="badge badge-success">Ativa</span>
+                                        {% else %}
+                                            <span class="badge badge-light">Inativa</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ branch.created_at|date:'d/m/Y H:i' }}</td>
+                                    <td>
+                                        {% if can_manage_organizations %}
+                                            <a class="btn btn-light btn-sm" href="{% url 'backoffice:branch_edit' branch.id %}">Editar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Nenhuma filial encontrada.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

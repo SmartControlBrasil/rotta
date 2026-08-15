@@ -1,0 +1,33 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">
+{% include 'backoffice/partials/breadcrumbs.html' %}
+<div class="row">
+<div class="col-xl-4"><div class="card"><div class="card-header d-flex justify-content-between"><h4 class="card-title">Resumo</h4>{% if can_edit %}<a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_quote_edit' quote.id %}">Editar</a>{% endif %}</div>
+<div class="card-body">
+<p><strong>Código:</strong> {{ quote.reference_code }} (v{{ quote.version }})</p>
+<p><strong>Status:</strong> <span class="badge badge-light">{{ quote.status }}</span></p>
+<p><strong>Solicitação:</strong> <a href="{% url 'backoffice:freight_request_detail' quote.freight_request.id %}">{{ quote.freight_request.reference_code }}</a></p>
+<p><strong>Validade:</strong> {{ quote.valid_until|date:'d/m/Y'|default:'-' }}</p>
+<p><strong>Total:</strong> R$ {{ quote.total_amount }} {{ quote.currency }}</p>
+{% if can_view_margin and quote.estimated_cost %}<p><strong>Custo estimado:</strong> R$ {{ quote.estimated_cost }}</p><p><strong>Margem:</strong> R$ {{ quote.gross_margin_amount }} ({{ quote.gross_margin_percent|floatformat:2 }}%)</p>{% endif %}
+<hr>
+{% if can_review and quote.status == 'DRAFT' %}<form method="post" action="{% url 'backoffice:freight_quote_review' quote.id %}">{% csrf_token %}<button class="btn btn-info btn-sm w-100 mb-2" type="submit">Enviar para análise</button></form>{% endif %}
+{% if can_approve and quote.status == 'UNDER_REVIEW' %}<form method="post" action="{% url 'backoffice:freight_quote_approve' quote.id %}">{% csrf_token %}<button class="btn btn-success btn-sm w-100 mb-2" type="submit">Aprovar</button></form>{% endif %}
+{% if can_send and quote.status == 'APPROVED' %}<form method="post" action="{% url 'backoffice:freight_quote_send' quote.id %}">{% csrf_token %}<button class="btn btn-primary btn-sm w-100 mb-2" type="submit">Marcar como enviada</button></form>{% endif %}
+{% if can_reject and quote.status == 'UNDER_REVIEW' %}<form method="post" action="{% url 'backoffice:freight_quote_reject' quote.id %}">{% csrf_token %}<input class="form-control mb-2" name="rejection_reason" placeholder="Motivo da rejeição" required><button class="btn btn-warning btn-sm w-100 mb-2" type="submit">Rejeitar</button></form>{% endif %}
+{% if can_cancel and quote.status in 'APPROVED,SENT,UNDER_REVIEW,DRAFT' %}<form method="post" action="{% url 'backoffice:freight_quote_cancel' quote.id %}">{% csrf_token %}<input class="form-control mb-2" name="cancellation_reason" placeholder="Motivo do cancelamento" required><button class="btn btn-danger btn-sm w-100" type="submit">Cancelar</button></form>{% endif %}
+{% if can_revise and quote.status != 'DRAFT' %}<form method="post" action="{% url 'backoffice:freight_quote_revise' quote.id %}">{% csrf_token %}<button class="btn btn-outline-secondary btn-sm w-100 mt-2" type="submit">Revisar cotação</button></form>{% endif %}
+</div></div></div>
+<div class="col-xl-8">
+<div class="card"><div class="card-header"><h4 class="card-title">Composição do preço</h4></div><div class="card-body"><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Tipo</th><th>Descrição</th><th>Qtd</th><th>Unit.</th><th>Total</th></tr></thead><tbody>{% for charge in quote.charges.all %}<tr><td>{{ charge.charge_type }}</td><td>{{ charge.description|default:'-' }}</td><td>{{ charge.quantity }}</td><td>R$ {{ charge.unit_amount }}</td><td>R$ {{ charge.total_amount }}</td></tr>{% empty %}<tr><td colspan="5" class="text-muted">Sem itens.</td></tr>{% endfor %}</tbody></table></div>
+<p class="mb-0"><strong>Frete base:</strong> R$ {{ quote.base_freight_amount }} · <strong>Adicionais:</strong> R$ {{ quote.additional_charges }} · <strong>Descontos:</strong> R$ {{ quote.discount_amount }} · <strong>Impostos:</strong> R$ {{ quote.tax_amount }}</p></div></div>
+<div class="card"><div class="card-header"><h4 class="card-title">Premissas (snapshot)</h4></div><div class="card-body"><pre class="mb-0">{{ quote.premises_snapshot }}</pre></div></div>
+{% if quote.customer_notes %}<div class="card"><div class="card-header"><h4 class="card-title">Notas ao cliente</h4></div><div class="card-body">{{ quote.customer_notes }}</div></div>{% endif %}
+<div class="card"><div class="card-header"><h4 class="card-title">Histórico de revisões</h4></div><div class="card-body"><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Versão</th><th>Código</th><th>Status</th><th>Total</th></tr></thead><tbody>{% for item in revision_history %}<tr><td>v{{ item.version }}</td><td><a href="{% url 'backoffice:freight_quote_detail' item.id %}">{{ item.reference_code }}</a></td><td>{{ item.status }}</td><td>R$ {{ item.total_amount }}</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% if can_view_offers %}
+<div class="card"><div class="card-header"><h4 class="card-title">Ofertas geradas</h4></div><div class="card-body"><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Oferta</th><th>Status</th><th>Valor</th><th>Audiência</th><th>Validade</th><th></th></tr></thead><tbody>{% for offer in generated_offers %}<tr><td>{{ offer.reference_code }}</td><td>{{ offer.status }}</td><td>R$ {{ offer.offer_amount }}</td><td>{{ offer.audience }}</td><td>{{ offer.expires_at|date:'d/m/Y H:i'|default:'-' }}</td><td><a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_offer_detail' offer.id %}">Abrir</a></td></tr>{% empty %}<tr><td colspan="6" class="text-muted">Nenhuma oferta gerada.</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% endif %}
+<div class="card"><div class="card-header"><h4 class="card-title">Auditoria</h4></div><div class="card-body"><table class="table table-sm"><thead><tr><th>Evento</th><th>Ator</th><th>Quando</th></tr></thead><tbody>{% for log in audit_logs %}<tr><td>{{ log.action }}</td><td>{{ log.actor|default:'-' }}</td><td>{{ log.created_at|date:'d/m/Y H:i' }}</td></tr>{% empty %}<tr><td colspan="3" class="text-muted">Sem eventos.</td></tr>{% endfor %}</tbody></table></div></div>
+</div></div></div></div>
+{% endblock %}

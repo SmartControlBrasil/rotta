@@ -220,9 +220,9 @@ def test_roles_permissions_and_audit_detail(client, django_user_model, rbac_read
     role = Role.objects.get(code=RoleCode.COMPANY_ADMIN)
     role_detail = client.get(reverse("backoffice:role_detail", args=[role.id]))
     permissions = client.get(reverse("backoffice:permissions"))
-    audit = AuditLog.objects.filter(
-        action="user_updated", metadata__safe="visible"
-    ).latest("created_at")
+    audit = AuditLog.objects.filter(action="user_updated", metadata__safe="visible").latest(
+        "created_at"
+    )
     audit_list = client.get(reverse("backoffice:audit"), {"action": "user_updated"})
     audit_detail = client.get(reverse("backoffice:audit_detail", args=[audit.id]))
 
@@ -256,12 +256,88 @@ def test_backoffice_sidebar_real_links_are_resolvable(client):
 
     assert response.status_code == 200
     assert reverse("backoffice:dashboard")
+    assert reverse("backoffice:dashboard_operations")
+    assert reverse("backoffice:dashboard_relationship")
+    assert reverse("backoffice:dashboard_finance")
+    assert reverse("backoffice:dashboard_analytics")
+    assert reverse("backoffice:dashboard_commercial")
+    assert reverse("backoffice:dashboard_marketplace")
+    assert reverse("backoffice:dashboard_compliance")
+    assert reverse("backoffice:dashboard_fleet_health")
     assert reverse("backoffice:organizations")
+    assert reverse("backoffice:drivers")
+    assert reverse("backoffice:vehicles")
+    assert reverse("backoffice:carriers")
     assert reverse("backoffice:users")
     assert reverse("backoffice:memberships")
     assert reverse("backoffice:roles")
     assert reverse("backoffice:permissions")
     assert reverse("backoffice:audit")
+    assert reverse("backoffice:documents")
+    assert reverse("backoffice:documents_review")
+    assert reverse("backoffice:document_upload")
+
+
+@pytest.mark.django_db
+def test_dashboard_thematic_routes_require_authentication(client):
+    route_names = [
+        "backoffice:dashboard",
+        "backoffice:dashboard_operations",
+        "backoffice:dashboard_relationship",
+        "backoffice:dashboard_finance",
+        "backoffice:dashboard_analytics",
+        "backoffice:dashboard_commercial",
+        "backoffice:dashboard_marketplace",
+        "backoffice:dashboard_compliance",
+        "backoffice:dashboard_fleet_health",
+    ]
+    for route_name in route_names:
+        response = client.get(reverse(route_name))
+        assert response.status_code == 302
+        assert response["Location"].startswith(reverse("backoffice:login"))
+
+
+@pytest.mark.django_db
+def test_dashboard_thematic_routes_enforce_rbac(
+    client, django_user_model, rbac_ready, organization
+):
+    admin = django_user_model.objects.create_user(username="dashadmin", password="safe-pass-123")
+    viewer = django_user_model.objects.create_user(username="dashviewer", password="safe-pass-123")
+    outsider = django_user_model.objects.create_user(
+        username="dashoutsider", password="safe-pass-123"
+    )
+    grant(admin, organization, RoleCode.COMPANY_ADMIN)
+    grant(viewer, organization, RoleCode.VIEWER)
+
+    client.force_login(admin)
+    allowed_for_admin = [
+        "backoffice:dashboard",
+        "backoffice:dashboard_operations",
+        "backoffice:dashboard_relationship",
+        "backoffice:dashboard_finance",
+        "backoffice:dashboard_analytics",
+        "backoffice:dashboard_commercial",
+        "backoffice:dashboard_marketplace",
+        "backoffice:dashboard_compliance",
+        "backoffice:dashboard_fleet_health",
+    ]
+    for route_name in allowed_for_admin:
+        assert client.get(reverse(route_name)).status_code == 200
+
+    client.force_login(outsider)
+    assert client.get(reverse("backoffice:dashboard")).status_code == 200
+    denied_for_viewer = [
+        "backoffice:dashboard_operations",
+        "backoffice:dashboard_relationship",
+        "backoffice:dashboard_finance",
+        "backoffice:dashboard_analytics",
+        "backoffice:dashboard_commercial",
+        "backoffice:dashboard_marketplace",
+        "backoffice:dashboard_compliance",
+        "backoffice:dashboard_fleet_health",
+    ]
+    for route_name in denied_for_viewer:
+        assert client.get(reverse(route_name)).status_code == 403
 
 
 def test_backoffice_detail_404_for_unknown_uuid(
@@ -274,3 +350,53 @@ def test_backoffice_detail_404_for_unknown_uuid(
     response = client.get(reverse("backoffice:organization_detail", args=[uuid.uuid4()]))
 
     assert response.status_code == 404
+
+
+@pytest.mark.django_db(transaction=True)
+def test_backoffice_login_invalid_credentials_stays_on_login_with_generic_message(
+    client, django_user_model
+):
+    django_user_model.objects.create_user(username="operator", password="safe-pass-123")
+
+    response = client.post(
+        reverse("backoffice:login"),
+        {"username": "operator", "password": "wrong-pass"},
+    )
+
+    assert response.status_code == 200
+    assert "Usuário ou senha inválidos.".encode() in response.content
+    assert "_auth_user_id" not in client.session
+    assert AuditLog.objects.filter(action="login_failed").exists()
+    audit = AuditLog.objects.filter(action="login_failed").latest("created_at")
+    assert audit.metadata["username"] == "operator"
+    assert "password" not in audit.metadata
+
+
+@pytest.mark.django_db(transaction=True)
+def test_backoffice_unknown_user_login_is_denied_and_audited(client):
+    response = client.post(
+        reverse("backoffice:login"),
+        {"username": "unknown", "password": "wrong-pass"},
+    )
+
+    assert response.status_code == 200
+    assert "Usuário ou senha inválidos.".encode() in response.content
+    assert "_auth_user_id" not in client.session
+    assert AuditLog.objects.filter(action="login_failed").exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_backoffice_logout_clears_session_and_private_page_requires_login(
+    client, django_user_model
+):
+    user = django_user_model.objects.create_user(username="operator", password="safe-pass-123")
+    client.force_login(user)
+
+    logout_response = client.post(reverse("backoffice:logout"))
+    dashboard_response = client.get(reverse("backoffice:dashboard"))
+
+    assert logout_response.status_code == 302
+    assert logout_response["Location"] == reverse("backoffice:login")
+    assert dashboard_response.status_code == 302
+    assert dashboard_response["Location"].startswith(reverse("backoffice:login"))
+    assert AuditLog.objects.filter(action="logout", actor=user).exists()

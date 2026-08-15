@@ -1,0 +1,39 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Solicitações abertas</p><h3 class="mb-0">{{ snapshot.freight_requests_open }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Rascunhos</p><h3 class="mb-0">{{ snapshot.freight_requests_drafts }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Enviadas</p><h3 class="mb-0">{{ snapshot.freight_requests_submitted }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Em análise</p><h3 class="mb-0">{{ snapshot.freight_requests_under_review }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Motoristas ativos</p><h3 class="mb-0">{{ snapshot.drivers_active }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Motoristas disponíveis</p><h3 class="mb-0">{{ snapshot.drivers_available }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Veículos ativos</p><h3 class="mb-0">{{ snapshot.vehicles_active }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Refrigeradas</p><h3 class="mb-0">{{ snapshot.freight_requests_refrigerated }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-8"><div class="card"><div class="card-header"><h4 class="card-title">Atividade operacional</h4></div><div class="card-body"><canvas id="activity" height="140"></canvas></div></div></div>
+            <div class="col-xl-4"><div class="card"><div class="card-header"><h4 class="card-title">Mix operacional</h4></div><div class="card-body"><div id="operations_mix"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas publicadas</p><h3 class="mb-0">{{ snapshot.freight_offers_published }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas pausadas</p><h3 class="mb-0">{{ snapshot.freight_offers_paused }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Ofertas vencendo (48h)</p><h3 class="mb-0">{{ snapshot.freight_offers_expiring_soon }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1">Prontas para publicação</p><h3 class="mb-0">{{ snapshot.freight_requests_ready_to_publish }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6"><div class="card"><div class="card-header"><h4 class="card-title">Solicitações canceladas</h4></div><div class="card-body"><h2>{{ snapshot.freight_requests_cancelled }}</h2></div></div></div>
+            <div class="col-xl-6"><div class="card"><div class="card-header"><h4 class="card-title">Coletas / entregas pendentes</h4></div><div class="card-body"><h2>0</h2><p class="mb-0 text-muted">Próxima fase: embarque e tracking operacional.</p></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

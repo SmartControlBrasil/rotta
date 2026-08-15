@@ -1,0 +1,80 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Rota desejada</h4>
+                        <div>
+                            {% if can_update %}
+                                <a class="btn btn-outline-primary btn-xs" href="{% url 'backoffice:driver_route_intent_edit' route_intent.id %}">Editar</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="h5 mb-3">{{ route_intent.origin_city }}/{{ route_intent.origin_state }} <span class="text-primary mx-2">→</span> {{ route_intent.destination_city }}/{{ route_intent.destination_state }}</p>
+                        <p>
+                            {% if route_intent.intent_type == 'RETURN_LOAD' %}
+                                <span class="badge badge-info">Retorno</span>
+                            {% else %}
+                                <span class="badge badge-primary">Destino desejado</span>
+                            {% endif %}
+                            <span class="badge badge-light">{{ route_intent.status }}</span>
+                        </p>
+                        <p><strong>Motorista:</strong> <a href="{% url 'backoffice:driver_detail' route_intent.driver_id %}">{{ route_intent.driver.full_name }}</a></p>
+                        <p><strong>Veículo:</strong> {% if route_intent.vehicle %}<a href="{% url 'backoffice:vehicle_detail' route_intent.vehicle_id %}">{{ route_intent.vehicle.plate }}</a>{% else %}-{% endif %}</p>
+                        <p><strong>Disponível:</strong> {{ route_intent.available_from|date:'d/m/Y H:i' }} – {{ route_intent.available_until|date:'d/m/Y H:i' }}</p>
+                        <p><strong>Origem:</strong> {{ route_intent.origin_city }}/{{ route_intent.origin_state }}</p>
+                        <p><strong>Destino:</strong> {{ route_intent.destination_city }}/{{ route_intent.destination_state }}</p>
+                        <p><strong>Desvio origem:</strong> {{ route_intent.max_origin_deviation_km|default:'-' }} km</p>
+                        <p><strong>Desvio destino:</strong> {{ route_intent.max_destination_deviation_km|default:'-' }} km</p>
+                        <p><strong>Preferência de carga:</strong>
+                            {% if route_intent.cargo_preference == 'DRY_CARGO' %}Seca
+                            {% elif route_intent.cargo_preference == 'REFRIGERATED_CARGO' %}Refrigerada
+                            {% elif route_intent.cargo_preference == 'BOTH' %}Seca ou refrigerada
+                            {% else %}Sem preferência{% endif %}
+                        </p>
+                        <p><strong>Origem do registro:</strong> {{ route_intent.source }}</p>
+                        {% if route_intent.notes %}<p><strong>Observações:</strong> {{ route_intent.notes }}</p>{% endif %}
+                        {% if route_intent.refrigeration_snapshot %}
+                            <hr>
+                            <h6 class="text-primary">Snapshot térmico</h6>
+                            <pre class="small bg-light p-2 rounded">{{ route_intent.refrigeration_snapshot }}</pre>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Ações</h4></div>
+                    <div class="card-body d-grid gap-2">
+                        {% if can_activate %}
+                            <form method="post" action="{% url 'backoffice:driver_route_intent_activate' route_intent.id %}">{% csrf_token %}<button class="btn btn-success btn-sm" type="submit">Ativar</button></form>
+                        {% endif %}
+                        {% if can_cancel %}
+                            <form method="post" action="{% url 'backoffice:driver_route_intent_cancel' route_intent.id %}">
+                                {% csrf_token %}
+                                <input class="form-control form-control-sm mb-2" name="reason" placeholder="Motivo do cancelamento (opcional)">
+                                <button class="btn btn-danger btn-sm" type="submit">Cancelar</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Auditoria</h4></div>
+                    <div class="card-body">
+                        {% for log in audit_logs %}
+                            <p class="small mb-2"><strong>{{ log.action }}</strong><br>{{ log.created_at|date:'d/m/Y H:i' }} · {{ log.actor|default:'-' }}</p>
+                        {% empty %}
+                            <p class="text-muted mb-0">Sem eventos.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

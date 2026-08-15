@@ -1,0 +1,47 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body"><div class="container-fluid">
+{% include 'backoffice/partials/breadcrumbs.html' %}
+<div class="row">
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Total</p><h4>{{ kpis.total }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Rascunhos</p><h4>{{ kpis.drafts }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Prontas</p><h4>{{ kpis.ready }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Publicadas</p><h4>{{ kpis.published }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Pausadas</p><h4>{{ kpis.paused }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Expiradas</p><h4>{{ kpis.expired }}</h4></div></div></div>
+</div>
+<div class="row"><div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Canceladas</p><h4>{{ kpis.cancelled }}</h4></div></div></div>
+<div class="col-xl-2 col-md-4 col-6"><div class="card"><div class="card-body"><p class="mb-1">Refrigeradas</p><h4>{{ kpis.refrigerated }}</h4></div></div></div>
+{% if can_view_margin %}<div class="col-xl-4"><div class="card"><div class="card-body"><p class="mb-1">Valor total ofertado</p><h3>R$ {{ offered_total }}</h3></div></div></div>{% endif %}
+</div>
+<div class="card"><div class="card-header"><h4 class="card-title">Ofertas de Frete</h4></div>
+<div class="card-body">
+<form class="row g-3 mb-4" method="get">
+<div class="col-md-3"><input class="form-control" name="q" value="{{ filters.q }}" placeholder="Código, solicitação, cliente ou rota"></div>
+<div class="col-md-2"><select class="form-control" name="status"><option value="">Status</option>{% for status in statuses %}<option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>{% if status == 'DRAFT' %}Rascunho{% elif status == 'READY' %}Pronta{% elif status == 'PUBLISHED' %}Publicada{% elif status == 'PAUSED' %}Pausada{% elif status == 'EXPIRED' %}Expirada{% elif status == 'CANCELLED' %}Cancelada{% else %}{{ status }}{% endif %}</option>{% endfor %}</select></div>
+<div class="col-md-2"><select class="form-control" name="audience"><option value="">Audiência</option>{% for audience in audiences %}<option value="{{ audience }}" {% if filters.audience == audience %}selected{% endif %}>{% if audience == 'CARRIERS' %}Transportadoras{% elif audience == 'DRIVERS' %}Motoristas{% elif audience == 'BOTH' %}Ambos{% elif audience == 'PRIVATE' %}Privada{% else %}{{ audience }}{% endif %}</option>{% endfor %}</select></div>
+<div class="col-md-2"><select class="form-control" name="owner"><option value="">Responsável</option>{% for owner in owners %}<option value="{{ owner.id }}" {% if filters.owner == owner.id|stringformat:'s' %}selected{% endif %}>{{ owner.email }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><input class="form-control" type="date" name="expires_before" value="{{ filters.expires_before }}"></div>
+<div class="col-md-1"><button class="btn btn-primary w-100" type="submit">Filtrar</button></div>
+</form>
+<div class="table-responsive"><table class="table table-responsive-md"><thead><tr><th>Oferta</th><th>Solicitação</th><th>Cliente</th><th>Rota</th><th>Perfil</th><th>Valor oferta</th>{% if can_view_margin %}<th>Preço cliente</th><th>Spread</th>{% endif %}<th>Audiência</th><th>Validade</th><th>Status</th><th>Responsável</th><th></th></tr></thead><tbody>
+{% for offer in freight_offers %}
+<tr>
+<td><strong>{{ offer.reference_code }}</strong></td>
+<td>{{ offer.freight_request.reference_code }}</td>
+<td>{{ offer.freight_request.customer.legal_name }}</td>
+<td>{{ offer.premises_snapshot.pickup.city|default:'-' }}/{{ offer.premises_snapshot.pickup.state|default:'-' }} → {{ offer.premises_snapshot.delivery.city|default:'-' }}/{{ offer.premises_snapshot.delivery.state|default:'-' }}</td>
+<td>{{ offer.premises_snapshot.cargo_profile|default:'-' }}</td>
+<td>R$ {{ offer.offer_amount }}</td>
+{% if can_view_margin %}<td>R$ {{ offer.freight_quote.customer_price }}</td><td>R$ {{ offer.spread_amount|default:'-' }}</td>{% endif %}
+<td>{{ offer.audience }}</td>
+<td>{{ offer.expires_at|date:'d/m/Y H:i'|default:'-' }}</td>
+<td><span class="badge badge-light">{{ offer.status }}</span></td>
+<td>{{ offer.owner|default:'-' }}</td>
+<td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:freight_offer_detail' offer.id %}">Abrir</a></td>
+</tr>
+{% empty %}<tr><td colspan="12" class="text-center text-muted">Nenhuma oferta encontrada.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include 'backoffice/partials/pagination.html' %}
+</div></div></div></div>
+{% endblock %}

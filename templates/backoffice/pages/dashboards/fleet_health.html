@@ -1,0 +1,34 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Total</p><h3 class="mb-0">{{ snapshot.vehicles_total }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Ativos</p><h3 class="mb-0">{{ snapshot.vehicles_active }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Disponíveis</p><h3 class="mb-0">{{ snapshot.vehicles_available }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Manutenção</p><h3 class="mb-0">{{ snapshot.vehicles_maintenance }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Bloqueados</p><h3 class="mb-0">{{ snapshot.vehicles_blocked }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">Refrigerados</p><h3 class="mb-0">{{ snapshot.vehicles_refrigerated }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">CRLV vencendo</p><h3 class="mb-0">{{ snapshot.documents_vehicle_crlv_expiring }}</h3></div></div></div>
+            <div class="col-xl-2 col-md-4"><div class="card"><div class="card-body"><p class="mb-1">CRLV vencido</p><h3 class="mb-0">{{ snapshot.documents_vehicle_crlv_expired }}</h3></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6"><div class="card"><div class="card-header"><h4 class="card-title">Status da frota</h4></div><div class="card-body"><div id="overiewChart"></div></div></div></div>
+            <div class="col-xl-3"><div class="card"><div class="card-header"><h4 class="card-title">Disponibilidade</h4></div><div class="card-body"><div id="redial"></div></div></div></div>
+            <div class="col-xl-3"><div class="card"><div class="card-header"><h4 class="card-title">Perfil de carga</h4></div><div class="card-body"><div id="overview-chart"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Documentação veicular</h4></div><div class="card-body"><div id="documentsChart"></div></div></div></div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12"><div class="card"><div class="card-header"><h4 class="card-title">Telemetria térmica</h4></div><div class="card-body"><p class="mb-0 text-muted">PREPARADO PARA FUTURO: sensores, alertas térmicos, calibração e ocorrências de refrigeração.</p></div></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

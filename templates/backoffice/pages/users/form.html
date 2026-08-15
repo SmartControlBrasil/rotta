@@ -1,0 +1,98 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Usuário{% else %}Novo Usuário{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <h5 class="col-12 mt-4 text-primary">Informações Básicas</h5>
+                    {% if form.username %}
+                        <div class="col-md-4">
+                            <label class="form-label">Nome de usuário (Login)</label>
+                            {{ form.username }}
+                            {{ form.username.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="col-md-8">
+                        <label class="form-label">E-mail</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nome</label>
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Sobrenome</label>
+                        {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                    </div>
+
+                    {% if form.password %}
+                        <div class="col-md-12">
+                            <label class="form-label">Senha</label>
+                            {{ form.password }}
+                            {{ form.password.errors }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.organization %}
+                        <h5 class="col-12 mt-4 text-primary">Vínculo Primário</h5>
+                        <div class="col-md-4">
+                            <label class="form-label">Organização</label>
+                            {{ form.organization }}
+                            {{ form.organization.errors }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Papel (Role)</label>
+                            {{ form.role }}
+                            {{ form.role.errors }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Escopo de Acesso</label>
+                            {{ form.scope }}
+                            {{ form.scope.errors }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.is_active %}
+                        <div class="col-md-12 mt-3">
+                            <div class="form-check">
+                                {{ form.is_active }}
+                                <label class="form-check-label">Usuário Ativo</label>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        {% if is_edit %}
+                            <a href="{% url 'backoffice:user_detail' form.instance.id %}" class="btn btn-light">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'backoffice:users' %}" class="btn btn-light">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

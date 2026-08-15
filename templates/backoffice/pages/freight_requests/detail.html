@@ -1,0 +1,232 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Resumo</h4>
+                        {% if can_edit %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_request_edit' freight_request.id %}">Editar</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Código:</strong> {{ freight_request.reference_code }}</p>
+                        <p><strong>Status:</strong>
+                            {% if freight_request.status == 'DRAFT' %}
+                                <span class="badge badge-warning light">Rascunho</span>
+                            {% elif freight_request.status == 'SUBMITTED' %}
+                                <span class="badge badge-primary light">Enviada</span>
+                            {% elif freight_request.status == 'UNDER_REVIEW' %}
+                                <span class="badge badge-info light">Em análise</span>
+                            {% elif freight_request.status == 'CANCELLED' %}
+                                <span class="badge badge-danger light">Cancelada</span>
+                            {% else %}
+                                <span class="badge badge-light">{{ freight_request.status }}</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Prioridade:</strong> {{ freight_request.priority }}</p>
+                        <p><strong>Responsável:</strong> {{ freight_request.owner|default:'-' }}</p>
+                        <p><strong>Criado em:</strong> {{ freight_request.created_at|date:'d/m/Y H:i' }}</p>
+                        {% if freight_request.submitted_at %}
+                            <p><strong>Enviado em:</strong> {{ freight_request.submitted_at|date:'d/m/Y H:i' }}</p>
+                        {% endif %}
+                        {% if freight_request.cancelled_at %}
+                            <p><strong>Cancelado em:</strong> {{ freight_request.cancelled_at|date:'d/m/Y H:i' }}</p>
+                            <p><strong>Motivo:</strong> {{ freight_request.cancellation_reason }}</p>
+                        {% endif %}
+                        <hr>
+                        {% if can_submit %}
+                            <form method="post" action="{% url 'backoffice:freight_request_submit' freight_request.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm w-100 mb-2" type="submit">Enviar solicitação</button>
+                            </form>
+                        {% endif %}
+                        {% if can_cancel %}
+                            <form method="post" action="{% url 'backoffice:freight_request_cancel' freight_request.id %}">
+                                {% csrf_token %}
+                                <input class="form-control mb-2" name="cancellation_reason" placeholder="Motivo do cancelamento" required>
+                                <button class="btn btn-danger btn-sm w-100" type="submit">Cancelar solicitação</button>
+                            </form>
+                        {% endif %}
+                        {% if can_change_status and allowed_transitions %}
+                            <form method="post" action="{% url 'backoffice:freight_request_status' freight_request.id %}" class="mt-3">
+                                {% csrf_token %}
+                                <select class="form-control mb-2" name="status">
+                                    {% for status in allowed_transitions %}
+                                        <option value="{{ status }}">{{ status }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-outline-primary btn-sm w-100" type="submit">Alterar status</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Cliente</h4></div>
+                    <div class="card-body">
+                        <p><strong>Nome:</strong> {{ freight_request.customer.legal_name }}</p>
+                        <p><strong>Organização:</strong> {{ freight_request.organization }}</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Rota</h4></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Origem</h6>
+                                {% with stop=freight_request.pickup_stop %}
+                                    <p>{{ stop.city|default:'-' }}/{{ stop.state|default:'-' }}</p>
+                                    <p class="text-muted mb-0">{{ stop.street }} {{ stop.number }}</p>
+                                    <p class="text-muted">Coleta: {{ stop.scheduled_date|date:'d/m/Y'|default:'-' }}
+                                        {% if stop.window_start %} · {{ stop.window_start|time:'H:i' }}{% endif %}
+                                        {% if stop.window_end %} - {{ stop.window_end|time:'H:i' }}{% endif %}
+                                    </p>
+                                {% endwith %}
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Destino</h6>
+                                {% with stop=freight_request.delivery_stop %}
+                                    <p>{{ stop.city|default:'-' }}/{{ stop.state|default:'-' }}</p>
+                                    <p class="text-muted mb-0">{{ stop.street }} {{ stop.number }}</p>
+                                    <p class="text-muted">Entrega: {{ stop.scheduled_date|date:'d/m/Y'|default:'-' }}
+                                        {% if stop.window_start %} · {{ stop.window_start|time:'H:i' }}{% endif %}
+                                        {% if stop.window_end %} - {{ stop.window_end|time:'H:i' }}{% endif %}
+                                    </p>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Carga</h4></div>
+                    <div class="card-body">
+                        <p><strong>Descrição:</strong> {{ freight_request.cargo.description|default:'-' }}</p>
+                        <p><strong>Tipo:</strong> {{ freight_request.cargo.cargo_type }}</p>
+                        <p><strong>Perfil:</strong>
+                            {% if freight_request.cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                                <span class="badge badge-info light">Refrigerada</span>
+                            {% else %}
+                                <span class="badge badge-secondary light">Seca</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Peso:</strong> {{ freight_request.cargo.weight_kg|default:'-' }} kg</p>
+                        <p><strong>Volume:</strong> {{ freight_request.cargo.volume_m3|default:'-' }} m³</p>
+                        <p><strong>Volumes:</strong> {{ freight_request.cargo.package_count|default:'-' }} {{ freight_request.cargo.package_type }}</p>
+                        {% if freight_request.cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                            <hr>
+                            <h6 class="text-primary">Requisitos térmicos</h6>
+                            <p><strong>Mínima:</strong> {{ freight_request.cargo.temperature_min_c|default:'-' }} °C</p>
+                            <p><strong>Máxima:</strong> {{ freight_request.cargo.temperature_max_c|default:'-' }} °C</p>
+                            <p><strong>Setpoint:</strong> {{ freight_request.cargo.target_temperature_c|default:'-' }} °C</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Requisitos do veículo e observações</h4></div>
+                    <div class="card-body">
+                        <p><strong>Tipo de veículo:</strong> {{ freight_request.vehicle_type_required|default:'-' }}</p>
+                        <p><strong>Carroceria:</strong> {{ freight_request.body_type_required|default:'-' }}</p>
+                        <p><strong>Instruções:</strong> {{ freight_request.instructions|default:'-' }}</p>
+                        <p><strong>Manuseio:</strong> {{ freight_request.handling_requirements|default:'-' }}</p>
+                        <p><strong>Valor declarado:</strong>
+                            {% if freight_request.declared_cargo_value %}
+                                {{ freight_request.declared_cargo_value }} {{ freight_request.currency }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                        <p><strong>Material perigoso:</strong> {% if freight_request.hazardous_material %}Sim{% else %}Não{% endif %}</p>
+                    </div>
+                </div>
+                {% if can_view_quotes %}
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Cotações</h4>
+                        {% if can_create_quote %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_quote_create' freight_request.id %}">Nova Cotação</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead><tr><th>Cotação</th><th>Status</th><th>Valor</th><th>Validade</th><th></th></tr></thead>
+                                <tbody>
+                                    {% for quote in quotes %}
+                                        <tr>
+                                            <td>{{ quote.reference_code }} (v{{ quote.version }})</td>
+                                            <td>{{ quote.status }}</td>
+                                            <td>R$ {{ quote.total_amount }}</td>
+                                            <td>{{ quote.valid_until|date:'d/m/Y'|default:'-' }}</td>
+                                            <td><a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_quote_detail' quote.id %}">Abrir</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="5" class="text-muted">Nenhuma cotação registrada.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if can_view_offers %}
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">Ofertas</h4>
+                        {% if can_create_offer %}
+                            <a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_offer_create' freight_request.id %}">Nova Oferta</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead><tr><th>Oferta</th><th>Status</th><th>Valor</th><th>Audiência</th><th>Validade</th><th></th></tr></thead>
+                                <tbody>
+                                    {% for offer in offers %}
+                                        <tr>
+                                            <td>{{ offer.reference_code }}</td>
+                                            <td>{{ offer.status }}</td>
+                                            <td>R$ {{ offer.offer_amount }}</td>
+                                            <td>{{ offer.audience }}</td>
+                                            <td>{{ offer.expires_at|date:'d/m/Y H:i'|default:'-' }}</td>
+                                            <td><a class="btn btn-primary btn-xs" href="{% url 'backoffice:freight_offer_detail' offer.id %}">Abrir</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="6" class="text-muted">Nenhuma oferta registrada.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Auditoria</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead><tr><th>Evento</th><th>Ator</th><th>Quando</th></tr></thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                        <tr>
+                                            <td>{{ log.action }}</td>
+                                            <td>{{ log.actor|default:'-' }}</td>
+                                            <td>{{ log.created_at|date:'d/m/Y H:i' }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="3" class="text-muted">Sem eventos registrados.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

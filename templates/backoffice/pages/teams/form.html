@@ -1,0 +1,57 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{% if is_edit %}Editar Equipe{% else %}Nova Equipe{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}<br>
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-md-4">
+                        <label class="form-label">Organização</label>
+                        {{ form.organization }}
+                        {{ form.organization.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Departamento</label>
+                        {{ form.department }}
+                        {{ form.department.errors }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nome da Equipe</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label">Equipe Ativa</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <a href="{% url 'backoffice:teams' %}" class="btn btn-light">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

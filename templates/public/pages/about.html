@@ -1,7 +1,12 @@
 {% extends 'public/landing.html' %}
 {% load static %}
 
-{% block title %}Cargon-About{% endblock %}
+{% block title %}Rotta 116 | Sobre Nós{% endblock %}
+
+{% block logo %}
+<meta name="description" content="Conheça o Rotta 116, marketplace de transporte que conecta clientes, empresas, motoristas, agregados e transportadores por meio da tecnologia.">
+<link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fav-3.svg' %}">
+{% endblock %}
 
 {% block page_content %}
 
@@ -16,11 +21,11 @@
       </div>
       <div class="container">
          <div class="ca-breadcrumb-content text-center">
-            <h2 class="ca-breadcrumb-title fnw-600">About Us</h2>
+            <h2 class="ca-breadcrumb-title fnw-600">Sobre o Rotta 116</h2>
             <div class="it-breadcum-link">
                <a href="{% url 'public:home' %}">Home</a>
                <span><i class="fa-solid fa-angle-right"></i></span>
-               <a class="active" href="#">About Us</a>
+               <a class="active" href="#">Sobre Nós</a>
             </div>
          </div>
       </div>
@@ -34,8 +39,8 @@
             <div class="col-lg-6 mb-30">
                <div class="ca-ab-iner p-relative z-index-1">
                   <div class="ca-iner-review-text p-absolute theme-bg-3">
-                     <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">25</span>K+</h3>
-                     <span>Clients Positive Reviews</span>
+                     <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">01</span></h3>
+                     <span>Marketplace em construção</span>
                   </div>
                   <div class="row">
                      <div class="col-lg-6 col-md-6 mb-30">
@@ -56,12 +61,10 @@
             <div class="col-lg-6 mb-30">
                <div class="ca-ab-content3">
                   <div class="ca-about-content-3 ca-sec-content-3">
-                     <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Why We Are</h5>
-                     <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Our Commitment: Reliable <br>
-                        and Efficient Logistics</h2>
-                     <p class="pt-16 pb-32"> With years of industry experience and a commitment to innovation, we have
-                        <br> become leaders in providing comprehensive, reliable, and efficient logistics<br> solutions.
-                        Our dedicated team of experts works tirelessly to ensure.
+                     <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Sobre o Rotta 116</h5>
+                     <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Tecnologia para conectar quem precisa transportar<br>
+                        a quem pode transportar</h2>
+                     <p class="pt-16 pb-32">O Rotta 116 nasce com a proposta de aproximar duas pontas essenciais da logística:<br> clientes e empresas com necessidades de transporte e motoristas, agregados e<br> transportadores com capacidade disponível.
                      </p>
                   </div>
                   <div class="ca-ab-item-check">
@@ -71,7 +74,7 @@
                            <span><i class="fa-solid fa-check"></i></span>
                         </div>
                         <div class="ca-ab-sngle-item-content">
-                           <h4 class="ca-item-ch-title">Experts in Logistics Management</h4>
+                           <h4 class="ca-item-ch-title">Clientes e empresas</h4>
                         </div>
                      </div>
                      <!-- single-item -->
@@ -80,7 +83,7 @@
                            <span><i class="fa-solid fa-check"></i></span>
                         </div>
                         <div class="ca-ab-sngle-item-content">
-                           <h4 class="ca-item-ch-title">Leaders in Global Logistics</h4>
+                           <h4 class="ca-item-ch-title">Motoristas e agregados</h4>
                         </div>
                      </div>
                      <!-- single-item -->
@@ -89,7 +92,7 @@
                            <span><i class="fa-solid fa-check"></i></span>
                         </div>
                         <div class="ca-ab-sngle-item-content">
-                           <h4 class="ca-item-ch-title">Transforming Transport & Logistics</h4>
+                           <h4 class="ca-item-ch-title">Transportadores parceiros</h4>
                         </div>
                      </div>
                      <!-- single-item -->
@@ -98,16 +101,15 @@
                            <span><i class="fa-solid fa-check"></i></span>
                         </div>
                         <div class="ca-ab-sngle-item-content">
-                           <h4 class="ca-item-ch-title">Driving Logistics Success</h4>
+                           <h4 class="ca-item-ch-title">Tecnologia aplicada</h4>
                         </div>
                      </div>
                   </div>
                   <div class="ca-about-item3 cream-bg-3 p-relative">
-                     <p>We are driving success and creating opportunities for growth. Discover <br>difference with a
-                        logistics partner that is truly invested in your success.</p>
+                     <p>Por meio de uma plataforma digital, queremos simplificar contratação, execução<br> e acompanhamento de operações urbanas, regionais e rodoviárias.</p>
                   </div>
                   <div class="ca-about-3-btn">
-                     <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Transpires<span><i
+                     <a href="{% url 'public:services' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conhecer serviços<span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -124,33 +126,30 @@
             <div class="col-lg-6 mb-30">
                <div class="ca-choose-content3">
                   <div class="ca-about-content-3 ca-sec-content-3">
-                     <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Why Choose Us</h5>
-                     <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Meet the Team: Experts in
-                        Logistics Management</h2>
-                     <p class="pt-16 pb-40">We pride ourselves on our global reach and local expertise, allowing us to
-                        offer tailored services that meet the unique needs of each client. At Cargon, we are <br> not
-                        just moving goods; we are driving success and creating opportunities.</p>
+                     <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">O problema</h5>
+                     <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Um mercado com demanda de um lado<br> e capacidade disponível do outro</h2>
+                     <p class="pt-16 pb-40">O transporte ainda é marcado por processos fragmentados, dificuldade para encontrar<br> o veículo adequado, baixa visibilidade operacional e capacidade ociosa em parte da frota disponível no mercado.</p>
                   </div>
                   <div class="row">
                      <div class="col-lg-6 col-md-6">
                         <!-- single box item -->
                         <div class="ca-iner-ch-box-content mb-40">
-                           <h4 class="ca-title fnw-600 theme-black-2 pb-16">Supply Chain Management</h4>
-                           <p>With years of industry experience and a commitment to innovation, we have become leaders
+                           <h4 class="ca-title fnw-600 theme-black-2 pb-16">Demanda e capacidade</h4>
+                           <p>O mercado reúne necessidades de transporte de um lado e veículos disponíveis do outro.
                            </p>
                         </div>
                      </div>
                      <div class="col-lg-6 col-md-6">
                         <!-- single box item -->
                         <div class="ca-iner-ch-box-content mb-40">
-                           <h4 class="ca-title fnw-600 theme-black-2 pb-16">Supply Chain Management</h4>
-                           <p>With years of industry experience and a commitment to innovation, we have become leaders
+                           <h4 class="ca-title fnw-600 theme-black-2 pb-16">Do urbano ao rodoviário</h4>
+                           <p>A plataforma será estruturada para entregas urbanas, carretos, VUCs, caminhões e carretas.
                            </p>
                         </div>
                      </div>
                   </div>
                   <div class="ca-about-3-btn">
-                     <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Learn More<span><i
+                     <a href="{% url 'public:services' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conhecer serviços<span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -182,42 +181,40 @@
             <div class="col-lg-6 mb-30">
                <div class="ca-value-content3">
                   <div class="ca-about-content-3 ca-sec-content-3">
-                     <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Our Values</h5>
-                     <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Mission Vision & Values Of
-                        Your Transport & Logistics</h2>
-                     <p class="pt-16 pb-40">Our dedicated team of experts works tirelessly to ensure that your goods<br>
-                        are transported safely and on time, no matter the destination.</p>
+                     <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Nossa visão</h5>
+                     <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Simplificar o transporte por meio da tecnologia</h2>
+                     <p class="pt-16 pb-40">Nossa visão é construir uma plataforma capaz de tornar o transporte mais acessível,<br> conectado e transparente desde a solicitação até a entrega.</p>
                   </div>
                   <div class="row">
                      <div class="col-lg-6 col-md-6 mb-20">
                         <div class="ca-value-cbox w-bg text-center br-7">
-                           <h3 class="ca-counter-title theme-black-3 fnw-700 pb-16"><span class="counter">2.4</span>K+
+                           <h3 class="ca-counter-title theme-black-3 fnw-700 pb-16"><span class="counter">01</span>
                            </h3>
-                           <span class="v-text">Successfully Delivery</span>
+                           <span class="v-text">Missão</span>
                         </div>
                      </div>
                      <div class="col-lg-6 col-md-6 mb-20">
                         <div class="ca-value-cbox w-bg text-center br-7">
-                           <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">1800</span>+</h3>
-                           <span class="v-text">Supply Engineers</span>
+                           <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">02</span></h3>
+                           <span class="v-text">Visão</span>
                         </div>
                      </div>
                      <div class="col-lg-6 col-md-6 mb-20">
                         <div class="ca-value-cbox w-bg text-center br-7">
-                           <h3 class="ca-counter-title theme-black-3 fnw-700 pb-16"><span class="counter">199</span>+
+                           <h3 class="ca-counter-title theme-black-3 fnw-700 pb-16"><span class="counter">03</span>
                            </h3>
-                           <span class="v-text">5 Star Reviews</span>
+                           <span class="v-text">Monitoramento</span>
                         </div>
                      </div>
                      <div class="col-lg-6 col-md-6 mb-20">
                         <div class="ca-value-cbox w-bg text-center br-7">
-                           <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">125</span>+</h3>
-                           <span class="v-text">Countries Covered</span>
+                           <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">04</span></h3>
+                           <span class="v-text">App Flutter</span>
                         </div>
                      </div>
                   </div>
                   <div class="ca-about-3-btn">
-                     <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50 mt-12">Learn More<span><i
+                     <a href="{% url 'public:services' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50 mt-12">Conhecer serviços<span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -232,10 +229,9 @@
       <div class="container">
          <div class="ca-team-iner-content-3 ca-sec-content-3 text-center mb-60 wow tpFadeInUp" data-wow-duration="1.5s"
             data-wow-delay=".2s">
-            <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Our Team</h5>
-            <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">The People Behind Our Success</h2>
-            <p class="pt-16">Each member brings a wealth of knowledge and expertise, ensuring that we deliver<br>
-               top-notch transport and logistics solutions to our clients.</p>
+            <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Quem participa da rede</h5>
+            <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Uma plataforma construída para diferentes participantes</h2>
+            <p class="pt-16">A rede será conectada por tecnologia, monitoramento e aplicativo Flutter para motoristas,<br> com cadastro, veículos, validação, status, localização e comprovantes digitais.</p>
          </div>
          <div class="row">
             <!-- single team item -->
@@ -258,8 +254,8 @@
                   <div class="ca-iner-content-team">
                      <div class="ca-team-iner-content br-7">
                         <div class="ca-team-iner-heading">
-                           <h4 class="ca-team-iner-title"><a href="{% url 'public:team' %}">Alex Fargusion</a></h4>
-                           <span>Specialist</span>
+                           <h4 class="ca-team-iner-title"><a href="#">Clientes</a></h4>
+                           <span>Publicam necessidades</span>
                         </div>
                         <div class="ca-team-iner-share">
                            <a href="#"><img src="{% static 'public/cargon/img/icon/ca-share.svg' %}" alt=""></a>
@@ -288,8 +284,8 @@
                   <div class="ca-iner-content-team">
                      <div class="ca-team-iner-content br-7">
                         <div class="ca-team-iner-heading">
-                           <h4 class="ca-team-iner-title"><a href="{% url 'public:team' %}">Richad Stones</a></h4>
-                           <span>Ceo &Founder</span>
+                           <h4 class="ca-team-iner-title"><a href="#">Motoristas e agregados</a></h4>
+                           <span>Usam o app operacional</span>
                         </div>
                         <div class="ca-team-iner-share">
                            <a href="#"><img src="{% static 'public/cargon/img/icon/ca-share.svg' %}" alt=""></a>
@@ -318,8 +314,8 @@
                   <div class="ca-iner-content-team">
                      <div class="ca-team-iner-content br-7">
                         <div class="ca-team-iner-heading">
-                           <h4 class="ca-team-iner-title"><a href="{% url 'public:team' %}">Pep Gurdiola</a></h4>
-                           <span>Manager</span>
+                           <h4 class="ca-team-iner-title"><a href="#">Transportadoras</a></h4>
+                           <span>Participam de operações</span>
                         </div>
                         <div class="ca-team-iner-share">
                            <a href="#"><img src="{% static 'public/cargon/img/icon/ca-share.svg' %}" alt=""></a>
@@ -348,8 +344,8 @@
                   <div class="ca-iner-content-team">
                      <div class="ca-team-iner-content br-7">
                         <div class="ca-team-iner-heading">
-                           <h4 class="ca-team-iner-title"><a href="{% url 'public:team' %}">Alex Fargusion</a></h4>
-                           <span>Coordinator</span>
+                           <h4 class="ca-team-iner-title"><a href="#">Empresas e parceiros</a></h4>
+                           <span>Integram o ecossistema</span>
                         </div>
                         <div class="ca-team-iner-share">
                            <a href="#"><img src="{% static 'public/cargon/img/icon/ca-share.svg' %}" alt=""></a>

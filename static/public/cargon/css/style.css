@@ -978,6 +978,28 @@ header.header-2.stiky.scroll-header .ca-header-bg-2 {
     width: 100%;
 }
 
+.header-area-3 .ca-logo img.rotta-public-logo {
+    display: block;
+    max-width: 52px;
+    height: auto;
+}
+
+.header-area-3 .ca-btn-header .ca-btn-primary-3 {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.header-area-3 .ca-btn-header .ca-btn-primary-3 span {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 991px) {
+    .header-area-3 .ca-logo img.rotta-public-logo {
+        max-width: 64px;
+    }
+}
+
 header.header-area-3.stiky .header-3 {
     background: #fff;
     padding: 20px 24px;
@@ -1579,22 +1601,19 @@ section.ca-hero-area-1 {
   
   @keyframes waves {
     0% {
-      -webkit-transform: scale(0.2, 0.2);
-      transform: scale(0.2, 0.2);
-      opacity: 0;
-      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        transform: scale(0.2);
+        opacity: 0;
     }
+
     50% {
-      opacity: 0.9;
-      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+        opacity: 0.9;
     }
+
     100% {
-      -webkit-transform: scale(0.9, 0.9);
-      transform: scale(0.9, 0.9);
-      opacity: 0;
-      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        transform: scale(0.9);
+        opacity: 0;
     }
-  }
+}
   
   .fa-play:before {
     content: "\f04b";
@@ -1606,13 +1625,12 @@ section.ca-hero-area-1 {
     height: 92px;
     background: #502303;
     opacity: 0;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-    border-radius: 100%;
+    border-radius: 50%;
     right: -28px;
+    top: -28px;
     z-index: -1;
     -webkit-animation: waves 3s ease-in-out infinite;
     animation: waves 3s ease-in-out infinite;
-    top: -28px;
 }
           
   .wave-1 {

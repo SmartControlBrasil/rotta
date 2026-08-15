@@ -1,7 +1,12 @@
 {% extends 'public/landing.html' %}
 {% load static %}
 
-{% block title %} Cargon-Services {% endblock %}
+{% block title %}Rotta 116 | Soluções de Transporte{% endblock %}
+
+{% block logo %}
+<meta name="description" content="Conheça as soluções de transporte do Rotta 116 para entregas urbanas, utilitários, vans, caminhões, carretas e operações programadas.">
+<link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fav-3.svg' %}">
+{% endblock %}
 
 {% block page_content %}
 
@@ -16,11 +21,11 @@
       </div>
       <div class="container">
          <div class="ca-breadcrumb-content text-center">
-            <h2 class="ca-breadcrumb-title fnw-600">Our Services</h2>
+            <h2 class="ca-breadcrumb-title fnw-600">Soluções de Transporte</h2>
             <div class="it-breadcum-link">
-               <a href="#">Home</a>
+               <a href="{% url 'public:home' %}">Home</a>
                <span><i class="fa-solid fa-angle-right"></i></span>
-               <a class="active" href="#">Our Services</a>
+               <a class="active" href="#">Serviços</a>
             </div>
          </div>
       </div>
@@ -42,11 +47,9 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Express Delivery
-                           Services</a></h4>
-                     <p class="pb-24">We provide a comprehensive suite logistics services designed to streamline your
-                        supply <br> chain &amp; meet your unique business needs.</p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Uma plataforma para diferentes necessidades de transporte</a></h4>
+                     <p class="pb-24">O Rotta 116 está sendo desenvolvido para conectar pessoas e empresas a motoristas, agregados e transportadores.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Conhecer proposta <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -63,11 +66,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Supply Chain Management</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Entrega rápida e transporte urbano</a>
                      </h4>
-                     <p class="pb-24">We offer state-of-the-art warehousing <br>solutions, ensuring your inventory
-                        is<br> managed with precision and care.</p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Pequenos volumes, documentos, coletas e entregas dentro da cidade com moto, carro e categorias leves.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Ver operações <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -84,11 +86,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Project Cargo Handling</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Carretos, utilitários e vans</a>
                      </h4>
-                     <p class="pb-24">Our freight forwarding services ensure<br> smooth and efficient transportation
-                        of<br> goods across borders, while our customs</p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Movimentação de volumes, móveis, equipamentos, caixas e distribuição urbana para pessoas e empresas.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Comparar veículos <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -105,11 +106,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Warehousing Solutions</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">VUC, caminhões e carretas</a>
                      </h4>
-                     <p class="pb-24">Our domestic transport services guarantee <br>timely reliable deliveries within
-                        the country, <br>while our international shipping solutions</p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Operações urbanas, intermunicipais e rodoviárias, inclusive transporte dedicado quando a carga exigir exclusividade.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Da cidade a estrada <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -126,11 +126,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">International Shipping</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Transporte sob demanda</a>
                      </h4>
-                     <p class="pb-24">Additionally, our supply chain management services optimize every step your
-                        logistics process, and our e-commerce fulfillment</p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Informe origem, destino e carga. A evolução da plataforma poderá indicar prestadores e veículos compatíveis.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Solicitar transporte <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -147,12 +146,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Cold Chain Logistics</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Operações programadas</a>
                      </h4>
-                     <p class="pb-24">Whether it's handling project cargo with specialized requirements or maintaining
-                        <br>the integrity of temperature-sensitive
-                     </p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Rotas recorrentes, coletas programadas, distribuição, abastecimento de unidades e entregas comerciais planejadas.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Planejar operação <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -169,11 +166,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Inventory Management</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Solucoes para empresas</a>
                      </h4>
-                     <p class="pb-24">Finally, our Reliable Last-Mile Delivery and Freight Consolidation Services ensure
-                        your<br> goods reach their final destination </p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Centralização de demandas, categorias de veículos, histórico operacional, acompanhamento e integrações futuras.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Organizar demandas <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -190,11 +186,10 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Cold Chain Logistics</a>
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Monitoramento e comprovantes</a>
                      </h4>
-                     <p class="pb-24">Trust our Professional Logistics Consulting <br>to enhance your logistics
-                        strategy, & rely on <br>our Efficient Reverse Logistics for seamless </p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <p class="pb-24">Status, localização, chegada, entrega, fotos, assinatura e POD são recursos planejados para a operação.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Acompanhar evolução <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
@@ -211,26 +206,26 @@
                      </div>
                   </div>
                   <div class="ca-service-content ca-service-content-iner">
-                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Domestic Transport</a></h4>
-                     <p class="pb-24">With Specialized Project Cargo Handling &<br> Cold Chain Logistics Services, we
-                        cater to<br> specialized and temperature-sensitive</p>
-                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Rede de prestadores</a></h4>
+                     <p class="pb-24">Motoristas, agregados e transportadores poderáo cadastrar veículos, passar por aprovação e receber oportunidades.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Quero fazer fretes <span><i
                               class="fa-solid fa-angle-right"></i></span></a>
                   </div>
                </div>
             </div>
          </div>
 
+         <!-- TODO: preparar destino futuro /solucoes/ quando a pagina de solucoes existir. -->
          <!-- pagination -->
          <div class="row">
             <div class="col-12 m-auto">
                <div class="theme-pagination text-center">
                   <ul>
                      <li><a href="#"><i class="fa-solid fa-angle-left"></i></a></li>
-                     <li><a class="active" href="#">01</a></li>
-                     <li><a href="#">02</a></li>
+                     <li><a class="active" href="#">Moto</a></li>
+                     <li><a href="#">Urbano</a></li>
                      <li>...</li>
-                     <li><a href="#">12</a></li>
+                     <li><a href="#">Soluções</a></li>
                      <li><a href="#"><i class="fa-solid fa-angle-right"></i></a></li>
                   </ul>
                </div>

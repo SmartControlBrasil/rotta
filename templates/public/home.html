@@ -1,9 +1,10 @@
 {% extends 'public/base.html' %}
 {% load static %}
 
-{% block title %}Rotta Web{% endblock %}
+{% block title %}Rotta 116 | Marketplace de Transporte e Logística{% endblock %}
 
 {% block logo %}
+<meta name="description" content="O Rotta 116 conecta clientes, empresas, motoristas e transportadores para operações de transporte urbano, regional e rodoviário.">
 <link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fav-3.svg' %}">
 {% endblock %}
 
@@ -40,17 +41,14 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="ca-hero-content-3">
                             <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">
-                                Cargon-Transport & Logistics</h5>
-                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Delivering Success Through
-                                Logistics And Expertise</h1>
-                            <p class="pt-16 pb-32">Whether it's international shipping, domestic transport, specialized
-                                logistics,<br> our expertise ensures that every shipment is handled with precision and
-                                care. </p>
+                                Marketplace de Transporte e Logística</h5>
+                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Transporte conectado
+                                do início ao destino</h1>
+                            <p class="pt-16 pb-32">O Rotta 116 conecta pessoas e empresas a motoristas e transportadores<br> para operações urbanas, regionais e rodoviárias. </p>
                             <div class="hero3-btn">
-                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Get
-                                    Started<span><i class="fa-solid fa-angle-right"></i></span></a>
-                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Discover
-                                    More<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                {# TODO: conectar ao fluxo público de solicitação/cadastro quando disponível. #}
+                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Solicitar transporte<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero fazer fretes<span><i class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -76,17 +74,13 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="ca-hero-content-3">
                             <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">
-                                Cargon-Transport & Logistics</h5>
-                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Delivering Success Through
-                                Logistics And Expertise</h1>
-                            <p class="pt-16 pb-32">Whether it's international shipping, domestic transport, specialized
-                                logistics,<br> our expertise ensures that every shipment is handled with precision and
-                                care. </p>
+                                Marketplace de Transporte e Logística</h5>
+                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Transporte conectado
+                                do início ao destino</h1>
+                            <p class="pt-16 pb-32">O Rotta 116 conecta pessoas e empresas a motoristas e transportadores<br> para operações urbanas, regionais e rodoviárias. </p>
                             <div class="hero3-btn">
-                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Get
-                                    Started<span><i class="fa-solid fa-angle-right"></i></span></a>
-                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Discover
-                                    More<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Solicitar transporte<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero fazer fretes<span><i class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -112,17 +106,13 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="ca-hero-content-3">
                             <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">
-                                Cargon-Transport & Logistics</h5>
-                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Delivering Success Through
-                                Logistics And Expertise</h1>
-                            <p class="pt-16 pb-32">Whether it's international shipping, domestic transport, specialized
-                                logistics,<br> our expertise ensures that every shipment is handled with precision and
-                                care. </p>
+                                Marketplace de Transporte e Logística</h5>
+                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Transporte conectado
+                                do início ao destino</h1>
+                            <p class="pt-16 pb-32">O Rotta 116 conecta pessoas e empresas a motoristas e transportadores<br> para operações urbanas, regionais e rodoviárias. </p>
                             <div class="hero3-btn">
-                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Get
-                                    Started<span><i class="fa-solid fa-angle-right"></i></span></a>
-                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Discover
-                                    More<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Solicitar transporte<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero fazer fretes<span><i class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -150,8 +140,8 @@
                                                 <span><img src="{% static 'public/cargon/img/icon/ca-delivery3.1.svg' %}"
                                                         alt=""></span>
                                             </div>
-                                            <h3 class="ca-abo-hover-title"><span class="counter">11</span>K+</h3>
-                                            <p>Delivered Goods</p>
+                                            <h3 class="ca-abo-hover-title"><span class="counter">01</span></h3>
+                                            <p>Transporte leve</p>
                                         </div>
                                     </div>
                                 </div>
@@ -166,8 +156,8 @@
                                                 <span><img src="{% static 'public/cargon/img/icon/ca-delivery3.1.svg' %}"
                                                         alt=""></span>
                                             </div>
-                                            <h3 class="ca-abo-hover-title"><span class="counter">11</span>K+</h3>
-                                            <p>Delivered Goods</p>
+                                            <h3 class="ca-abo-hover-title"><span class="counter">02</span></h3>
+                                            <p>Utilitários</p>
                                         </div>
                                     </div>
                                 </div>
@@ -184,8 +174,8 @@
                                                 <span><img src="{% static 'public/cargon/img/icon/ca-delivery3.1.svg' %}"
                                                         alt=""></span>
                                             </div>
-                                            <h3 class="ca-abo-hover-title"><span class="counter">11</span>K+</h3>
-                                            <p>Delivered Goods</p>
+                                            <h3 class="ca-abo-hover-title"><span class="counter">03</span></h3>
+                                            <p>Caminhões</p>
                                         </div>
                                     </div>
                                 </div>
@@ -199,8 +189,8 @@
                                                 <span><img src="{% static 'public/cargon/img/icon/ca-delivery3.1.svg' %}"
                                                         alt=""></span>
                                             </div>
-                                            <h3 class="ca-abo-hover-title"><span class="counter">11</span>K+</h3>
-                                            <p>Delivered Goods</p>
+                                            <h3 class="ca-abo-hover-title"><span class="counter">04</span></h3>
+                                            <p>Carretas</p>
                                         </div>
                                     </div>
                                 </div>
@@ -213,12 +203,9 @@
                 <div class="col-xl-6 mb-30">
                     <div class="ca-ab-content3">
                         <div class="ca-about-content-3 ca-sec-content-3">
-                            <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Why We Are</h5>
-                            <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Our Commitment:
-                                Reliable <br> and Efficient Logistics</h2>
-                            <p class="pt-16 pb-32"> With years of industry experience and a commitment to innovation, we
-                                have <br> become leaders in providing comprehensive, reliable, and efficient
-                                logistics<br> solutions. Our dedicated team of experts works tirelessly to ensure.</p>
+                            <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Por que Rotta 116</h5>
+                            <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Uma plataforma para quem precisa transportar<br> e para quem quer transportar</h2>
+                            <p class="pt-16 pb-32">O Rotta 116 aproxima demanda e capacidade disponível em uma única plataforma.<br> Clientes encontram soluções de transporte e motoristas, agregados e transportadores<br> podem acessar novas oportunidades de frete.</p>
                         </div>
                         <div class="ca-ab-item-check">
                             <!-- single-item -->
@@ -227,7 +214,7 @@
                                     <span><i class="fa-solid fa-check"></i></span>
                                 </div>
                                 <div class="ca-ab-sngle-item-content">
-                                    <h4 class="ca-item-ch-title">Experts in Logistics Management</h4>
+                                    <h4 class="ca-item-ch-title">Contratação simplificada</h4>
                                 </div>
                             </div>
                             <!-- single-item -->
@@ -236,7 +223,7 @@
                                     <span><i class="fa-solid fa-check"></i></span>
                                 </div>
                                 <div class="ca-ab-sngle-item-content">
-                                    <h4 class="ca-item-ch-title">Leaders in Global Logistics</h4>
+                                    <h4 class="ca-item-ch-title">Rede de transportadores</h4>
                                 </div>
                             </div>
                             <!-- single-item -->
@@ -245,7 +232,7 @@
                                     <span><i class="fa-solid fa-check"></i></span>
                                 </div>
                                 <div class="ca-ab-sngle-item-content">
-                                    <h4 class="ca-item-ch-title">Transforming Transport & Logistics</h4>
+                                    <h4 class="ca-item-ch-title">Acompanhamento da operação</h4>
                                 </div>
                             </div>
                             <!-- single-item -->
@@ -254,16 +241,15 @@
                                     <span><i class="fa-solid fa-check"></i></span>
                                 </div>
                                 <div class="ca-ab-sngle-item-content">
-                                    <h4 class="ca-item-ch-title">Driving Logistics Success</h4>
+                                    <h4 class="ca-item-ch-title">Categorias de veículo</h4>
                                 </div>
                             </div>
                         </div>
                         <div class="ca-about-item3 cream-bg-3 p-relative">
-                            <p>We are driving success and creating opportunities for growth. Discover <br>difference
-                                with a logistics partner that is truly invested in your success.</p>
+                            <p>Encontre a categoria de veículo adequada, conecte-se a prestadores disponíveis<br> e acompanhe uma operação preparada para evoluir da coleta até a entrega.</p>
                         </div>
                         <div class="ca-about-3-btn">
-                            <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Transpires<span><i
+                            <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conheça a plataforma<span><i
                                         class="fa-solid fa-angle-right"></i></span></a>
                         </div>
                     </div>
@@ -278,11 +264,10 @@
         <div class="container">
             <div class="ca-portfolio-content-3 ca-sec-content-3 text-center mb-60 aos-init aos-animate"
                 data-aos="fade-up" data-aos-duration="800">
-                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Our Service</h5>
-                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Our Range of Logistics Services
+                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Serviços</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Transporte para diferentes tipos de operação
                 </h2>
-                <p class="pt-16">Our state-of-the-art facilities and innovative technology support e-commerce<br>
-                    fulfillment and project cargo handling, providing you with tailored solutions.</p>
+                <p class="pt-16">Da entrega rápida ao transporte rodoviário, a plataforma organiza categorias<br> de veículos para conectar cada solicitação ao prestador adequado.</p>
             </div>
         </div>
         <!-- expand gallery start -->
@@ -295,9 +280,8 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Supply Chain Management</a></h2>
-                    <p>From freight forwarding & customs brokerage to warehousing solutions and supply chain management,
-                        our expertise ensures that your logistics operations are seamless and efficient.</p>
+                    <h2 class="ca-expand-title"><a href="#">Entregas rápidas</a></h2>
+                    <p>Pequenos volumes e operações urbanas com agilidade, conforme disponibilidade da rede.</p>
                 </div>
             </div>
             <!-- single item -->
@@ -308,9 +292,8 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Supply Chain Management</a></h2>
-                    <p>From freight forwarding & customs brokerage to warehousing solutions and supply chain management,
-                        our expertise ensures that your logistics operations are seamless and efficient.</p>
+                    <h2 class="ca-expand-title"><a href="#">Utilitários e vans</a></h2>
+                    <p>Mercadorias, caixas, equipamentos e distribuição urbana com mais espaço e proteção.</p>
                 </div>
             </div>
             <!-- single item -->
@@ -321,9 +304,8 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Supply Chain Management</a></h2>
-                    <p>From freight forwarding & customs brokerage to warehousing solutions and supply chain management,
-                        our expertise ensures that your logistics operations are seamless and efficient.</p>
+                    <h2 class="ca-expand-title"><a href="#">VUC e distribuição</a></h2>
+                    <p>Operações comerciais com maior necessidade de capacidade e organização de rota.</p>
                 </div>
             </div>
             <!-- single item -->
@@ -334,9 +316,8 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Supply Chain Management</a></h2>
-                    <p>From freight forwarding & customs brokerage to warehousing solutions and supply chain management,
-                        our expertise ensures that your logistics operations are seamless and efficient.</p>
+                    <h2 class="ca-expand-title"><a href="#">Caminhões</a></h2>
+                    <p>Cargas médias e pesadas em operações dedicadas, regionais ou rodoviárias.</p>
                 </div>
             </div>
             <!-- single item -->
@@ -347,9 +328,8 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Supply Chain Management</a></h2>
-                    <p>From freight forwarding & customs brokerage to warehousing solutions and supply chain management,
-                        our expertise ensures that your logistics operations are seamless and efficient.</p>
+                    <h2 class="ca-expand-title"><a href="#">Transporte programado</a></h2>
+                    <p>Coletas, entregas e operações recorrentes com planejamento operacional.</p>
                 </div>
             </div>
         </div>
@@ -362,10 +342,9 @@
         <div class="container">
             <div class="ca-portfolio-content-3 ca-sec-content-3 text-center mb-60 aos-init aos-animate"
                 data-aos="fade-up" data-aos-duration="800">
-                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Our Projects</h5>
-                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16">Showcasing Our Expertise</h2>
-                <p class="pt-16"> From complex international shipments to efficient domestic transport, <br>our success
-                    stories highlight our commitment to reliability.</p>
+                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Veículos e operações</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16">Do transporte leve ao rodoviário</h2>
+                <p class="pt-16">Diferentes operações exigem diferentes capacidades. O Rotta 116 trabalha com<br> categorias qualitativas, sem publicar limites técnicos ainda não definidos.</p>
             </div>
 
             <div class="row">
@@ -375,14 +354,13 @@
                     <div class="ca-single-pro-img-3 mb-30">
                         <img class="w-100" src="{% static 'public/cargon/img/portfolio/ca-portfoli3.1.png' %}" alt="">
                         <div class="ca-project-hover-item1">
-                            <a href="{% url 'public:project_single' %}" class="ca-project-hover-item1-icon">
+                            <a href="{% url 'public:services' %}" class="ca-project-hover-item1-icon">
                                 <span><img src="{% static 'public/cargon/img/icon/ca-arow-3.1.svg' %}" alt=""></span>
                             </a>
                             <div class="ca-project-hover-item-content">
-                                <h4 class="ca-project-hov-sub-title">Transportation</h4>
-                                <h3 class="ca-project-hov-title"><a href="{% url 'public:project_single' %}">Customs Clearance
-                                        Excellence</a></h3>
-                                <p>Explore our case studies achievements<br> to see how we have transformed.</p>
+                                <h4 class="ca-project-hov-sub-title">Transporte leve</h4>
+                                <h3 class="ca-project-hov-title"><a href="{% url 'public:services' %}">Moto e carro</a></h3>
+                                <p>Documentos, pequenos volumes e entregas urbanas.</p>
                             </div>
                         </div>
                     </div>
@@ -393,14 +371,13 @@
                     <div class="ca-single-pro-img-3 mb-30">
                         <img class="w-100" src="{% static 'public/cargon/img/portfolio/ca-portfolio3.2.png' %}" alt="">
                         <div class="ca-project-hover-item1">
-                            <a href="{% url 'public:project_single' %}" class="ca-project-hover-item1-icon">
+                            <a href="{% url 'public:services' %}" class="ca-project-hover-item1-icon">
                                 <span><img src="{% static 'public/cargon/img/icon/ca-arow-3.1.svg' %}" alt=""></span>
                             </a>
                             <div class="ca-project-hover-item-content">
-                                <h4 class="ca-project-hov-sub-title">Transportation</h4>
-                                <h3 class="ca-project-hov-title"><a href="{% url 'public:project_single' %}">Customs Clearance
-                                        Excellence</a></h3>
-                                <p>Explore our case studies achievements<br> to see how we have transformed.</p>
+                                <h4 class="ca-project-hov-sub-title">Distribuição urbana</h4>
+                                <h3 class="ca-project-hov-title"><a href="{% url 'public:services' %}">Utilitário e van</a></h3>
+                                <p>Caixas, mercadorias, equipamentos e rotas comerciais.</p>
                             </div>
                         </div>
                     </div>
@@ -411,14 +388,13 @@
                     <div class="ca-single-pro-img-3 mb-30">
                         <img class="w-100" src="{% static 'public/cargon/img/portfolio/ca-portfoli3.3.png' %}" alt="">
                         <div class="ca-project-hover-item1">
-                            <a href="{% url 'public:project_single' %}" class="ca-project-hover-item1-icon">
+                            <a href="{% url 'public:services' %}" class="ca-project-hover-item1-icon">
                                 <span><img src="{% static 'public/cargon/img/icon/ca-arow-3.1.svg' %}" alt=""></span>
                             </a>
                             <div class="ca-project-hover-item-content">
-                                <h4 class="ca-project-hov-sub-title">Transportation</h4>
-                                <h3 class="ca-project-hov-title"><a href="{% url 'public:project_single' %}">Customs Clearance
-                                        Excellence</a></h3>
-                                <p>Explore our case studies achievements<br> to see how we have transformed.</p>
+                                <h4 class="ca-project-hov-sub-title">Maior capacidade</h4>
+                                <h3 class="ca-project-hov-title"><a href="{% url 'public:services' %}">VUC e distribuição</a></h3>
+                                <p>Operações comerciais com mais volume e planejamento.</p>
                             </div>
                         </div>
                     </div>
@@ -430,14 +406,13 @@
                         <img class="w-100 pro-lar-img-1" src="{% static 'public/cargon/img/portfolio/ca-project3.4.png' %}"
                             alt="">
                         <div class="ca-project-hover-item1">
-                            <a href="{% url 'public:project_single' %}" class="ca-project-hover-item1-icon">
+                            <a href="{% url 'public:services' %}" class="ca-project-hover-item1-icon">
                                 <span><img src="{% static 'public/cargon/img/icon/ca-arow-3.1.svg' %}" alt=""></span>
                             </a>
                             <div class="ca-project-hover-item-content">
-                                <h4 class="ca-project-hov-sub-title">Transportation</h4>
-                                <h3 class="ca-project-hov-title"><a href="{% url 'public:project_single' %}">Customs Clearance
-                                        Excellence</a></h3>
-                                <p>Explore our case studies achievements<br> to see how we have transformed.</p>
+                                <h4 class="ca-project-hov-sub-title">Operação dedicada</h4>
+                                <h3 class="ca-project-hov-title"><a href="{% url 'public:services' %}">Caminhão</a></h3>
+                                <p>Cargas médias e pesadas em rotas dedicadas ou rodoviárias.</p>
                             </div>
                         </div>
                     </div>
@@ -449,14 +424,13 @@
                         <img class="w-100 pro-lar-img-1"
                             src="{% static 'public/cargon/img/portfolio/ca-portfolio-3.5.png' %}" alt="">
                         <div class="ca-project-hover-item1">
-                            <a href="{% url 'public:project_single' %}" class="ca-project-hover-item1-icon">
+                            <a href="{% url 'public:services' %}" class="ca-project-hover-item1-icon">
                                 <span><img src="{% static 'public/cargon/img/icon/ca-arow-3.1.svg' %}" alt=""></span>
                             </a>
                             <div class="ca-project-hover-item-content">
-                                <h4 class="ca-project-hov-sub-title">Transportation</h4>
-                                <h3 class="ca-project-hov-title"><a href="{% url 'public:project_single' %}">Customs Clearance
-                                        Excellence</a></h3>
-                                <p>Explore our case studies achievements<br> to see how we have transformed.</p>
+                                <h4 class="ca-project-hov-sub-title">Longa distância</h4>
+                                <h3 class="ca-project-hov-title"><a href="{% url 'public:services' %}">Carreta</a></h3>
+                                <p>Transporte de maior porte e operações de longa distância.</p>
                             </div>
                         </div>
                     </div>
@@ -479,18 +453,18 @@
                 <div class="ca-counter-3 p-absolute">
                     <!-- single counter area -->
                     <div class="ca-counter-area-3">
-                        <h3 class="ca-counter-title text-white fnw-700 pb-12"><span class="counter">65</span>%</h3>
-                        <p>Air Freight</p>
+                        <h3 class="ca-counter-title text-white fnw-700 pb-12"><span class="counter">01</span></h3>
+                        <p>Urbano</p>
                     </div>
                     <!-- single counter area -->
                     <div class="ca-counter-area-3">
-                        <h3 class="ca-counter-title text-white fnw-700 pb-12"><span class="counter">49</span>%</h3>
-                        <p>Land Freight</p>
+                        <h3 class="ca-counter-title text-white fnw-700 pb-12"><span class="counter">02</span></h3>
+                        <p>Regional</p>
                     </div>
                     <!-- single counter area -->
                     <div class="ca-counter-area-3">
-                        <h3 class="ca-counter-title text-white fnw-700 pb-12"><span class="counter">51</span>%</h3>
-                        <p>Shipping Service</p>
+                        <h3 class="ca-counter-title text-white fnw-700 pb-12"><span class="counter">03</span></h3>
+                        <p>Rodoviário</p>
                     </div>
                 </div>
             </div>
@@ -504,10 +478,9 @@
         <div class="container">
             <div class="ca-working-section-3 ca-sec-content-3 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
                 data-aos-duration="800">
-                <h5 class="ca-section-subtitle subtitle-bg-7 p-relative text-white br-50">Working Process</h5>
-                <h2 class="ca-section-title theme-black-3 fnw-600 text-white pt-16">Efficient Working Process</h2>
-                <p class="pt-16"> our working process is designed to deliver efficient, reliable, & tailored<br>
-                    logistics solutions. From the initial consultation to the final delivery,</p>
+                <h5 class="ca-section-subtitle subtitle-bg-7 p-relative text-white br-50">Como funciona</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 text-white pt-16">Efficient Como funciona</h2>
+                <p class="pt-16">O fluxo público será conectado gradualmente à plataforma, preservando clareza<br> desde a necessidade de transporte até a entrega.</p>
             </div>
             <div class="row">
                 <!-- working icon box -->
@@ -519,10 +492,8 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Coordination &
-                                    Execution</a></h4>
-                            <p>We then coordinate & manage all aspects of transportation, <br>leveraging our global
-                                network.</p>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Informe sua necessidade</a></h4>
+                            <p>Origem, destino, tipo de carga e características da operação.</p>
                         </div>
                     </div>
                 </div>
@@ -535,10 +506,8 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Planning
-                                    and Strategy</a></h4>
-                            <p>Throughout the journey, our <br>team monitors progress in real-<br>time, providing you
-                                with updates.</p>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Escolha a solução</a></h4>
+                            <p>A plataforma ajuda a identificar a categoria de veículo adequada.</p>
                         </div>
                     </div>
                 </div>
@@ -551,10 +520,8 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Real-Time
-                                    Monitoring</a></h4>
-                            <p>Finally, we ensure timely and <br>secure delivery of your goods, followed by a thorough
-                                review.</p>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Encontre um transportador</a></h4>
+                            <p>Motoristas e transportadores elegíveis poderão atender à solicitação.</p>
                         </div>
                     </div>
                 </div>
@@ -567,10 +534,8 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Secure
-                                    Transportation</a></h4>
-                            <p>Trust our meticulous process to streamline your supply chain <br> and drive your business
-                                forward.</p>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Acompanhe a operação</a></h4>
+                            <p>Da coleta à entrega, com evolução para acompanhamento online e comprovantes digitais.</p>
                         </div>
                     </div>
                 </div>
@@ -584,10 +549,9 @@
         <div class="container">
             <div class="ca-testimonial-content-3 ca-sec-content-3 text-center mb-60 aos-init aos-animate"
                 data-aos="zoom-out-down" data-aos-duration="800">
-                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Our Testimonial</h5>
-                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Trusted by Industry Leaders</h2>
-                <p class="pt-16">Their testimonials highlight our commitment to overcoming logistical <br>challenges and
-                    delivering on our promises. Read on to discover.</p>
+                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Benefícios da plataforma</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Muito além da entrega urbana</h2>
+                <p class="pt-16">O Rotta 116 está sendo desenvolvido para conectar pequenos volumes,<br> entregas urbanas e operações intermunicipais, interestaduais e rodoviárias.</p>
             </div>
             <div class="row">
                 <div class="ca-testimonials">
@@ -602,16 +566,12 @@
                                     <span><i class="fa-solid fa-star"></i></span>
                                 </div>
                                 <div class="ca-rating-num-3">
-                                    <h4 class="ca-rating-title-3">(5) <span>Rating</span></h4>
+                                    <h4 class="ca-rating-title-3"><span>Diretriz</span></h4>
                                 </div>
                             </div>
                             <div class="ca-test-3-content">
-                                <h4 class="ca-test-title-3">“Read about how our tailored solutions have helped
-                                    businesses achieve.”</h4>
-                                <p>Our clients' satisfaction is our top priority,<br> and their feedback speaks volumes
-                                    about our dedication to excellence. We take immense <br> pride in the positive
-                                    experiences shared by businesses across various industries who rely <br> on our
-                                    transport and logistics expertise.</p>
+                                <h4 class="ca-test-title-3">Entrega urbana, transporte dedicado e distribuição em uma mesma visão operacional.</h4>
+                                <p>A plataforma aproxima solicitações de transporte e prestadores disponíveis, sem assumir frota própria ou cobertura não definida.</p>
                             </div>
                             <div class="ca-test-3-user">
                                 <div class="ca-test-3-user-img">
@@ -619,8 +579,8 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Shevon Daniel</a></h4>
-                                    <span>Co-Founder</span>
+                                    <h4 class="test-3-title"><a href="#">Plataforma</a></h4>
+                                    <span>Marketplace Rotta 116</span>
                                 </div>
                             </div>
                         </div>
@@ -634,16 +594,12 @@
                                     <span><i class="fa-solid fa-star"></i></span>
                                 </div>
                                 <div class="ca-rating-num-3">
-                                    <h4 class="ca-rating-title-3">(5) <span>Rating</span></h4>
+                                    <h4 class="ca-rating-title-3"><span>Diretriz</span></h4>
                                 </div>
                             </div>
                             <div class="ca-test-3-content">
-                                <h4 class="ca-test-title-3">“Hear from the businesses we support <br>and their journey
-                                    with our logistics.”</h4>
-                                <p>At Cargon, client satisfaction is at the heart<br> of everything we do. We are proud
-                                    to share <br> the positive experiences of our clients, whose testimonials reflect or
-                                    commitment delivering exceptional transport and logistics solutions whether it's
-                                    seamless international.</p>
+                                <h4 class="ca-test-title-3">Intermunicipal, interestadual e operações recorrentes preparados para a evolução da rede.</h4>
+                                <p>Empresas poderão centralizar demandas, acessar diferentes categorias de veículos e acompanhar histórico operacional.</p>
                             </div>
                             <div class="ca-test-3-user">
                                 <div class="ca-test-3-user-img">
@@ -651,8 +607,8 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Muhammad Waseem</a></h4>
-                                    <span>Co-Founder</span>
+                                    <h4 class="test-3-title"><a href="#">Empresas</a></h4>
+                                    <span>Operações empresariais</span>
                                 </div>
                             </div>
                         </div>
@@ -666,16 +622,12 @@
                                     <span><i class="fa-solid fa-star"></i></span>
                                 </div>
                                 <div class="ca-rating-num-3">
-                                    <h4 class="ca-rating-title-3">(5) <span>Rating</span></h4>
+                                    <h4 class="ca-rating-title-3"><span>Diretriz</span></h4>
                                 </div>
                             </div>
                             <div class="ca-test-3-content">
-                                <h4 class="ca-test-title-3">“Leading businesses share their success stories and why they
-                                    rely logistics.”</h4>
-                                <p>Whether it's seamless international shipping, efficient domestic transport, or
-                                    specialized logistics services, our clients consistently<br> praise our ability to
-                                    meet and exceed their expectations. They highlight our innovative approach, reliable
-                                    execution, & dedicated.</p>
+                                <h4 class="ca-test-title-3">Visibilidade durante o transporte com status, localização e comprovantes digitais.</h4>
+                                <p>A operação está sendo preparada para registrar coleta, em trânsito, chegada, entrega, foto, assinatura e comprovante digital.</p>
                             </div>
                             <div class="ca-test-3-user">
                                 <div class="ca-test-3-user-img">
@@ -683,8 +635,8 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Shevon Daniel</a></h4>
-                                    <span>Co-Founder</span>
+                                    <h4 class="test-3-title"><a href="#">Monitoramento</a></h4>
+                                    <span>Recurso em evolução</span>
                                 </div>
                             </div>
                         </div>
@@ -698,16 +650,12 @@
                                     <span><i class="fa-solid fa-star"></i></span>
                                 </div>
                                 <div class="ca-rating-num-3">
-                                    <h4 class="ca-rating-title-3">(5) <span>Rating</span></h4>
+                                    <h4 class="ca-rating-title-3"><span>Diretriz</span></h4>
                                 </div>
                             </div>
                             <div class="ca-test-3-content">
-                                <h4 class="ca-test-title-3">“Read about how our tailored solutions have helped
-                                    businesses achieve.”</h4>
-                                <p>Our clients' satisfaction is our top priority,<br> and their feedback speaks volumes
-                                    about our dedication to excellence. We take immense <br> pride in the positive
-                                    experiences shared by businesses across various industries who rely <br> on our
-                                    transport and logistics expertise.</p>
+                                <h4 class="ca-test-title-3">Rotta 116 para Motoristas como ferramenta operacional futura para cada frete.</h4>
+                                <p>O aplicativo móvel será usado para disponibilidade, oportunidades, aceite, status, localização, fotos, comprovantes e notificações.</p>
                             </div>
                             <div class="ca-test-3-user">
                                 <div class="ca-test-3-user-img">
@@ -715,8 +663,8 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Shevon Daniel</a></h4>
-                                    <span>Co-Founder</span>
+                                    <h4 class="test-3-title"><a href="#">Motoristas</a></h4>
+                                    <span>Aplicativo futuro</span>
                                 </div>
                             </div>
                         </div>
@@ -732,49 +680,47 @@
         <div class="container">
             <div class="ca-blog-content-3 ca-sec-content-3 text-center mb-60 aos-init aos-animate"
                 data-aos="zoom-out-down" data-aos-duration="1000">
-                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Contact Us</h5>
-                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap"> Trusted by Industry Leaders</h2>
-                <p class="pt-16">Gain insights into effective warehouse management strategies that<br> maximize space,
-                    improve accuracy, and boost productivity. </p>
+                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Contato</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap"> Muito além da entrega urbana</h2>
+                <p class="pt-16">O Rotta 116 está construindo uma rede de motoristas, agregados e transportadores<br> para atender solicitações de diferentes tipos de transporte. </p>
             </div>
             <div class="row align-items-center">
                 <div class="col-xl-6 mb-30">
                     <div class="ca-contact-from w-bg ca-contact-from-3 aos-init aos-animate" data-aos="fade-right"
                         data-aos-duration="1200">
                         <div class="ca-contact-content-3">
-                            <h4 class="ca-contact-title-2 theme-black-2 fnw-600">Send Us A Message</h4>
-                            <p class="pt-16 pb-24">As a fellow small business owner, we know the fulfillment that an a
-                                best to comes from running & own business contact our service to Cargon.</p>
+                            <h4 class="ca-contact-title-2 theme-black-2 fnw-600">Quero fazer fretes</h4>
+                            <p class="pt-16 pb-24">Cadastre seu perfil, cadastre seus veículos, envie a documentação necessária, passe pelo processo de aprovação e fique disponível para futuras oportunidades de frete.</p>
                         </div>
                         <form action="#">
                             <div class="row">
                                 <div class="col-md-6 mb-20">
-                                    <input type="text" placeholder="First Name">
+                                    <input type="text" placeholder="Nome">
                                 </div>
                                 <div class="col-md-6 mb-20">
-                                    <input type="text" placeholder="Last Name">
+                                    <input type="text" placeholder="Perfil">
                                 </div>
                                 <div class="col-md-6 mb-20">
-                                    <input type="tel" placeholder="Phone Number">
+                                    <input type="tel" placeholder="Telefone">
                                 </div>
                                 <div class="col-md-6 mb-20">
-                                    <input type="email" placeholder="Email Address">
+                                    <input type="email" placeholder="Email">
                                 </div>
                                 <div class="col-md-12 mb-20">
                                     <select class="nice-select wide ca-select">
-                                        <option data-display="Service Type">Nothing</option>
-                                        <option value="1">01</option>
-                                        <option value="2">02</option>
-                                        <option value="3">03</option>
-                                        <option value="4">04</option>
+                                        <option data-display="Interesse">Quero fazer fretes</option>
+                                        <option value="1">Motorista</option>
+                                        <option value="2">Agregado</option>
+                                        <option value="3">Transportador</option>
+                                        <option value="4">Empresa</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12 mb-20">
-                                    <textarea name="message" id="message" placeholder="Message"></textarea>
+                                    <textarea name="message" id="message" placeholder="Mensagem"></textarea>
                                 </div>
                                 <div class="submit-btn">
                                     <button class="ca-btn-primary-3 theme-bg-3 text-white br-50" type="submit"
-                                        value="submit"> Send Message<span><i
+                                        value="submit">Quero fazer fretes<span><i
                                                 class="fa-solid fa-angle-right"></i></span></button>
                                 </div>
                             </div>
@@ -791,8 +737,8 @@
                                     <span><img src="{% static 'public/cargon/img/icon/ca-location3.1.svg' %}" alt=""></span>
                                 </div>
                                 <div class="ca-location-icbox-text">
-                                    <h4 class="ca-title fnw-600 theme-black-3 pb-12">Contact Us</h4>
-                                    <p>198 West 21th Street,New York NY City 1010 <br> freightexpress@mail.com</p>
+                                    <h4 class="ca-title fnw-600 theme-black-3 pb-12">Contato</h4>
+                                    <p>Cadastro de perfil, veículos e documentação<br> serão conectados à plataforma futura.</p>
                                 </div>
                             </div>
                         </div>
@@ -803,8 +749,8 @@
                                     <span><img src="{% static 'public/cargon/img/icon/ca-location3.2.svg' %}" alt=""></span>
                                 </div>
                                 <div class="ca-location-icbox-text">
-                                    <h4 class="ca-title fnw-600 theme-black-3 pb-12">Call or Text</h4>
-                                    <a href="tel:123-456-7890">123-456-7890</a>
+                                    <h4 class="ca-title fnw-600 theme-black-3 pb-12">Para empresas</h4>
+                                    <p>E-commerce, indústrias, distribuidores, comércio,<br> assistência técnica e construção.</p>
                                 </div>
                             </div>
                         </div>
@@ -815,9 +761,9 @@
                                     <span><img src="{% static 'public/cargon/img/icon/ca-location3.3.svg' %}" alt=""></span>
                                 </div>
                                 <div class="ca-location-icbox-text">
-                                    <h4 class="ca-title fnw-600 theme-black-3 pb-12">Send Email</h4>
+                                    <h4 class="ca-title fnw-600 theme-black-3 pb-12">Integrações futuras</h4>
                                     <a
-                                        href="mailto:infotransportlogistics@gmail.com">infotransportlogistics@gmail.com</a>
+                                        href="mailto:contato@rotta116.com.br">contato@rotta116.com.br</a>
                                 </div>
                             </div>
                         </div>
@@ -833,10 +779,9 @@
         <div class="container">
             <div class="ca-blog-content-3 ca-sec-content-3 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
                 data-aos-duration="800">
-                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Our Blog</h5>
-                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap"> Best Practices and Strategies</h2>
-                <p class="pt-16">Gain insights into effective warehouse management strategies that<br> maximize space,
-                    improve accuracy, and boost productivity. </p>
+                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Conteúdo</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Transporte, tecnologia e operação</h2>
+                <p class="pt-16">Temas para clientes, empresas, motoristas e transportadores acompanharem<br> a evolução do marketplace Rotta 116. </p>
             </div>
             <div class="row">
                 <!-- single-blog-item -->
@@ -844,11 +789,11 @@
                     <div class="ca-team-box ca-blog-box-3 cream-bg-3 br-7 fix p-relative z-index-1 aos-init aos-animate"
                         data-aos="fade-right" data-aos-duration="800">
                         <div class="ca-team-img">
-                            <a href="{% url 'public:blog_single' %}"><img class="w-100"
+                            <a href="{% url 'public:blog' %}"><img class="w-100"
                                     src="{% static 'public/cargon/img/blog/ca-blog-1.2.png' %}" alt=""></a>
                         </div>
                         <div class="ca-blog-date-3">
-                            <a href="#" class="blg-date-3">March 21, 2024</a>
+                            <a href="#" class="blg-date-3">Conteúdo futuro</a>
                         </div>
                         <div class="ca-blog-box-content ca-blog-box-content-3">
                             <div class="ca-b-meta">
@@ -858,7 +803,7 @@
                                         <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
-                                        <span>Henry Nicolls</span>
+                                        <span>Rotta 116</span>
                                     </div>
                                 </a>
                                 <!-- blog meta box -->
@@ -867,16 +812,14 @@
                                         <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
-                                        <span>Transport & Logistics</span>
+                                        <span>Transporte e logística</span>
                                     </div>
                                 </a>
                             </div>
-                            <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog_single' %}">Optimizing
-                                    Last-Mile Delivery: Strategies for Success</a></h4>
-                            <p class="pt-16 pb-18">Delve into the challenges of last-mile delivery <br>and explore
-                                strategies to overcome them.</p>
+                            <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog' %}">Como escolher a categoria de veículo ideal</a></h4>
+                            <p class="pt-16 pb-18">Pequenos volumes, utilitários, VUCs, caminhões e carretas<br> exigem critérios diferentes de operação.</p>
                             <div class="blog-3-rearmore">
-                                <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                <a href="{% url 'public:blog' %}" class="read-more3">Ler mais <span><i
                                             class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
@@ -887,11 +830,11 @@
                     <div class="ca-team-box ca-blog-box-3 cream-bg-3 br-7 fix p-relative z-index-1  aos-init aos-animate"
                         data-aos="fade-up" data-aos-duration="1000">
                         <div class="ca-team-img">
-                            <a href="{% url 'public:blog_single' %}"><img class="w-100"
+                            <a href="{% url 'public:blog' %}"><img class="w-100"
                                     src="{% static 'public/cargon/img/blog/ca-blog-1.3.png' %}" alt=""></a>
                         </div>
                         <div class="ca-blog-date-3">
-                            <a href="#" class="blg-date-3">March 20, 2024</a>
+                            <a href="#" class="blg-date-3">Conteúdo futuro</a>
                         </div>
                         <div class="ca-blog-box-content ca-blog-box-content-3">
                             <div class="ca-b-meta">
@@ -901,7 +844,7 @@
                                         <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
-                                        <span>Henry Nicolls</span>
+                                        <span>Rotta 116</span>
                                     </div>
                                 </a>
                                 <!-- blog meta box -->
@@ -910,16 +853,14 @@
                                         <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
-                                        <span>Transport & Logistics</span>
+                                        <span>Transporte e logística</span>
                                     </div>
                                 </a>
                             </div>
-                            <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog_single' %}">Handling
-                                    Project Cargo: Expert<br> Tips and Strategies</a></h4>
-                            <p class="pt-16 pb-18">Get expert tips on managing project cargo <br> logistics. From
-                                planning and coordination.</p>
+                            <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog' %}">Oportunidades para motoristas e agregados</a></h4>
+                            <p class="pt-16 pb-18">A rede Rotta 116 será preparada para conectar veículos disponíveis<br> a solicitações compatíveis.</p>
                             <div class="blog-3-rearmore">
-                                <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                <a href="{% url 'public:blog' %}" class="read-more3">Ler mais <span><i
                                             class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
@@ -930,11 +871,11 @@
                     <div class="ca-team-box ca-blog-box-3 cream-bg-3 br-7 fix p-relative z-index-1 aos-init aos-animate"
                         data-aos="fade-left" data-aos-duration="1200">
                         <div class="ca-team-img">
-                            <a href="{% url 'public:blog_single' %}"> <img class="w-100"
+                            <a href="{% url 'public:blog' %}"> <img class="w-100"
                                     src="{% static 'public/cargon/img/blog/ca-blog-1.1.png' %}" alt=""></a>
                         </div>
                         <div class="ca-blog-date-3">
-                            <a href="#" class="blg-date-3">March 18, 2024</a>
+                            <a href="#" class="blg-date-3">Conteúdo futuro</a>
                         </div>
                         <div class="ca-blog-box-content ca-blog-box-content-3">
                             <div class="ca-b-meta">
@@ -944,7 +885,7 @@
                                         <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
-                                        <span>Henry Nicolls</span>
+                                        <span>Rotta 116</span>
                                     </div>
                                 </a>
                                 <!-- blog meta box -->
@@ -953,16 +894,14 @@
                                         <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
-                                        <span>Transport & Logistics</span>
+                                        <span>Transporte e logística</span>
                                     </div>
                                 </a>
                             </div>
-                            <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog_single' %}">The Importance
-                                    of Reliable Freight Forwarding Services</a></h4>
-                            <p class="pt-16 pb-18">Learn practical strategies for optimizing your<br> supply chain
-                                operations, improve delivery.</p>
+                            <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog' %}">Visibilidade da coleta até a entrega</a></h4>
+                            <p class="pt-16 pb-18">Status operacionais, localização e comprovantes digitais fazem parte<br> da evolução planejada da plataforma.</p>
                             <div class="blog-3-rearmore">
-                                <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                <a href="{% url 'public:blog' %}" class="read-more3">Ler mais <span><i
                                             class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
@@ -975,120 +914,7 @@
 
 </main>
 <!-- footer section start-->
-<footer class="theme-bg-3 pt-30 p-relative z-index-1">
-    <div class="ca-ft-shape p-absolute ft-shape-2"><img src="{% static 'public/cargon/img/shape/ca-footer-shape3.1.png' %}"
-            alt=""></div>
-    <div class="ca-cta-area p-relative z-index-1">
-        <div class="container">
-            <div class="ca-cta-shape3 p-absolute d-none d-lg-block">
-                <img src="{% static 'public/cargon/img/shape/cta-shape-3.1.png' %}" alt="">
-            </div>
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-30">
-                    <div class="ca-cta-content">
-                        <h2 class="ca-section-title cta-title-1 text-white fnw-700">Join Us Today And let Us Help You To
-                            Grow Your Business.</h2>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-30">
-                    <div class="ca-btn-cta-3 text-end">
-                        <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 w-bg">Get Started <span><i
-                                    class="fa-solid fa-angle-right"></i></span></a>
-                    </div>
-                </div>
-            </div>
-            <div class="b-bottom pt-48"></div>
-        </div>
-    </div>
-    <div class="ca-footer-area">
-        <div class="container">
-            <div class="ca-ft-area w-bg">
-                <div class="row">
-                    <div class="col-xl-4 col-md-6 mb-30">
-                        <div class="ca-footer widget-1">
-                            <div class="ca-ft-logo">
-                                <a href="{% url 'public:index_03' %}"><img src="{% static 'public/cargon/img/logo/ca-logo3.1.png' %}"
-                                        alt=""></a>
-                            </div>
-                            <div class="ca-ft-content ca-ft-content-3 mb-24">
-                                <p class="pt-16">Our global reach, combined with local <br> expertise, ensures that your
-                                    goods are <br>transported safely, on time.</p>
-                            </div>
-                            <div class="ca-footer-social ca-footer-social-3">
-                                <ul>
-                                    <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
-                                    <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                                    <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
-                                    <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl col-md-6 mb-30">
-                        <div class="ca-footer widget-2">
-                            <h4 class="ca-title fnw-700 theme-black-3 pb-24">Quick Links</h4>
-                            <div class="ca-footer-menu ca-footer-menu-3">
-                                <ul>
-                                    <li><a href="{% url 'public:index' %}">Home</a></li>
-                                    <li><a href="{% url 'public:service' %}">Service</a></li>
-                                    <li><a href="{% url 'public:about' %}">About Us</a></li>
-                                    <li><a href="{% url 'public:blog' %}">Latest News</a></li>
-                                    <li><a href="{% url 'public:contact' %}">Contact Us</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl col-md-6 mb-30">
-                        <div class="ca-footer widget-3">
-                            <h4 class="ca-title fnw-700 theme-black-3 pb-24">Other Links</h4>
-                            <div class="ca-footer-menu ca-footer-menu-3">
-                                <ul>
-                                    <li><a href="#">Maintenance</a></li>
-                                    <li><a href="#">Our Team</a></li>
-                                    <li><a href="#">Reviews & Awards</a></li>
-                                    <li><a href="#">Personal</a></li>
-                                    <li><a href="#">Certifications</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-md-6 mb-30">
-                        <div class="ca-footer widget-4">
-                            <h4 class="ca-title fnw-700 theme-black-3 pb-24">Other Links</h4>
-                            <div class="ca-ft-content">
-                                <p class="pb-32">Subscribe us & receive our latest news & articles</p>
-                            </div>
-                            <div class="ca-footer-email-sub ca-footer-email-sub-3">
-                                <form action="#">
-                                    <input type="email" placeholder="Email Address..">
-                                </form>
-                                <button class="ca-btn-primary ca-btn-primary-3 theme-bg-3 text-white br-50"
-                                    type="submit" value="submit">Subscribe Now <span><i
-                                            class="fa-solid fa-angle-right"></i></span></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="copy-right-border border-1"></div>
-                    </div>
-                    <div class="col-lg-6">
-                        <p class="copry-right-text pt-24">Copyright &COPY;2024 Cargon. All Rights Reserved</p>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="copy-right-menu pt-24">
-                            <ul>
-                                <li><a href="#">Terms & Conditions</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+{% include 'public/partials/footer.html' %}
 
 <button id="topBtn3"><i class="fa-solid fa-arrow-up"></i></button>
 
