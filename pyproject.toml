@@ -1,0 +1,31 @@
+[project]
+name = "rotta"
+version = "0.1.0"
+description = "Rotta transport and logistics platform foundation"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1,<6.0",
+    "django-environ>=0.11,<1.0",
+    "psycopg[binary]>=3.2,<4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-django>=4.9,<5.0",
+    "ruff>=0.8,<1.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.local"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B904"]
