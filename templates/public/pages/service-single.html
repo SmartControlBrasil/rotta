@@ -1,0 +1,282 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %} Cargon-Service Single {% endblock %}
+
+{% block page_content %}
+
+<main>
+   <!-- breadcrumb area start -->
+   <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+         <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+      </div>
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+         <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="ca-breadcrumb-content text-center">
+            <h2 class="ca-breadcrumb-title fnw-600">Supply Chain Management</h2>
+            <div class="it-breadcum-link">
+               <a href="{% url 'public:home' %}">Home</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a href="{% url 'public:service' %}">Service</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a class="active" href="#">Supply Chain Management</a>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- breadcrumb area end -->
+   <!-- service left -->
+   <div class="ca-service-lft-area pt-100 pb-70">
+      <div class="container">
+         <div class="row">
+            <div class="col-xl-8 col-lg-10 mb-30 mx-auto">
+               <div class="ca-service-content-area">
+                  <div class="ca-servic-thumb br-7 mb-40">
+                     <img class="w-100" src="{% static 'public/cargon/img/service/ca-servic-larg.png' %}" alt="">
+                  </div>
+                  <div class="ca-servic-thumb-content">
+                     <h2 class="ca-service-thumb-title theme-black-3 fnw-600">Supply Chain Management</h2>
+                     <p class="pt-16">We pride ourselves on offering a comprehensive suite of logistics and transport
+                        services tailored to meet <br>the diverse needs of our clients. Our Freight Forwarding Services
+                        ensure your goods are transported <br> efficiently and safely across international borders,
+                        leveraging our extensive network and expertise.</p>
+                     <p class="pt-16">Our Warehousing Solutions provide secure storage with advanced inventory
+                        management systems to keep <br>your products organized and easily accessible. We specialize in
+                        Customs Clearance, navigating the<br> complexities of international trade regulations to ensure
+                        smooth and timely shipments.</p>
+                     <h3 class="ca-thumb-title-2 theme-black-3 fnw-600 pt-40">Comprehensive Service Overview</h3>
+                     <p class="pt-16 pb-40">Our Global Shipping Services connect you to markets worldwide, offering
+                        reliable & cost-effective solutions<br> for your business. For domestic needs, our Domestic
+                        Transport Solutions guarantee fast and dependable <br>delivery across the country. Our Supply
+                        Chain Management services optimize every step of your logistics</p>
+                     <div class="ca-acordion-area">
+                        <div class="accordion" id="accordionExample">
+                           <!-- single accordion item -->
+                           <div class="ca-accordion-item ca-accordion-item-2 mb-24">
+                              <h2 class="ca-accordion-header" id="headingTwo">
+                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    What is your policy on damaged or lost goods?
+                                 </button>
+                              </h2>
+                              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                 data-bs-parent="#accordionExample">
+                                 <div class="ca-accordion-body">
+                                    <p>That's why we've compiled a list of frequently asked questions to help you get
+                                       the <br> answers you need quickly and easily. Whether you're curious about our
+                                       range of<br> services, need information on tracking your shipment, or want to
+                                       understand.</p>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- single accordion item -->
+                           <div class="ca-accordion-item ca-accordion-item-2 mb-24">
+                              <h2 class="ca-accordion-header" id="headingOne">
+                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    What should I do if my shipment is delayed?
+                                 </button>
+                              </h2>
+                              <div id="collapseOne" class="accordion-collapse collapse show"
+                                 aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                 <div class="ca-accordion-body">
+                                    <p>That's why we've compiled a list of frequently asked questions to help you get
+                                       the <br> answers you need quickly and easily. Whether you're curious about our
+                                       range of<br> services, need information on tracking your shipment, or want to
+                                       understand.</p>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- single accordion item -->
+                           <div class="ca-accordion-item ca-accordion-item-2 mb-24">
+                              <h2 class="ca-accordion-header" id="headingThree">
+                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Can you handle oversized or special cargo?
+                                 </button>
+                              </h2>
+                              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                 data-bs-parent="#accordionExample">
+                                 <div class="ca-accordion-body">
+                                    <p>That's why we've compiled a list of frequently asked questions to help you get
+                                       the <br> answers you need quickly and easily. Whether you're curious about our
+                                       range of<br> services, need information on tracking your shipment, or want to
+                                       understand.</p>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- single accordion item -->
+                           <div class="ca-accordion-item ca-accordion-item-2 mb-24">
+                              <h2 class="ca-accordion-header" id="headingFour">
+                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    What types of goods can you transport?
+                                 </button>
+                              </h2>
+                              <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                                 data-bs-parent="#accordionExample">
+                                 <div class="ca-accordion-body">
+                                    <p>That's why we've compiled a list of frequently asked questions to help you get
+                                       the <br> answers you need quickly and easily. Whether you're curious about our
+                                       range of<br> services, need information on tracking your shipment, or want to
+                                       understand.</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <h3 class="ca-thumb-title-2 theme-black-3 fnw-600 pt-16">In-Depth Service Information</h3>
+                     <p class="pt-16 pb-40">Our Freight Forwarding Services are designed to handle complex international
+                        shipments, ensuring your <br>goods reach their destination safely & on time. Our Warehousing
+                        Solutions offer state-of-the-art facilities <br>equipped with advanced security & inventory
+                        management systems, allowing for efficient storage.</p>
+                     <h3 class="ca-thumb-title-2 theme-black-3 fnw-600">Our Specialized Services</h3>
+                     <p class="pt-16 pb-40">With our Customs Clearance Expertise, we simplify process of navigating
+                        international trade regulations, <br>ensuring compliance and minimizing delays. Our Global
+                        Shipping Services provide comprehensive solutions <br>for transporting goods worldwide, backed
+                        by a network of reliable carriers and partners.</p>
+                     <h4 class="ca-thumb-title-4 theme-black-3 fnw-600 pb-16">Detailed Service Offerings Service
+                        Highlights</h4>
+                     <div class="ca-ab-item-check ca-ab-item-check-2">
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Service Breakdown</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Our Specialized Services</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Service Highlights</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Our Services in Detail</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">What We Provide</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Extensive Service</h4>
+                           </div>
+                        </div>
+                     </div>
+                     <h3 class="ca-thumb-title-2 theme-black-3 fnw-600 pt-30 ca-text-cap">Our Services in Detail</h3>
+                     <p class="pt-16">For businesses requiring domestic transportation, our Domestic Transport Solutions
+                        offer fast, flexible, and<br> cost-effective delivery options. Our Supply Chain Management
+                        services are tailored to optimize every <br>aspect of your logistics process, from procurement
+                        to final delivery.</p>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="ca-more-section pb-70">
+      <div class="container">
+         <h2 class="ca-more-title theme-black-3 fnw-600 text-center mb-60">More Services</h2>
+         <div class="row">
+            <!-- single service box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-ser-icon-box ca-ser-icon-box-2 fix p-relative cream-bg-3 z-index-1 p-32 br-7">
+                  <div class="ca-about-icon">
+                     <div class="ca-about-ic ca-ser-ic">
+                        <img src="{% static 'public/cargon/img/icon/ca-iner-ser1.1.svg' %}" alt="">
+                     </div>
+                     <div class="ca-num">
+                        <h4 class="overly-num overly-num2">01</h4>
+                     </div>
+                  </div>
+                  <div class="ca-service-content ca-service-content-iner">
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Express Delivery
+                           Services</a></h4>
+                     <p class="pb-24">We provide a comprehensive suite logistics services designed to streamline your
+                        supply <br> chain &amp; meet your unique business needs.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                              class="fa-solid fa-angle-right"></i></span></a>
+                  </div>
+               </div>
+            </div>
+            <!-- single service box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-ser-icon-box ca-ser-icon-box-2 fix p-relative cream-bg-3 z-index-1 p-32 br-7">
+                  <div class="ca-about-icon">
+                     <div class="ca-about-ic ca-ser-ic">
+                        <img src="{% static 'public/cargon/img/icon/ca-iner-ser1.2.svg' %}" alt="">
+                     </div>
+                     <div class="ca-num">
+                        <h4 class="overly-num overly-num2">02</h4>
+                     </div>
+                  </div>
+                  <div class="ca-service-content ca-service-content-iner">
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Supply Chain Management</a>
+                     </h4>
+                     <p class="pb-24">We offer state-of-the-art warehousing <br>solutions, ensuring your inventory
+                        is<br> managed with precision and care.</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                              class="fa-solid fa-angle-right"></i></span></a>
+                  </div>
+               </div>
+            </div>
+            <!-- single service box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-ser-icon-box ca-ser-icon-box-2 fix p-relative cream-bg-3 z-index-1 p-32 br-7">
+                  <div class="ca-about-icon">
+                     <div class="ca-about-ic ca-ser-ic">
+                        <img src="{% static 'public/cargon/img/icon/ca-iner-ser1.3.svg' %}" alt="">
+                     </div>
+                     <div class="ca-num">
+                        <h4 class="overly-num overly-num2">03</h4>
+                     </div>
+                  </div>
+                  <div class="ca-service-content ca-service-content-iner">
+                     <h4 class="ca-title fnw-700 pb-16 pt-32"><a href="{% url 'public:service_single' %}">Project Cargo Handling</a>
+                     </h4>
+                     <p class="pb-24">Our freight forwarding services ensure<br> smooth and efficient transportation
+                        of<br> goods across borders, while our customs</p>
+                     <a href="{% url 'public:service_single' %}" class="read-more">Read More <span><i
+                              class="fa-solid fa-angle-right"></i></span></a>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</main>
+
+{% endblock page_content %}

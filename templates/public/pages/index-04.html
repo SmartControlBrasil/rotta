@@ -1,0 +1,882 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}Cargon-04{% endblock %}
+
+{% block logo %}
+<link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fac4.svg' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include 'public/partials/preloader.html' %}
+
+<header class="header-area-3 header-area-4 stiky">
+   <div class="container header-4">
+      <div class="row align-items-center">
+         <div class="col-xl-3 col-lg col-md-6 col-6">
+            <!-- ca-logo -->
+            <div class="ca-logo">
+               <a href="{% url 'public:index_04' %}"><img src="{% static 'public/cargon/img/logo/ca-logo4.1.png' %}" alt=""></a>
+            </div>
+         </div>
+         <div class="col-xl-6 col-lg-7 d-none d-lg-block">
+            <!-- ca-main-menu -->
+            <div class="ca-main-menu-4">
+               <nav class="ca-mobile-menu-active-4">
+                  <ul>
+
+                     <li>
+                        <a href="#">Home <span><i class="fa-solid fa-angle-down"></i></span></a>
+                        <ul class="sub-menu">
+                           <li><a href="{% url 'public:index' %}">Home 01</a></li>
+                           <li><a href="{% url 'public:index_02' %}">Home 02</a></li>
+                           <li><a href="{% url 'public:index_03' %}">Home 03</a></li>
+                           <li><a href="{% url 'public:index_04' %}">Home 04</a></li>
+                        </ul>
+                     </li>
+                     <li><a href="{% url 'public:about' %}">About Us</a></li>
+                     <li>
+                        <a href="#">Service <span><i class="fa-solid fa-angle-down"></i></span></a>
+                        <ul class="sub-menu">
+                           <li><a href="{% url 'public:service' %}">Service</a></li>
+                           <li><a href="{% url 'public:service_left' %}">Service Left</a></li>
+                           <li><a href="{% url 'public:service_right' %}">Service Right</a></li>
+                           <li><a href="{% url 'public:service_single' %}">Service Single</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a href="#">Pages <span><i class="fa-solid fa-angle-down"></i></span></a>
+                        <ul class="sub-menu">
+                           <li><a href="{% url 'public:team' %}">Team</a></li>
+                           <li><a href="{% url 'public:testimonial' %}">Testimonial</a></li>
+                           <li><a href="{% url 'public:faq' %}">Faq</a></li>
+                           <li><a href="{% url 'public:pricing' %}">Pricing Plan</a></li>
+                           <li><a href="{% url 'public:contact' %}">Contact Us</a></li>
+                           <li><a href="{% url 'public:not_found_demo' %}">404</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a href="#">Blog <span><i class="fa-solid fa-angle-down"></i></span></a>
+                        <ul class="sub-menu">
+                           <li><a href="{% url 'public:blog' %}">Blog</a></li>
+                           <li><a href="{% url 'public:blog_left' %}">Blog Left</a></li>
+                           <li><a href="{% url 'public:blog_right' %}">Blog Right</a></li>
+                           <li><a href="{% url 'public:blog_single' %}">Blog Single</a></li>
+                        </ul>
+                     </li>
+                     <li>
+                        <a href="#">Project <span><i class="fa-solid fa-angle-down"></i></span></a>
+                        <ul class="sub-menu">
+                           <li><a href="{% url 'public:projects' %}">Project</a></li>
+                           <li><a href="{% url 'public:project_left' %}">Project Left</a></li>
+                           <li><a href="{% url 'public:project_right' %}">Project Right</a></li>
+                           <li><a href="{% url 'public:project_single' %}">Project Single</a></li>
+                        </ul>
+                     </li>
+                  </ul>
+               </nav>
+            </div>
+         </div>
+         <div class="col-xl-3 col-lg col-md-6 col-6">
+            <!-- ca-btn -->
+            <div class="ca-btn-header d-none d-lg-block text-end">
+               <a href="{% url 'public:contact' %}" class="ca-btn-primary ca-btn-primary-4 theme-bg-4 text-white br-50">Track Shipment
+                  <span><i class="fa-solid fa-arrow-right"></i></span></a>
+            </div>
+            <div class="ca-header-action-item d-lg-none text-end">
+               <button type="button" class="ca-offcanvas-toogle">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="16" viewBox="0 0 30 16">
+                     <rect x="10" width="20" height="2" fill="currentColor"></rect>
+                     <rect x="5" y="7" width="25" height="2" fill="currentColor"></rect>
+                     <rect x="10" y="14" width="20" height="2" fill="currentColor"></rect>
+                  </svg>
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+</header>
+
+{% include 'public/partials/offcanvas.html' %}
+
+<main>
+   <!-- slider section start -->
+   <div class="ca-hero-4 p-relative z-index-1 fix">
+      <div class="ca-hero-4-shape p-absolute">
+         <img src="{% static 'public/cargon/img/shape/ca-dot-shape4.1.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-6">
+               <div class="ca-hero-4-content wow tpFadeInUp" data-wow-duration="1.5s" data-wow-delay=".1s">
+                  <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">What We Do</h5>
+                  <h1 class="ca-slider-heading text-white pt-20 pb-20 ca-text-cap">Transporting Your Business to New
+                     Heights logistic</h1>
+                  <p class="pb-32">Our innovative approach leverages the latest technology streamline <br> your supply
+                     chain, optimize routes, and provide real-time tracking.</p>
+                  <!-- btn -->
+                  <div class="ca-hero-4-btn">
+                     <a href="#" class="ca-btn-primary ca-btn-primary-4 theme-bg-4 text-white br-50">Our Service<span><i
+                              class="fa-solid fa-arrow-right"></i></span></a>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-6">
+            </div>
+         </div>
+      </div>
+      <div class="ca-hero-4-img">
+         <img class="w-100" src="{% static 'public/cargon/img/slider/ca-hero-4.png' %}" alt="">
+      </div>
+   </div>
+   <!-- slider section end -->
+   <!-- circle text -->
+   <div class="ca-circle-text text-center">
+      <img class="circle-text-animation" src="{% static 'public/cargon/img/slider/circle-text.png' %}" alt="">
+      <div class="circle-ic-4">
+         <img src="{% static 'public/cargon/img/icon/circle-ic.svg' %}" alt="">
+      </div>
+   </div>
+   <!-- space -->
+   <!-- <div class="space-mt"></div> -->
+
+   <!-- about section start -->
+   <section class="ca-about-4 pb-70">
+      <div class="container">
+         <div class="row align-items-center">
+
+            <div class="col-xl-6 mb-30">
+               <div class="ca-ab-4-img p-relative z-index-1">
+                  <div class="ca-ab-counter-4">
+                     <h3 class="ca-counter-title fnw-700"><span class="counter">25</span>+</h3>
+                     <p>Years Experience</p>
+                  </div>
+                  <img class="w-100 ca-ab-sm-img" src="{% static 'public/cargon/img/about/ca-ch-2.png' %}" alt="">
+                  <img class="w-100 ca-ab-lng-img" src="{% static 'public/cargon/img/about/ca-about-4.1.png' %}" alt="">
+               </div>
+            </div>
+
+
+            <div class="col-xl-6 mb-30">
+               <div class="ca-about-content-4">
+                  <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">What We Do</h5>
+                  <h2 class="ca-section-title theme-black-4 fnw-600 pt-16">How We Deliver Excellence</h2>
+                  <p class="pt-16 pb-24">We leverage cutting-edge technology & a global network to ensure seamless <br>
+                     international and domestic shipments, while our experienced team provides <br> personalized support
+                     and expert guidance every step of the way.</p>
+               </div>
+               <div class="ca-service-4-list">
+                  <ul>
+                     <li><span><i class="fa-solid fa-check"></i></span>Tailored Transport and Logistics Solutions</li>
+                     <li><span><i class="fa-solid fa-check"></i></span>Our Comprehensive Logistics Solutions</li>
+                     <li><span><i class="fa-solid fa-check"></i></span>Explore Our Range of Services</li>
+                  </ul>
+               </div>
+               <div class="ca-counter-servic-4 br-7 pt-24">
+                  <!-- single counter area -->
+                  <div class="ca-counter-area-4 mb-30">
+                     <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">215</span>+</h3>
+                     <p>Happy Customers</p>
+                  </div>
+                  <!-- single counter area -->
+                  <div class="ca-counter-area-4 mb-30">
+                     <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">735</span>+</h3>
+                     <p>Completed Transport</p>
+                  </div>
+               </div>
+               <div class="ca-about-4-btn">
+                  <a href="#" class="ca-btn-primary ca-btn-primary-4 theme-bg-4 text-white br-50">Get Started
+                     Now<span><i class="fa-solid fa-arrow-right"></i></span></a>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+
+
+   <!-- about section end -->
+   <!-- service section start -->
+   <section class="ca-service-4 cream-bg-3 pt-100 pb-70 p-relative z-index-1">
+      <div class="ca-servic-4-shape p-absolute"><img src="{% static 'public/cargon/img/shape/ca-plane-1.1.png' %}" alt="">
+      </div>
+      <div class="ca-servic-4-shape-2 p-absolute"><img src="{% static 'public/cargon/img/shape/ca-ft-shape4.1.png' %}"
+            alt=""></div>
+      <div class="container">
+         <div class="ca-service-content-4 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
+            data-aos-duration="800">
+            <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">Our Service</h5>
+            <h2 class="ca-section-title theme-black-4 fnw-600 pt-16 ca-text-cap">Cold Chain Logistics Services</h2>
+            <p class="pt-16">From freight forwarding and customs brokerage to warehousing solutions &<br> supply chain
+               management, our expertise ensures that your logistics.</p>
+         </div>
+         <div class="row">
+            <div class="ca-services-4">
+               <!-- single servic-item -->
+               <div class="ca-service-4-item br-7 fix p-relative z-index-1 mb-30">
+                  <img class="w-100" src="{% static 'public/cargon/img/service/ca-service-4.1.png' %}" alt="">
+                  <div class="ca-servic-4-ic-box p-absolute">
+                     <div class="ca-service-4-icon">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-service-ic-4.1.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-service-4-content">
+                        <h3 class="ca-ser-4-title"><a href="#">Express Delivery Services</a></h3>
+                        <p>We offer state-of-the-art warehousing solutions, ensuring your inventory is managed with
+                           precision and care.</p>
+                        <a href="#" class="read-mor4">Read More <span><i class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+                  <div class="ca-ser-overlay p-absolute">
+                     <img class="w-100" src="{% static 'public/cargon/img/service/ca-overlay-servic-4.png' %}" alt="">
+                  </div>
+               </div>
+               <!-- single servic-item -->
+               <div class="ca-service-4-item br-7 fix p-relative z-index-1 mb-30">
+                  <img class="w-100" src="{% static 'public/cargon/img/service/ca-service-4.3.png' %}" alt="">
+                  <div class="ca-servic-4-ic-box p-absolute">
+                     <div class="ca-service-4-icon">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-service-ic-4.3.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-service-4-content">
+                        <h3 class="ca-ser-4-title"><a href="#">Supply Chain Management</a></h3>
+                        <p>We offer state-of-the-art warehousing solutions, ensuring your inventory is managed with
+                           precision and care.</p>
+                        <a href="#" class="read-mor4">Read More <span><i class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+                  <div class="ca-ser-overlay p-absolute">
+                     <img class="w-100" src="{% static 'public/cargon/img/service/ca-overlay-servic-4.png' %}" alt="">
+                  </div>
+               </div>
+               <!-- single servic-item -->
+               <div class="ca-service-4-item br-7 fix p-relative z-index-1 mb-30">
+                  <img class="w-100" src="{% static 'public/cargon/img/service/ca-service-4.1.png' %}" alt="">
+                  <div class="ca-servic-4-ic-box p-absolute">
+                     <div class="ca-service-4-icon">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-service-ic-4.1.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-service-4-content">
+                        <h3 class="ca-ser-4-title"><a href="#">Express Delivery Services</a></h3>
+                        <p>We offer state-of-the-art warehousing solutions, ensuring your inventory is managed with
+                           precision and care.</p>
+                        <a href="#" class="read-mor4">Read More <span><i class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+                  <div class="ca-ser-overlay p-absolute">
+                     <img class="w-100" src="{% static 'public/cargon/img/service/ca-overlay-servic-4.png' %}" alt="">
+                  </div>
+               </div>
+               <!-- single servic-item -->
+               <div class="ca-service-4-item br-7 fix p-relative z-index-1 mb-30">
+                  <img class="w-100" src="{% static 'public/cargon/img/service/ca-service-4.1.png' %}" alt="">
+                  <div class="ca-servic-4-ic-box p-absolute">
+                     <div class="ca-service-4-icon">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-service-ic-4.2.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-service-4-content">
+                        <h3 class="ca-ser-4-title"><a href="#">Freight Consolidation</a></h3>
+                        <p>We offer state-of-the-art warehousing solutions, ensuring your inventory is managed with
+                           precision and care.</p>
+                        <a href="#" class="read-mor4">Read More <span><i class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+                  <div class="ca-ser-overlay p-absolute">
+                     <img class="w-100" src="{% static 'public/cargon/img/service/ca-overlay-servic-4.png' %}" alt="">
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- service section end -->
+   <!-- pricing plan start -->
+   <section class="ca-pricing-plan pt-100 pb-70">
+      <div class="container">
+         <div class="ca-pricing-content-4 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
+            data-aos-duration="800">
+            <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">Pricing Plan</h5>
+            <h2 class="ca-section-title theme-black-4 fnw-600 pt-16 ca-text-cap">Flexible Pricing Options</h2>
+            <p class="pt-16">we offer a diverse array of transport and logistics services tailored <br> to meet the
+               unique needs of businesses across various industries.</p>
+         </div>
+         <div class="row">
+            <!-- single pricing-box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-pricing-box br-7 aos-init aos-animate" data-aos="fade-right" data-aos-duration="800">
+                  <div class="ca-pring-box-content">
+                     <h2 class="ca-pricing-box-title fnw-600">Stater Pack</h2>
+                     <p class="pt-16 pb-32">Our Freight Forwarding Services ensure your goods are transported
+                        efficiently </p>
+                     <h3 class="ca-price"><span>$</span>99.00 <cite>/month</cite></h3>
+                  </div>
+                  <div class="ca-price-list p-relative">
+                     <div class="ca-price-btn p-absolute">
+                        <a href="#" class="ca-btn-primary ca-pricebtn ca-btn-primary-4 theme-bg-4 text-white br-50">Get
+                           Started Now <span><i class="fa-solid fa-arrow-right"></i></span></a>
+                     </div>
+                     <ul>
+                        <li><span><i class="fa-solid fa-check"></i></span>Single Plane Service </li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Additional Plane Available</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Insurance Included</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>1000km Maximum Distance</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <!-- single pricing-box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-pricing-box active br-7 aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000">
+                  <div class="ca-pring-box-content">
+                     <h2 class="ca-pricing-box-title fnw-600">Pro Pack</h2>
+                     <p class="pt-16 pb-32">While our Comprehensive Warehousing <br> Solutions provide secure storage.
+                     </p>
+                     <h3 class="ca-price"><span>$</span>149.00 <cite>/month</cite></h3>
+                  </div>
+                  <div class="ca-price-list p-relative">
+                     <div class="ca-price-btn p-absolute">
+                        <a href="#" class="ca-btn-primary ca-pricebtn ca-btn-primary-4 theme-bg-4 text-white br-50">Get
+                           Started Now <span><i class="fa-solid fa-arrow-right"></i></span></a>
+                     </div>
+                     <ul>
+                        <li><span><i class="fa-solid fa-check"></i></span>Dual Plane Service</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Additional Plane Available</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Insurance Included</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>3000km Maximum Distance</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <!-- single pricing-box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-pricing-box br-7 aos-init aos-animate" data-aos="fade-left" data-aos-duration="1200">
+                  <div class="ca-pring-box-content">
+                     <h2 class="ca-pricing-box-title fnw-600">Business Pack</h2>
+                     <p class="pt-16 pb-32">With Specialized Project Cargo Handling<br> and Cold Chain Logistics
+                        Services. </p>
+                     <h3 class="ca-price"><span>$</span>199.00 <cite>/month</cite></h3>
+                  </div>
+                  <div class="ca-price-list p-relative">
+                     <div class="ca-price-btn p-absolute">
+                        <a href="#" class="ca-btn-primary ca-pricebtn ca-btn-primary-4 theme-bg-4 text-white br-50">Get
+                           Started Now <span><i class="fa-solid fa-arrow-right"></i></span></a>
+                     </div>
+                     <ul>
+                        <li><span><i class="fa-solid fa-check"></i></span>Three Planes Service</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Additional Plane Available </li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Insurance Included</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>5000km Maximum Distance</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- pricing plan end -->
+   <!-- testimonial section start -->
+   <section class="ca-testimonial-4 theme-black-bg-4 pt-100 pb-70 p-relative z-index-1">
+      <div class="ca-shape ca-test-shape p-absolute"><img src="{% static 'public/cargon/img/shape/shape-1.1.png' %}" alt="">
+      </div>
+      <div class="ca-service-shape p-absolute"><img src="{% static 'public/cargon/img/shape/ca-footer-shape3.1.png' %}"
+            alt=""></div>
+      <div class="container">
+         <div class="ca-blog-content-4 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
+            data-aos-duration="800">
+            <h5 class="ca-section-subtitle subtitle-bg-9 text-white p-relative br-50">Testimonial</h5>
+            <h2 class="ca-section-title text-white fnw-600 pt-16 ca-text-cap">Success Stories from Our<br> Clients
+               Feedback</h2>
+         </div>
+         <div class="row">
+            <div class="ca-testimonials">
+               <div class="ca-testimonials-4">
+                  <!-- single testimonial item -->
+                  <div class="ca-testimonial-card-3 ca-testimonial-card-4 br-7">
+                     <div class="ca-quote-4">
+                        <img src="{% static 'public/cargon/img/icon/ca-testimonialquote4.1.svg' %}" alt="">
+                     </div>
+                     <div class="ca-test-4-rating">
+                        <div class="ca-ratings-4">
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                        </div>
+                     </div>
+                     <div class="ca-test-4-content">
+                        <p>“From ensuring seamless international shipments to providing efficient domestic deliveries,
+                           our clients commend our ability to handle their logistics challenges with precision and
+                           care.”</p>
+                     </div>
+                     <div class="ca-test-3-user mt-24">
+                        <div class="ca-test-3-user-img">
+                           <span><img src="{% static 'public/cargon/img/testimonial/ca-testimonial4.1.png' %}"
+                                 alt=""></span>
+                        </div>
+                        <div class="ca-test-4-user-name">
+                           <h4 class="test-3-title"><a href="#">Alesha Healy</a></h4>
+                           <span>Cargon Operator</span>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- single testimonial item -->
+                  <div class="ca-testimonial-card-3 ca-testimonial-card-4 br-7">
+                     <div class="ca-quote-4">
+                        <img src="{% static 'public/cargon/img/icon/ca-testimonialquote4.1.svg' %}" alt="">
+                     </div>
+                     <div class="ca-test-4-rating">
+                        <div class="ca-ratings-4">
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                        </div>
+                     </div>
+                     <div class="ca-test-4-content">
+                        <p>“We take pride in the positive feedback we receive businesses <br> across various industries
+                           who rely on our expertise to meet their logistics needs. Our clients consistently highlight
+                           our reliable.”</p>
+                     </div>
+                     <div class="ca-test-3-user mt-24">
+                        <div class="ca-test-3-user-img">
+                           <span><img src="{% static 'public/cargon/img/testimonial/ca-testimonial4.2.png' %}"
+                                 alt=""></span>
+                        </div>
+                        <div class="ca-test-4-user-name">
+                           <h4 class="test-3-title"><a href="#">Virginia Dea</a></h4>
+                           <span>Cargon Operator</span>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- single testimonial item -->
+                  <div class="ca-testimonial-card-3 ca-testimonial-card-4 br-7">
+                     <div class="ca-quote-4">
+                        <img src="{% static 'public/cargon/img/icon/ca-testimonialquote4.1.svg' %}" alt="">
+                     </div>
+                     <div class="ca-test-4-rating">
+                        <div class="ca-ratings-4">
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                           <span><i class="fa-solid fa-star"></i></span>
+                        </div>
+                     </div>
+                     <div class="ca-test-4-content">
+                        <p>“From ensuring seamless international shipments to providing efficient domestic deliveries,
+                           our clients commend our ability to handle their logistics challenges with precision and
+                           care.”</p>
+                     </div>
+                     <div class="ca-test-3-user mt-24">
+                        <div class="ca-test-3-user-img">
+                           <span><img src="{% static 'public/cargon/img/testimonial/ca-testimonial4.1.png' %}"
+                                 alt=""></span>
+                        </div>
+                        <div class="ca-test-4-user-name">
+                           <h4 class="test-3-title"><a href="#">Alesha Healy</a></h4>
+                           <span>Cargon Operator</span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- testimonial section end -->
+   <!-- sponsor section start -->
+   <section class="ca-sponsor-area pt-100 pb-70">
+      <div class="container">
+         <div class="ca-sponsor-content-4 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
+            data-aos-duration="800">
+            <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">Happy Client And Sponsor</h5>
+            <h2 class="ca-section-title theme-black-4 fnw-600 pt-16 ca-text-cap">Trusted By Our 356.00 Clients</h2>
+         </div>
+      </div>
+      <!-- brand logo 1 -->
+      <div class="ca-brand-slides mb-24">
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-2.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-3.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-4.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-5.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-6.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-3.png' %}" alt="">
+         </div>
+      </div>
+      <!-- brand logo 2 -->
+      <div class="ca-brand-slides-2" dir="rtl">
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.1.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.2.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.3.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.4.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.5.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.6.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.4.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.3.png' %}" alt="">
+         </div>
+         <div class="ca-brand-item">
+            <img src="{% static 'public/cargon/img/brand/brand-1.2.png' %}" alt="">
+         </div>
+      </div>
+   </section>
+   <!-- sponsor section end -->
+   <!-- contact-section start -->
+   <section class="contact-3-area cream-bg-3 pt-100 pb-70">
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-6 mb-30">
+               <div class="ca-contact-us-4 mr-50">
+                  <div class="ca-blog-content-4 aos-init aos-animate" data-aos="fade-up" data-aos-duration="800">
+                     <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">Contact Us</h5>
+                     <h2 class="ca-section-title theme-black-4 fnw-600 pt-16 ca-text-cap"> We're Ready to Serve You</h2>
+                     <p class="pt-16">We take pride in the positive feedback we receive from businesses <br>across
+                        various industries expertise to meet their logistics needs.</p>
+                  </div>
+                  <div class="ca-working-hour mt-28 aos-init aos-animate" data-aos="fade-up" data-aos-duration="800">
+                     <h3 class="ca-blo-4-title theme-black-4 fnw-600 pb-16">Work Hour</h3>
+                     <div class="ca-working-time">
+                        <!-- single box -->
+                        <div class="ca-work-time-box mr-46">
+                           <div class="ca-work-ic">
+                              <span><img src="{% static 'public/cargon/img/icon/ca-time4.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-work-content">
+                              <span>Tuesday - Saturday</span>
+                           </div>
+                        </div>
+                        <!-- single box -->
+                        <div class="ca-work-time-box">
+                           <div class="ca-work-ic">
+                              <span><img src="{% static 'public/cargon/img/icon/ca-time4.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-work-content">
+                              <span>8:00 Am - 5:00 Pm </span>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="ca-con-icon-box-4 aos-init aos-animate" data-aos="fade-right" data-aos-duration="800">
+                     <!-- single-icon-box -->
+                     <div class="ca-contact-ic-box-4 mb-30">
+                        <div class="ca-contact-4-icon">
+                           <span><img src="{% static 'public/cargon/img/icon/ca-map4.1.svg' %}" alt=""></span>
+                        </div>
+                        <div class="ca-contact-4-content">
+                           <h3 class="ca-blo-4-title theme-black-4 fnw-600 pb-12">Our Location</h3>
+                           <p>73 Bridge St Brooklyn, USA.</p>
+                        </div>
+                     </div>
+                     <!-- single-icon-box -->
+                     <div class="ca-contact-ic-box-4 mb-30">
+                        <div class="ca-contact-4-icon">
+                           <span><img src="{% static 'public/cargon/img/icon/ca-mail-4.3.svg' %}" alt=""></span>
+                        </div>
+                        <div class="ca-contact-4-content">
+                           <h3 class="ca-blo-4-title theme-black-4 fnw-600 pb-12">Our Mail</h3>
+                           <p>Demo@gmail.com</p>
+                        </div>
+                     </div>
+                     <!-- single-icon-box -->
+                     <div class="ca-contact-ic-box-4 mb-30">
+                        <div class="ca-contact-4-icon">
+                           <span><img src="{% static 'public/cargon/img/icon/ca-phone-4.2.svg' %}" alt=""></span>
+                        </div>
+                        <div class="ca-contact-4-content">
+                           <h3 class="ca-blo-4-title theme-black-4 fnw-600 pb-12">Office Number</h3>
+                           <p>+921 5222 6132</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-6 mb-30">
+               <div class="ca-contact-from w-bg ca-contact-from-3 mr-60 aos-init aos-animate" data-aos="zoom-out-down"
+                  data-aos-duration="800">
+                  <div class="ca-contact-content-4">
+                     <h4 class="ca-contact-title-2 theme-black-2 fnw-600">Send Us A Message</h4>
+                     <p class="pt-16 pb-24">As a fellow small business owner, we know the fulfillment that an a best to
+                        comes from running & own business contact our service to Cargon.</p>
+                  </div>
+                  <form action="#">
+                     <div class="row">
+                        <div class="col-md-6 mb-20">
+                           <input type="text" placeholder="First Name">
+                        </div>
+                        <div class="col-md-6 mb-20">
+                           <input type="text" placeholder="Last Name">
+                        </div>
+                        <div class="col-md-6 mb-20">
+                           <input type="tel" placeholder="Phone Number">
+                        </div>
+                        <div class="col-md-6 mb-20">
+                           <input type="email" placeholder="Email Address">
+                        </div>
+                        <div class="col-md-12 mb-20">
+                           <select class="nice-select wide ca-select">
+                              <option data-display="Service Type">Nothing</option>
+                              <option value="1">01</option>
+                              <option value="2">02</option>
+                              <option value="3">03</option>
+                              <option value="4">04</option>
+                           </select>
+                        </div>
+                        <div class="col-md-12 mb-20">
+                           <textarea name="message" id="message" placeholder="Message"></textarea>
+                        </div>
+                        <div class="submit-btn">
+                           <button class="ca-btn-primary ca-btn-primary-4 theme-bg-4 text-white br-50" type="submit"
+                              value="submit"> Send Now<span><i class="fa-solid fa-arrow-right"></i></span></button>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- contact-section end -->
+   <!-- blog section start -->
+   <section class="ca-blog pt-100 pb-70">
+      <div class="container">
+         <div class="ca-blog-content-4 text-center mb-60 aos-init aos-animate" data-aos="fade-up"
+            data-aos-duration="800">
+            <h5 class="ca-section-subtitle subtitle-bg-8 p-relative theme-black-4 br-50">Our Blog</h5>
+            <h2 class="ca-section-title theme-black-4 fnw-600 pt-16 ca-text-cap"> Best Practices and Strategies</h2>
+            <p class="pt-16">Delve into the challenges of last-mile delivery and explore strategies to overcome<br>
+               them. Learn how to improve delivery times, enhance customer satisfaction,</p>
+         </div>
+         <div class="row">
+            <!-- single-blog-item -->
+            <div class="col-lg-6 col-md-6 mb-30">
+               <div class="ca-team-box ca-blog-box-4 br-7 aos-init aos-animate" data-aos="fade-right"
+                  data-aos-duration="1000">
+                  <div class="ca-team-img ca-blog-4-img">
+                     <a href="{% url 'public:blog_single' %}"> <img class="w-100"
+                           src="{% static 'public/cargon/img/blog/ca-blog-4.1.png' %}" alt=""></a>
+                  </div>
+                  <div class="ca-blog-box-content w-bg ca-blog-box-content-4">
+                     <div class="ca-b-meta">
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Henry Nicolls</span>
+                           </div>
+                        </a>
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Transport & Logistics</span>
+                           </div>
+                        </a>
+                     </div>
+                     <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="#">Meeting the Challenges of E-commerce
+                           Logistics</a></h4>
+                     <p class="pt-16 pb-18">Get expert tips on managing project cargo logistics planning &<br>
+                        coordination to execution & delivery, discover best practices.</p>
+                     <div class="blog-4-readmore">
+                        <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- single-blog-item -->
+            <div class="col-lg-6 col-md-6 mb-30">
+               <div class="ca-team-box ca-blog-box-4 br-7 aos-init aos-animate" data-aos="fade-left"
+                  data-aos-duration="1200">
+                  <div class="ca-team-img ca-blog-4-img">
+                     <a href="{% url 'public:blog_single' %}"><img class="w-100"
+                           src="{% static 'public/cargon/img/blog/ca-blog-4.2.png' %}" alt=""></a>
+                  </div>
+                  <div class="ca-blog-box-content w-bg ca-blog-box-content-4">
+                     <div class="ca-b-meta">
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Henry Nicolls</span>
+                           </div>
+                        </a>
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Transport & Logistics</span>
+                           </div>
+                        </a>
+                     </div>
+                     <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="#">Handling Project Cargo: Expert Tips &
+                           Strategies</a></h4>
+                     <p class="pt-16 pb-18">Explore the unique challenges of e-commerce logistics and how <br> to
+                        overcome them. Find out how to handle high order volumes.</p>
+                     <div class="blog-4-readmore">
+                        <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- blog section end -->
+
+   <!-- cta section -->
+   <div class="ca-cta-section-4 pb-100">
+      <div class="container theme-bg-4">
+         <div class="row">
+            <div class="col-lg-7">
+               <div class="ca-cta-content-4 aos-init aos-animate" data-aos="fade-up" data-aos-duration="1000">
+                  <h2 class="ca-section-title cta-title-1 text-white fnw-700 pb-32 ca-text-cap">Join Us Today And let Us
+                     Help <br> You To Grow Your Business.</h2>
+                  <div class="ca-btn-cta-4">
+                     <a href="{% url 'public:contact' %}" class="ca-btn-primary ca-btn-primary-4 w-bg theme-color-4 br-50">Get Started
+                        <span><i class="fa-solid fa-arrow-right"></i></span></a>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-5">
+               <div class="ca-cta-map-4">
+                  <iframe
+                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1349133.575550262!2d18.377667987858814!3d48.66673564526868!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471460b9ae7cc67f%3A0xcd6b6167b1723a7d!2sSlovakia!5e0!3m2!1sen!2sbd!4v1724038046755!5m2!1sen!2sbd"
+                     allowfullscreen="" class="ca-map-4"></iframe>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</main>
+
+<footer class="cream-bg-3 p-relative pt-100 pb-30">
+   <div class="ca-footer-4-shape p-absolute"><img src="{% static 'public/cargon/img/shape/ca-ft-shape4.1.png' %}" alt="">
+   </div>
+   <div class="ca-footer-area">
+      <div class="container">
+         <div class="row">
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-footer-4 widget-1">
+                  <div class="ca-ft-logo">
+                     <a href="{% url 'public:index_04' %}"><img src="{% static 'public/cargon/img/logo/ca-logo4.2.png' %}" alt=""></a>
+                  </div>
+                  <div class="ca-ft-content ca-ft-content-3 mb-24">
+                     <p class="pt-16">Our global reach, combined with local <br> expertise, ensures that your goods are
+                        <br>transported safely, on time.
+                     </p>
+                  </div>
+                  <div class="ca-footer-social ca-footer-social-4">
+                     <ul>
+                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                        <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                        <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                        <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <div class="col-xl col-md-6 mb-30">
+               <div class="ca-footer widget-2">
+                  <h4 class="ca-title fnw-700 theme-black-1 pb-24">Quick Links</h4>
+                  <div class="ca-footer-menu ca-footer-menu-4">
+                     <ul>
+                        <li><a href="{% url 'public:index' %}">Home</a></li>
+                        <li><a href="{% url 'public:service' %}">Service</a></li>
+                        <li><a href="{% url 'public:about' %}">About Us</a></li>
+                        <li><a href="{% url 'public:blog' %}">Latest News</a></li>
+                        <li><a href="{% url 'public:contact' %}">Contact Us</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <div class="col-xl col-md-6 mb-30">
+               <div class="ca-footer widget-3">
+                  <h4 class="ca-title fnw-700 theme-black-1 pb-24">Other Links</h4>
+                  <div class="ca-footer-menu ca-footer-menu-4">
+                     <ul>
+                        <li><a href="#">Maintenance</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#"> Reviews & Awards</a></li>
+                        <li><a href="#"> Personal</a></li>
+                        <li><a href="#">Certifications</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-footer widget-4">
+                  <h4 class="ca-title fnw-700 theme-black-1 pb-24">Other Links</h4>
+                  <div class="ca-ft-content-4">
+                     <p class="pb-32">Subscribe us & receive our latest <br> news & articles</p>
+                  </div>
+                  <div class="ca-footer-email-sub ca-footer-email-sub-3">
+                     <form action="#">
+                        <input type="email" placeholder="Email Address..">
+                     </form>
+                     <button class="ca-btn-primary ca-btn-primary-4 theme-bg-4 text-white br-50" type="submit"
+                        value="submit">Subscribe Now <span><i class="fa-solid fa-arrow-right"></i></span></button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-lg-12">
+               <div class="copy-right-border border-1"></div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+               <p class="copry-right-text-4 pt-24">Copyright &COPY;2024 Cargon. All Rights Reserved</p>
+            </div>
+            <div class="col-lg-6 col-md-6">
+               <div class="copy-right-menu copy-right-menu-4 text-end pt-24">
+                  <ul>
+                     <li><a href="#">Terms & Conditions</a></li>
+                     <li><a href="#">Privacy Policy</a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</footer>
+
+<button id="topBtn4"><i class="fa-solid fa-arrow-up"></i></button>
+
+{% endblock content %}

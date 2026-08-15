@@ -1,0 +1,357 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %}Cargon-FAQ{% endblock %}
+
+{% block page_content %}
+
+<main>
+    <!-- breadcrumb area start -->
+    <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+        <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+            <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+        </div>
+        <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+            <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+        </div>
+        <div class="container">
+            <div class="ca-breadcrumb-content text-center">
+                <h2 class="ca-breadcrumb-title fnw-600">FAQ’s</h2>
+                <div class="it-breadcum-link">
+                    <a href="{% url 'public:home' %}">Home</a>
+                    <span><i class="fa-solid fa-angle-right"></i></span>
+                    <a class="active" href="#">FAQ’s</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- breadcrumb area end -->
+
+    <div class="ca-faq-inner pt-100 pb-70">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mb-30">
+                    <div class="ca-faq-iner-thumb p-relative mr-65">
+                        <img class="w-100" src="{% static 'public/cargon/img/faq/ca-faq-thumb-1.1.png' %}" alt="">
+                        <div class="ca-fa-sm-thumb">
+                            <img src="{% static 'public/cargon/img/faq/ca-faq-sm1.2.png' %}" alt="">
+                        </div>
+
+                        <div class="ca-iner-review-text ca-faq-iner-review p-absolute theme-bg-3">
+                            <h3 class="ca-counter-title fnw-700 pb-16"><span class="counter">28</span>+</h3>
+                            <p>Years Of Experience</p>
+                            <div class="ca-test-3-rating ca-faq-rating">
+                                <div class="ca-ratings-3">
+                                    <span class="fa fa-star checked star"></span>
+                                    <span class="fa fa-star checked star"></span>
+                                    <span class="fa fa-star checked star"></span>
+                                    <span class="fa fa-star checked star"></span>
+                                    <span class="fa fa-star checked star"></span>
+                                </div>
+                                <div class="ca-rating-num-3">
+                                    <h4 class="ca-rating-title-3">(5) <span class="rat-title">Rating</span></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-30">
+                    <div class="ca-about-content-3 ca-sec-content-3 mb-48">
+                        <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">FAQ'S</h5>
+                        <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Frequently Asked Questions
+                            and Answers</h2>
+                    </div>
+                    <div class="ca-faq-accordion-one">
+                        <div class="accordion" id="accordionExample">
+                            <!-- single item -->
+                            <div class="ca-iner-one accordion-item">
+                                <h2 class="accordion-header" id="heading2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                        <span><i class="fa-solid fa-angle-down"></i></span> How do you ensure the safety
+                                        of my shipments?
+                                    </button>
+                                </h2>
+                                <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                    data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <p>Our FAQs also address our warehousing options, shipment tracking <br>systems,
+                                            & specialized services for different industries. Additionally,<br> you'll
+                                            find information on how we manage temperature-sensitive.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- single item -->
+                            <div class="ca-iner-one accordion-item">
+                                <h2 class="accordion-header" id="heading1">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                        <span><i class="fa-solid fa-angle-down"></i></span> What transport and logistics
+                                        services do you offer?
+                                    </button>
+                                </h2>
+                                <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="heading1"
+                                    data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <p>Our FAQs also address our warehousing options, shipment tracking <br>systems,
+                                            & specialized services for different industries. Additionally,<br> you'll
+                                            find information on how we manage temperature-sensitive.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- single item -->
+                            <div class="ca-iner-one accordion-item">
+                                <h2 class="accordion-header" id="heading3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                        <span><i class="fa-solid fa-angle-down"></i></span> How can I get a quote for
+                                        your services?
+                                    </button>
+                                </h2>
+                                <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                                    data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <p>Our FAQs also address our warehousing options, shipment tracking <br>systems,
+                                            & specialized services for different industries. Additionally,<br> you'll
+                                            find information on how we manage temperature-sensitive.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- single item -->
+                            <div class="ca-iner-one accordion-item">
+                                <h2 class="accordion-header" id="heading4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                        <span><i class="fa-solid fa-angle-down"></i></span> What steps do you take to
+                                        ensure timely deliveries?
+                                    </button>
+                                </h2>
+                                <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
+                                    data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <p>Our FAQs also address our warehousing options, shipment tracking <br>systems,
+                                            & specialized services for different industries. Additionally,<br> you'll
+                                            find information on how we manage temperature-sensitive.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <section class="ca-faq-iner2 pt-100 pb-70">
+        <div class="container">
+            <div class="ca-about-content-3 ca-sec-content-3 text-center mb-60">
+                <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">FAQ'S</h5>
+                <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Answers to Your Questions</h2>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="ca-faq-acc">
+                        <div class="ca-accordion" id="accordionExample1">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="accordion" id="accordionExample2">
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                    aria-expanded="false" aria-controls="collapseTwo">
+                                                    Do you provide same-day or express delivery services?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseTwo" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample1">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseOne" aria-expanded="true"
+                                                    aria-controls="collapseOne">
+                                                    What are your warehousing and storage options?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne" class="accordion-collapse collapse show"
+                                                data-bs-parent="#accordionExample1">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                    aria-expanded="false" aria-controls="collapseThree">
+                                                    How do you handle temperature-sensitive shipments?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseThree" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample1">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                                    aria-expanded="false" aria-controls="collapseFour">
+                                                    What steps do you take to ensure timely deliveries?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseFour" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample1">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="accordion" id="accordionExample3">
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                    aria-expanded="false" aria-controls="collapseFive">
+                                                    How do you manage large or complex shipments?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseFive" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample3">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseSix"
+                                                    aria-expanded="false" aria-controls="collapseSix">
+                                                    What technology do you use for inventory
+                                                </button>
+                                            </h2>
+                                            <div id="collapseSix" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample3">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseSeven"
+                                                    aria-expanded="false" aria-controls="collapseSeven">
+                                                    How can I get a quote for your services?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseSeven" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample3">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseeight"
+                                                    aria-expanded="false" aria-controls="collapseeight">
+                                                    What industries do you specialize in?
+                                                </button>
+                                            </h2>
+                                            <div id="collapseeight" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample3">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- single acordion item -->
+                                        <div class="ca-iner-accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapsenine"
+                                                    aria-expanded="false" aria-controls="collapsenine">
+                                                    How can I track my shipment?
+                                                </button>
+                                            </h2>
+                                            <div id="collapsenine" class="accordion-collapse collapse"
+                                                data-bs-parent="#accordionExample3">
+                                                <div class="accordion-body">
+                                                    <p>Learn more about our pricing, compliance with international
+                                                        regulations, & the advanced technology we use to enhance
+                                                        efficiency & transparency in your logistics operations. If you
+                                                        have further questions.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% endblock page_content %}

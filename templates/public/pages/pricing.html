@@ -1,0 +1,114 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %} Cargon-Pricing {% endblock %}
+
+{% block page_content %}
+
+<main>
+   <!-- breadcrumb area start -->
+   <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+         <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+      </div>
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+         <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="ca-breadcrumb-content text-center">
+            <h2 class="ca-breadcrumb-title fnw-600">Pricing Plan</h2>
+            <div class="it-breadcum-link">
+               <a href="{% url 'public:home' %}">Home</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a class="active" href="#">Pricing Plan</a>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- breadcrumb area end -->
+   <!-- pricing plan start -->
+   <section class="ca-pricing-plan pt-100 pb-70">
+      <div class="container">
+         <div class="ca-about-content-3 ca-sec-content-3 text-center mb-60">
+            <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">Pricing Plan</h5>
+            <h2 class="ca-section-title theme-black-3 fnw-600 pt-16 ca-text-cap">Flexible Pricing Options</h2>
+            <p class="pt-16">we offer a diverse array of transport and logistics services tailored <br> to meet the
+               unique needs of businesses across various industries.</p>
+         </div>
+         <div class="row">
+            <!-- single pricing-box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-pricing-box ca-pricing-box-2 cream-bg-3 br-7">
+                  <div class="ca-pring-box-content">
+                     <h2 class="ca-pricing-box-title fnw-600">Stater Pack</h2>
+                     <p class="pt-16 pb-32">Our Freight Forwarding Services ensure your goods are transported
+                        efficiently </p>
+                     <h3 class="ca-price"><span>$</span>99.00 <cite>/month</cite></h3>
+                  </div>
+                  <div class="ca-price-list ca-price-list-2 p-relative">
+                     <div class="ca-price-btn p-absolute">
+                        <a href="#" class="ca-price-btn-4 text-white br-50">Get Started Now<span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                     <ul>
+                        <li><span><i class="fa-solid fa-check"></i></span>Single Plane Service </li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Additional Plane Available</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Insurance Included</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>1000km Maximum Distance</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <!-- single pricing-box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-pricing-box ca-pricing-box-2 active cream-bg-3 br-7">
+                  <div class="ca-pring-box-content">
+                     <h2 class="ca-pricing-box-title fnw-600">Pro Pack</h2>
+                     <p class="pt-16 pb-32">While our Comprehensive Warehousing <br> Solutions provide secure storage.
+                     </p>
+                     <h3 class="ca-price"><span>$</span>149.00 <cite>/month</cite></h3>
+                  </div>
+                  <div class="ca-price-list ca-price-list-2 p-relative">
+                     <div class="ca-price-btn p-absolute">
+                        <a href="#" class="ca-price-btn-4 text-white br-50">Get Started Now<span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                     <ul>
+                        <li><span><i class="fa-solid fa-check"></i></span>Dual Plane Service</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Additional Plane Available</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Insurance Included</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>3000km Maximum Distance</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <!-- single pricing-box -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-pricing-box ca-pricing-box-2 cream-bg-3 br-7">
+                  <div class="ca-pring-box-content">
+                     <h2 class="ca-pricing-box-title fnw-600">Business Pack</h2>
+                     <p class="pt-16 pb-32">With Specialized Project Cargo Handling <br> and Cold Chain Logistics
+                        Services. </p>
+                     <h3 class="ca-price"><span>$</span>199.00 <cite>/month</cite></h3>
+                  </div>
+                  <div class="ca-price-list ca-price-list-2 p-relative">
+                     <div class="ca-price-btn p-absolute">
+                        <a href="#" class="ca-price-btn-4 text-white br-50">Get Started Now<span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                     <ul>
+                        <li><span><i class="fa-solid fa-check"></i></span>Single Plane Service </li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Additional Plane Available</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>Insurance Included</li>
+                        <li><span><i class="fa-solid fa-check"></i></span>1000km Maximum Distance</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- pricing plan end -->
+</main>
+
+{% endblock page_content %}

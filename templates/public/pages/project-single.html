@@ -1,0 +1,229 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %} Cargon-Project Single {% endblock %}
+
+{% block page_content %}
+
+<main>
+   <!-- breadcrumb area start -->
+   <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+         <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+      </div>
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+         <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="ca-breadcrumb-content text-center">
+            <h2 class="ca-breadcrumb-title fnw-600">Customs Clearance Excellence</h2>
+            <div class="it-breadcum-link">
+               <a href="{% url 'public:home' %}">Home</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a href="{% url 'public:projects' %}">Project</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a class="active" href="#">Customs Clearance Excellence</a>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- breadcrumb area end -->
+   <!-- project left -->
+   <div class="ca-service-lft-area pt-100 pb-70">
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-8 mb-30 mx-auto">
+               <div class="ca-project-content-area">
+                  <div class="ca-pro-thumb-content">
+                     <h2 class="ca-project-thumb-title theme-black-3 fnw-600 ca-text-cap">Customs Clearance Excellence
+                     </h2>
+                     <p class="pt-16 pb-40">We provide a full spectrum of logistics & transport services designed to
+                        meet the specific needs businesses <br> in various industries. Our Freight Forwarding Services
+                        utilize a vast network of carriers to ensure your <br>international shipments are managed
+                        efficiently and cost-effectively.</p>
+                     <div class="ca-servic-thumb br-7">
+                        <img class="w-100" src="{% static 'public/cargon/img/portfolio/ca-pro-thumb1.1.png' %}" alt="">
+                     </div>
+                     <div class="ca-project-cat">
+                        <!-- single category -->
+                        <div class="ca-single-cat-item mb-30">
+                           <h4 class="ca-title fnw-600 theme-black-3 pb-16">Category </h4>
+                           <span>Branding & Profile</span>
+                        </div>
+                        <!-- single category -->
+                        <div class="ca-single-cat-item mb-30">
+                           <h4 class="ca-title fnw-600 theme-black-3 pb-16">Location </h4>
+                           <span>73 Bridge St Brooklyn, USA.</span>
+                        </div>
+                        <!-- single category -->
+                        <div class="ca-single-cat-item mb-30">
+                           <h4 class="ca-title fnw-600 theme-black-3 pb-16">Client </h4>
+                           <span>Transport & Logistics</span>
+                        </div>
+                        <!-- single category -->
+                        <div class="ca-single-cat-item mb-30">
+                           <h4 class="ca-title fnw-600 theme-black-3 pb-16">Date</h4>
+                           <span>20/06/2024</span>
+                        </div>
+                     </div>
+                     <h3 class="ca-project-thumb-title-2 theme-black-3 fnw-600 ca-text-cap">Consolidation and
+                        Deconsolidation Services</h3>
+                     <p class="pt-16">Our Warehousing Solutions offer secure, climate-controlled storage with advanced
+                        inventory tracking to <br> keep your goods safe & easily accessible. We excel in Customs
+                        Clearance, simplifying the complexities of <br> international trade and ensuring your shipments
+                        comply with all regulations.</p>
+                     <p class="pt-20">Our Global Shipping Services guarantee that your products reach global markets on
+                        time, leveraging our <br> strategic partnerships and logistical expertise. For domestic
+                        logistics, our Domestic Transport Solutions <br>provide reliable, flexible delivery options
+                        across the country.</p>
+                     <div class="row">
+                        <div class="col-lg-6">
+                           <div class="ca-projrct-iner-box cream-bg-3 br-7">
+                              <h4 class="ca-title fnw-600 theme-black-3 pb-16 ca-text-cap">Reverse Logistics Management
+                              </h4>
+                              <p>We optimize every aspect of your supply <br> chain through Supply Chain Management<br>
+                                 services, from procurement to delivery,<br> enhancing operational efficiency.</p>
+                           </div>
+                        </div>
+                        <div class="col-lg-6">
+                           <div class="ca-projrct-iner-box cream-bg-3 br-7">
+                              <h4 class="ca-title fnw-600 theme-black-3 pb-16 ca-text-cap">Heavy Lift and Project Cargo
+                              </h4>
+                              <p>Our E-commerce Logistics Solutions are <br> designed to streamline your online order
+                                 <br>fulfillment, offering seamless integration <br> with your e-commerce platform
+                              </p>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="ca-about-item3 cream-bg-3 p-relative">
+                        <p>Our Express Delivery Services offer fast and reliable shipping options to meet urgent
+                           delivery <br> needs, and our Inventory Management solutions help you maintain accurate stock
+                           levels, reduce <br> costs, and improve customer satisfaction. Partner with Cargon for
+                           innovative and tailored</p>
+                     </div>
+                     <div class="ca-ab-item-check ca-ab-item-check-2 caborder-top">
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title ca-text-cap">Secure Warehousing</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title ca-text-cap">Customs Brokerage</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title ca-text-cap">E-commerce Fulfillment</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title ca-text-cap">Heavy Lift and Project Cargo</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title ca-text-cap">Rapid Express Delivery</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title ca-text-cap">Inventory Optimization</h4>
+                           </div>
+                        </div>
+                     </div>
+                     <h3 class="ca-project-thumb-title-2 theme-black-3 fnw-600 ca-text-cap">Domestic Freight Transport
+                     </h3>
+                     <p class="pt-16">Our expertise in Customs Clearance navigates the complexities of global trade
+                        regulations, ensuring your<br> shipments comply with all necessary requirements and minimizing
+                        delays. Our Global Shipping Services <br>connect you to international markets, utilizing
+                        optimized routes and reliable carriers to enhance</p>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="ca-more-section pb-70">
+      <div class="container">
+         <h2 class="ca-more-title theme-black-3 fnw-600 text-center mb-60">More Projects</h2>
+         <div class="row">
+            <div class="col-lg-4 col-md-6">
+               <!-- single-portfolio-item -->
+               <div class="ca-single-portfolio-item sm-img p-relative z-index-1 fix mb-30">
+                  <div class="ca-portfolio-img">
+                     <img class="w-100 br-7" src="{% static 'public/cargon/img/portfolio/portfolio-sm-1.4.png' %}" alt="">
+                  </div>
+                  <div class="ca-portfolio-link">
+                     <a href="#" class="portfolio-link portfolio-link-2"><span><img
+                              src="{% static 'public/cargon/img/icon/ca-portfolio-arrow-1.1.svg' %}" alt=""></span></a>
+                  </div>
+                  <div class="ca-portfolio-content-meta theme-bg-3 br-7">
+                     <p>Transportation 2024</p>
+                     <h4 class="ca-por-title"><a href="#">Experts in Logistics Management</a></h4>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+               <!-- single-portfolio-item -->
+               <div class="ca-single-portfolio-item sm-img p-relative z-index-1 fix mb-30">
+                  <div class="ca-portfolio-img">
+                     <img class="w-100 br-7" src="{% static 'public/cargon/img/portfolio/portfolio-sm-1.5.png' %}" alt="">
+                  </div>
+                  <div class="ca-portfolio-link">
+                     <a href="#" class="portfolio-link portfolio-link-2"><span><img
+                              src="{% static 'public/cargon/img/icon/ca-portfolio-arrow-1.1.svg' %}" alt=""></span></a>
+                  </div>
+                  <div class="ca-portfolio-content-meta theme-bg-3 br-7">
+                     <p>Transportation 2024</p>
+                     <h4 class="ca-por-title"><a href="#">Experts in Logistics Management</a></h4>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+               <!-- single-portfolio-item -->
+               <div class="ca-single-portfolio-item sm-img p-relative z-index-1 fix mb-30">
+                  <div class="ca-portfolio-img">
+                     <img class="w-100 br-7" src="{% static 'public/cargon/img/portfolio/portfolio-sm-1.6.png' %}" alt="">
+                  </div>
+                  <div class="ca-portfolio-link">
+                     <a href="#" class="portfolio-link portfolio-link-2"><span><img
+                              src="{% static 'public/cargon/img/icon/ca-portfolio-arrow-1.1.svg' %}" alt=""></span></a>
+                  </div>
+                  <div class="ca-portfolio-content-meta theme-bg-3 br-7">
+                     <p>Transportation 2024</p>
+                     <h4 class="ca-por-title"><a href="#">Experts in Logistics Management</a></h4>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</main>
+
+{% endblock page_content %}

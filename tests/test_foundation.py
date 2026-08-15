@@ -98,7 +98,7 @@ def test_basic_authentication_and_login_audit():
 
     assert client.login(username="eva", password="safe-password-123")
 
-    request = RequestFactory().get(reverse("home"), HTTP_USER_AGENT="pytest")
+    request = RequestFactory().get(reverse("public:home"), HTTP_USER_AGENT="pytest")
     request.request_id = "test-request-id"
     user_logged_in.send(sender=user.__class__, request=request, user=user)
 
@@ -108,7 +108,7 @@ def test_basic_authentication_and_login_audit():
 
 
 def test_request_id_middleware_adds_response_header():
-    response = Client().get(reverse("home"))
+    response = Client().get(reverse("public:home"))
 
     assert response.status_code == 200
     assert response.headers["X-Request-ID"]
@@ -173,7 +173,7 @@ def test_healthcheck_returns_ok():
 
 
 def test_request_id_rejects_invalid_incoming_header():
-    response = Client().get(reverse("home"), HTTP_X_REQUEST_ID="not-a-valid-request-id")
+    response = Client().get(reverse("public:home"), HTTP_X_REQUEST_ID="not-a-valid-request-id")
 
     assert response.status_code == 200
     assert response.headers["X-Request-ID"] != "not-a-valid-request-id"
@@ -182,7 +182,7 @@ def test_request_id_rejects_invalid_incoming_header():
 
 def test_request_id_accepts_valid_uuid_header():
     request_id = str(uuid.uuid4())
-    response = Client().get(reverse("home"), HTTP_X_REQUEST_ID=request_id)
+    response = Client().get(reverse("public:home"), HTTP_X_REQUEST_ID=request_id)
 
     assert response.headers["X-Request-ID"] == request_id
 

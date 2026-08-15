@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- fav icon -->
+    {% block logo %}{% endblock %}
+
+    <!-- css file -->
+    <link rel="stylesheet" href="{% static 'public/cargon/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/all.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/slick-theme.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/typography.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/aos.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'public/cargon/css/responsive.css' %}">
+
+    <!-- Specific CSS goes HERE -->
+    {% block extra_css %}{% endblock extra_css %}
+    {% block stylesheets %}{% endblock stylesheets %}
+
+</head>
+
+<body>
+
+    {% block content %}{% endblock content %}    
+    
+    <!-- js file -->
+    <script src="{% static 'public/cargon/js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'public/cargon/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'public/cargon/js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'public/cargon/js/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'public/cargon/js/slick.min.js' %}"></script>
+    <script src="{% static 'public/cargon/js/jquery.nice-select.js' %}"></script>
+    <script src="{% static 'public/cargon/js/waypoints.min.js' %}"></script>
+    <script src="{% static 'public/cargon/js/aos.js' %}"></script>
+    <script src="{% static 'public/cargon/js/main.js' %}"></script>
+
+    <!-- Specific Page JS goes HERE  -->
+    {% block extra_js %}{% endblock extra_js %}
+    {% block javascripts %}{% endblock javascripts %}
+
+</body>
+
+</html>

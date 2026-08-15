@@ -21,3 +21,7 @@ logs/*
 
 private_documents/*
 !private_documents/.gitkeep
+
+# Commercial template source packages kept intact until visual transplant is verified.
+rotta/
+rotta-admin/

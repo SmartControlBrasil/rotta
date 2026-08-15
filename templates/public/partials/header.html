@@ -1,0 +1,86 @@
+{% load static %}
+<header class="header-area-3 stiky">
+    <div class="container header-3">
+        <div class="row align-items-center">
+            <div class="col-xl-2 col-lg col-md-6 col-6">
+                <!-- ca-logo -->
+                <div class="ca-logo">
+                    <a href="{% url 'public:index_03' %}"><img src="{% static 'public/cargon/img/logo/ca-logo3.1.png' %}" alt=""></a>
+                </div>
+            </div>
+            <div class="col-xl-8 col-lg-7 d-none d-lg-block">
+                <!-- ca-main-menu -->
+                <div class="ca-main-menu-3">
+                    <nav class="ca-mobile-menu-active-3">
+                        <ul>
+                            <li>
+                                <a href="#">Home <span><i class="fa-solid fa-angle-down"></i></span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="{% url 'public:home' %}">Home 01</a></li>
+                                    <li><a href="{% url 'public:index_02' %}">Home 02</a></li>
+                                    <li><a href="{% url 'public:index_03' %}">Home 03</a></li>
+                                    <li><a href="{% url 'public:index_04' %}">Home 04</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="{% url 'public:about' %}">About Us</a></li>
+                            <li>
+                                <a href="#">Service <span><i class="fa-solid fa-angle-down"></i></span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="{% url 'public:service' %}">Service</a></li>
+                                    <li><a href="{% url 'public:service_left' %}">Service Left</a></li>
+                                    <li><a href="{% url 'public:service_right' %}">Service Right</a></li>
+                                    <li><a href="{% url 'public:service_single' %}">Service Single</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">Pages <span><i class="fa-solid fa-angle-down"></i></span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="{% url 'public:team' %}">Team</a></li>
+                                    <li><a href="{% url 'public:testimonial' %}">Testimonial</a></li>
+                                    <li><a href="{% url 'public:faq' %}">Faq</a></li>
+                                    <li><a href="{% url 'public:pricing' %}">Pricing Plan</a></li>
+                                    <li><a href="{% url 'public:contact' %}">Contact</a></li>
+                                    <li><a href="{% url 'public:not_found_demo' %}">404</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">Blog <span><i class="fa-solid fa-angle-down"></i></span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="{% url 'public:blog' %}">Blog</a></li>
+                                    <li><a href="{% url 'public:blog_left' %}">Blog Left</a></li>
+                                    <li><a href="{% url 'public:blog_right' %}">Blog Right</a></li>
+                                    <li><a href="{% url 'public:blog_single' %}">Blog Single</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">Projects <span><i class="fa-solid fa-angle-down"></i></span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="{% url 'public:projects' %}">Project</a></li>
+                                    <li><a href="{% url 'public:project_left' %}">Project Left</a></li>
+                                    <li><a href="{% url 'public:project_right' %}">Project Right</a></li>
+                                    <li><a href="{% url 'public:project_single' %}">Project Single</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg col-md-6 col-6">
+                <!-- ca-btn -->
+                <div class="ca-btn-header d-none d-lg-block text-end">
+                    <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Get A Quote <span><i
+                                class="fa-solid fa-angle-right"></i></span></a>
+                </div>
+                <div class="ca-header-action-item d-lg-none text-end">
+                    <button type="button" class="ca-offcanvas-toogle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="16" viewBox="0 0 30 16">
+                            <rect x="10" width="20" height="2" fill="currentColor"></rect>
+                            <rect x="5" y="7" width="25" height="2" fill="currentColor"></rect>
+                            <rect x="10" y="14" width="20" height="2" fill="currentColor"></rect>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

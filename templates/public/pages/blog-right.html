@@ -1,0 +1,573 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %}Cargon-Blog Right{% endblock %}
+
+{% block page_content %}
+
+<main>
+   <!-- breadcrumb area start -->
+   <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+         <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+      </div>
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+         <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="ca-breadcrumb-content text-center">
+            <h2 class="ca-breadcrumb-title fnw-600">Handling Project Cargo: Expert Tips and Strategies</h2>
+            <div class="it-breadcum-link">
+               <a href="{% url 'public:home' %}">Home</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a href="{% url 'public:blog' %}">Our Blog</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a class="active" href="#">Handling Project Cargo: Expert Tips and Strategies</a>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- breadcrumb area end -->
+   <!-- service left -->
+   <div class="ca-service-lft-area pt-100 pb-70">
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-8 mb-30">
+               <div class="ca-project-content-area">
+                  <div class="ca-pro-thumb-content ca-service-left-content">
+                     <h2 class="ca-project-thumb-title theme-black-3 fnw-600">Consolidation & Deconsolidation <br>
+                        Services Reverse Logistics </h2>
+                     <p class="pt-16 pb-32">Welcome to the Cargon Blog, your go-to resource for the latest insights,
+                        trends, and innovations in the <br>world of transport and logistics. Our blog is designed to
+                        keep you informed about industry developments, <br> provide expert advice, and share best
+                        practices for optimizing your supply chain</p>
+                     <div class="ca-servic-cat">
+                        <!-- single cat -->
+                        <div class="ca-servic-cat-item mb-30">
+                           <div class="ca-servic-cat-item-img">
+                              <img src="{% static 'public/cargon/img/blog/ca-blog-cat1.1.png' %}" alt="">
+                           </div>
+                           <div class="ca-servic-cat-item-content">
+                              <h3 class="ca-blog-cat-ttitle"><a href="#">Rahul Tewatia</a></h3>
+                           </div>
+                        </div>
+                        <!-- single cat -->
+                        <div class="ca-servic-cat-item mb-30">
+                           <div class="ca-servic-cat-item-ic">
+                              <span><img src="{% static 'public/cargon/img/icon/ca-ser-cat-date.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-servic-cat-item-content">
+                              <h3 class="ca-blog-cat-ttitle"><a href="#">8/06/2024</a></h3>
+                           </div>
+                        </div>
+                        <!-- single cat -->
+                        <div class="ca-servic-cat-item mb-30">
+                           <div class="ca-servic-cat-item-ic">
+                              <span><img src="{% static 'public/cargon/img/icon/ca-ser-cat-tag.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-servic-cat-item-content">
+                              <h3 class="ca-blog-cat-ttitle"><a href="#">Transport & Logistics</a></h3>
+                           </div>
+                        </div>
+                        <!-- single cat -->
+                        <div class="ca-servic-cat-item mb-30">
+                           <div class="ca-servic-cat-item-ic">
+                              <span><img src="{% static 'public/cargon/img/icon/ca-ser-cat-chat.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-servic-cat-item-content">
+                              <h3 class="ca-blog-cat-ttitle"><a href="#">2 Comments</a></h3>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="ca-servic-thumb br-7">
+                        <img class="w-100" src="{% static 'public/cargon/img/blog/ca-blog-thumb-1.1.png' %}" alt="">
+                     </div>
+                     <h3 class="ca-project-thumb-title-2 theme-black-3 fnw-600 pt-32 ca-text-cap">Your Source for
+                        Logistics Information</h3>
+                     <p class="pt-20">Whether you're looking to stay updated on the latest technologies transforming
+                        logistics, understand the <br> impact of global trade policies, or learn tips for improving
+                        efficiency and reducing costs, you'll find valuable <br>information here. Our team of industry
+                        experts and thought leaders regularly contribute articles</p>
+                     <p class="pt-20">Dive into our blog to discover how we navigate the complexities of logistics, stay
+                        ahead of industry trends, <br>and continue to deliver exceptional service to our clients. Join
+                        us on this journey & empower your business</p>
+                     <h3 class="ca-project-thumb-title-2 theme-black-3 fnw-600 pt-32 ca-text-cap">Transport and
+                        Logistics Insights</h3>
+                     <p class="pt-20">Our blog is a valuable resource for industry professionals looking to stay ahead
+                        of the curve and navigate <br> the complexities of global logistics. We cover a wide array of
+                        topics, including the latest advancements in <br> logistics technology, best practices for
+                        supply chain management, and strategies for overcoming.</p>
+                     <p class="pt-20">Whether you're interested in learning about innovative shipping solutions,
+                        exploring the impact of new <br>trade regulations, or finding tips to enhance your logistics
+                        operations, our blog has something for you.</p>
+                     <h3 class="ca-project-thumb-title-2 theme-black-3 fnw-600 pt-32 ca-text-cap">Behind the Scenes in
+                        Transport</h3>
+                     <p class="pt-20">Our articles are written by seasoned professionals who bring their firsthand
+                        experience and expertise to <br> each post, ensuring you get practical, actionable insights.
+                        Stay informed, stay competitive, and stay <br> connected with the Cargon Blog, your ultimate
+                        guide to mastering the art of logistics.</p>
+                     <div class="ca-about-item3 cream-bg-3 p-relative">
+                        <p>Here, we delve into the latest trends, explore emerging technologies, & provide practical
+                           solutions <br> to the challenges faced by businesses in today's fast-paced logistics
+                           environment. Our blog <br>covers a broad spectrum of topics, from the intricacies of freight
+                           forwarding.</p>
+                     </div>
+                     <div class="ca-ab-item-check ca-ab-item-check-2 ca-ab-item-check-3 caborder-top">
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Secure Warehousing</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Customs Brokerage</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">E-commerce Fulfillment</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Heavy Lift and Project Cargo</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Rapid Express Delivery</h4>
+                           </div>
+                        </div>
+                        <!-- single-item -->
+                        <div class="ca-ab-sngle-item">
+                           <div class="ca-ab-sngle-item-ic">
+                              <span><i class="fa-solid fa-check"></i></span>
+                           </div>
+                           <div class="ca-ab-sngle-item-content">
+                              <h4 class="ca-item-ch-title">Inventory Optimization</h4>
+                           </div>
+                        </div>
+                     </div>
+                     <h3 class="ca-project-thumb-title-2 theme-black-3 fnw-600">Domestic Freight Transport</h3>
+                     <p class="pt-20 pb-32">We aim to equip our readers with the information they need to make informed
+                        decisions, optimize their <br> logistics operations, and stay competitive in a global
+                        marketplace. Each post is crafted by our team of <br>logistics experts who share their insights
+                        and experiences, offering you valuable perspectives on how.</p>
+                     <div class="ca-blog-tags-section">
+                        <div class="ca-blog-tag-section">
+                           <div class="ca-blg-tag-taile">
+                              <h4 class="ca-title fnw-600 theme-black-3">Our Tags:</h4>
+                           </div>
+                           <div class="ca-blg-tag-list">
+                              <ul>
+                                 <li><a href="#">Transport</a></li>
+                                 <li><a href="#">Creative</a></li>
+                                 <li><a href="#">Development</a></li>
+                              </ul>
+                           </div>
+                        </div>
+                        <div class="ca-blog-share">
+                           <h4 class="ca-title fnw-600 theme-black-3">Share:</h4>
+                           <div class="ca-footer-social ca-tag-social-3">
+                              <ul>
+                                 <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                 <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                                 <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                                 <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- blog post comment form -->
+                     <div class="ca-blg-comt-form pt-32">
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-32">Blog Comments (2)</h4>
+                        <!-- single post comment -->
+                        <div class="ca-blg-single-comment cream-bg-3 mb-30">
+                           <div class="ca-blg-cmt">
+                              <div class="ca-blg-auth">
+                                 <div class="ca-blg-auth-img">
+                                    <img src="{% static 'public/cargon/img/blog/ca-blg-comment1.1.png' %}" alt="">
+                                 </div>
+                                 <div class="ca-blg-auth-title">
+                                    <h4 class="ca-title fnw-600 theme-black-3">Matthew Larson</h4>
+                                    <span>8/01/2023</span>
+                                 </div>
+                              </div>
+                              <a href="" class="ca-rep-cmt">
+                                 <h4 class="ca-blg-rep-title"><span><img
+                                          src="{% static 'public/cargon/img/icon/ca-blg-reply.svg' %}" alt=""></span>Reply
+                                 </h4>
+                              </a>
+                           </div>
+                           <p class="pt-16">We value your feedback and encourage you to share your thoughts and
+                              experiences <br> with us. Whether you have a question about our services, a suggestion for
+                              <br>improvement, or a success story you'd like to share, we're here to listen.
+                           </p>
+                        </div>
+                        <!-- single post comment -->
+                        <div class="ca-blg-single-comment ca-rep-cmt cream-bg-3 mb-30">
+                           <div class="ca-blg-cmt">
+                              <div class="ca-blg-auth">
+                                 <div class="ca-blg-auth-img">
+                                    <img src="{% static 'public/cargon/img/blog/ca-author-1.3.png' %}" alt="">
+                                 </div>
+                                 <div class="ca-blg-auth-title">
+                                    <h4 class="ca-title fnw-600 theme-black-3">Sergio Daugherty</h4>
+                                    <span>8/01/2023</span>
+                                 </div>
+                              </div>
+                              <a href="" class="ca-rep-cmt">
+                                 <h4 class="ca-blg-rep-title"><span><img
+                                          src="{% static 'public/cargon/img/icon/ca-blg-reply.svg' %}" alt=""></span>Reply
+                                 </h4>
+                              </a>
+                           </div>
+                           <p class="pt-16">Your insights help us continuously improve and provide the best possible
+                              service to<br> our clients. Join the conversation and connect with other industry
+                              professionals, <br>exchange ideas, and gain valuable insights into the world of transport
+                              and logistics</p>
+                        </div>
+                        <div class="ca-blog-rep-form cream-bg-3">
+                           <h4 class="ca-title fnw-600 theme-black-3 pb-16">Leave a Reply</h4>
+                           <p class="pb-32">Provide clear contact information, including phone number, email, and
+                              address.</p>
+                           <div class="ca-cmt-from">
+                              <form action="#">
+                                 <div class="row">
+                                    <div class="col-lg-6 mb-20">
+                                       <input type="text" placeholder="First Name">
+                                    </div>
+                                    <div class="col-lg-6 mb-20">
+                                       <input type="text" placeholder="Last Name">
+                                    </div>
+                                    <div class="col-lg-6 mb-20">
+                                       <input type="email" placeholder="Email">
+                                    </div>
+                                    <div class="col-lg-6 mb-20">
+                                       <input type="tel" placeholder="Phone">
+                                    </div>
+                                    <div class="col-lg-12 mb-20">
+                                       <input type="text" placeholder="subject">
+                                    </div>
+                                    <div class="col-lg-12 mb-20">
+                                       <textarea name="message" id="message" placeholder="Message"></textarea>
+                                    </div>
+                                 </div>
+                                 <div class="ca-blg-sen-btn">
+                                    <button type="submit" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Send Now
+                                       <span><i class="fa-solid fa-angle-right"></i></span></button>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="col-lg-4 mb-30">
+               <!-- sidebar area -->
+               <div class="ca-sidebar-area ml-50">
+                  <!-- search -->
+                  <div class="ca-search ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title fnw-600 theme-black-3 pb-16">Search</h4>
+                     <div class="ca-search-box p-relative z-index-1">
+                        <input type="text" placeholder="Search..">
+                        <div class="ca-sea-icon">
+                           <span><i class="fa-solid fa-magnifying-glass"></i></span>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- service list -->
+                  <div class="ca-servic-list ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title fnw-600 theme-black-3 pb-24">Our Blog</h4>
+                     <h3 class="ca-ser-list-title"><a href="#"
+                           class="d-flex justify-content-between align-items-center">Supply Chain Management <span><i
+                                 class="fa-solid fa-angle-down"></i></span></a></h3>
+                     <h3 class="ca-ser-list-title"><a href="#"
+                           class="d-flex justify-content-between align-items-center">Domestic Freight Transport <span><i
+                                 class="fa-solid fa-angle-down"></i></span></a></h3>
+                     <h3 class="ca-ser-list-title"><a href="#"
+                           class="d-flex justify-content-between align-items-center">Heavy Lift and Project Cargo
+                           <span><i class="fa-solid fa-angle-down"></i></span></a></h3>
+                     <h3 class="ca-ser-list-title"><a href="#"
+                           class="d-flex justify-content-between align-items-center">Inventory Optimization <span><i
+                                 class="fa-solid fa-angle-down"></i></span></a></h3>
+                     <h3 class="ca-ser-list-title"><a href="#"
+                           class="d-flex justify-content-between align-items-center">E-commerce Fulfillment <span><i
+                                 class="fa-solid fa-angle-down"></i></span></a></h3>
+                  </div>
+                  <!-- service list -->
+                  <div class="ca-servic-list ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title fnw-600 theme-black-3 pb-24">Recent Blogs</h4>
+                     <!-- single post -->
+                     <div class="ca-recent-post-section mb-20">
+                        <div class="ca-recent-post-thumb">
+                           <img src="{% static 'public/cargon/img/blog/ca-blog-post1.1.png' %}" alt="">
+                        </div>
+                        <div class="ca-recent-post-cntent">
+                           <div class="ca-rec-post-date">
+                              <a href="#"><span><img src="{% static 'public/cargon/img/icon/re-post-ic1.1.svg' %}"
+                                       alt=""></span>5/15/2024</a>
+                           </div>
+                           <h4 class="ca-rec-post-title pt-10"><a href="{% url 'public:blog_single' %}">E-commerce &<br> Logistics:
+                                 Meeting the..</a></h4>
+                        </div>
+                     </div>
+                     <!-- single post -->
+                     <div class="ca-recent-post-section mb-20">
+                        <div class="ca-recent-post-thumb">
+                           <img src="{% static 'public/cargon/img/blog/ca-blog-post1.2.png' %}" alt="">
+                        </div>
+                        <div class="ca-recent-post-cntent">
+                           <div class="ca-rec-post-date">
+                              <a href="#"><span><img src="{% static 'public/cargon/img/icon/re-post-ic1.1.svg' %}"
+                                       alt=""></span>6/05/2024</a>
+                           </div>
+                           <h4 class="ca-rec-post-title pt-10"><a href="{% url 'public:blog_single' %}">The Importance of <br>Reliable
+                                 Freight Forw..</a></h4>
+                        </div>
+                     </div>
+                     <!-- single post -->
+                     <div class="ca-recent-post-section mb-20">
+                        <div class="ca-recent-post-thumb">
+                           <img src="{% static 'public/cargon/img/blog/ca-blog-post1.3.png' %}" alt="">
+                        </div>
+                        <div class="ca-recent-post-cntent">
+                           <div class="ca-rec-post-date">
+                              <a href="#"><span><img src="{% static 'public/cargon/img/icon/re-post-ic1.1.svg' %}"
+                                       alt=""></span>8/05/2024</a>
+                           </div>
+                           <h4 class="ca-rec-post-title pt-10"><a href="{% url 'public:blog_single' %}">Project Logistics:<br>
+                                 Handling Large and C..</a></h4>
+                        </div>
+                     </div>
+                     <!-- single post -->
+                     <div class="ca-recent-post-section mb-20">
+                        <div class="ca-recent-post-thumb">
+                           <img src="{% static 'public/cargon/img/blog/ca-blog-post1.4.png' %}" alt="">
+                        </div>
+                        <div class="ca-recent-post-cntent">
+                           <div class="ca-rec-post-date">
+                              <a href="#"><span><img src="{% static 'public/cargon/img/icon/re-post-ic1.1.svg' %}"
+                                       alt=""></span>7/5/2024</a>
+                           </div>
+                           <h4 class="ca-rec-post-title pt-10"><a href="{% url 'public:blog_single' %}">Navigating Customs<br>
+                                 Clearance: Tips for a..</a></h4>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- phone us -->
+                  <div class="ca-servic-list ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title ca-servic-list-title fnw-600 theme-black-3 pb-24">If You Need Any Help <br>
+                        Contact With Us</h4>
+                     <div class="ca-ph-content">
+                        <div class="ca-ph-ic">
+                           <span><img src="{% static 'public/cargon/img/icon/ca-ser-phone.svg' %}" alt=""></span>
+                        </div>
+                        <div class="ca-ph-title">
+                           <h4 class="ph-title"><a href="tel:1234567890">+123 456 7890</a></h4>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Author -->
+                  <div class="ca-search ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title fnw-600 theme-black-3 pb-16">Our Author</h4>
+                     <div class="ca-blg-author">
+                        <div class="ca-single-author">
+                           <img src="{% static 'public/cargon/img/blog/ca-author-1.1.png' %}" alt="">
+                        </div>
+                        <div class="ca-single-author">
+                           <img src="{% static 'public/cargon/img/blog/ca-author-1.2.png' %}" alt="">
+                        </div>
+                        <div class="ca-single-author">
+                           <img src="{% static 'public/cargon/img/blog/ca-author-1.3.png' %}" alt="">
+                        </div>
+                        <div class="ca-single-author">
+                           <img src="{% static 'public/cargon/img/blog/ca-author-1.4.png' %}" alt="">
+                        </div>
+                     </div>
+                  </div>
+                  <!-- popular tags -->
+                  <div class="ca-tags ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title fnw-600 theme-black-3 pb-16">Popular Tags</h4>
+                     <div class="ca-tags-list">
+                        <ul>
+                           <li><a href="#">Warehousing</a></li>
+                           <li><a href="#">Domestic Transport</a></li>
+                           <li><a href="#">Efficient Logistics</a></li>
+                           <li><a href="#">Project Cargo</a></li>
+                           <li><a href="#">Cold Chain</a></li>
+                           <li><a href="#">Express Delivery</a></li>
+                        </ul>
+                     </div>
+                  </div>
+                  <!-- Follow Us -->
+                  <div class="ca-search ca-padding cream-bg-3 br-7 mb-30">
+                     <h4 class="ca-title fnw-600 theme-black-3 pb-24">Follow Us</h4>
+                     <div class="ca-footer-social ca-footer-social-3">
+                        <ul>
+                           <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                           <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                           <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                           <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="ca-more-section pb-70">
+      <div class="container">
+         <h2 class="ca-more-title theme-black-3 fnw-600 text-center mb-60">View More Blogs</h2>
+         <div class="row">
+            <!-- single-blog-item -->
+            <div class="col-lg-4 col-md-6 mb-30">
+               <div class="ca-team-box ca-blg-box-3 cream-bg-3 br-7 fix p-relative z-index-1">
+                  <div class="ca-team-img">
+                     <img class="w-100" src="{% static 'public/cargon/img/blog/ca-blog-1.2.png' %}" alt="">
+                  </div>
+                  <div class="ca-blog-date-3 ca-blg-date-3">
+                     <a href="#" class="blg-date-3">March 21, 2024</a>
+                  </div>
+                  <div class="ca-blog-box-content ca-blog-box-content-3">
+                     <div class="ca-b-meta">
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Henry Nicolls</span>
+                           </div>
+                        </a>
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Transport &amp; Logistics</span>
+                           </div>
+                        </a>
+                     </div>
+                     <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="#">Optimizing Last-Mile Delivery:
+                           Strategies for Success</a></h4>
+                     <p class="pt-16 pb-18">Delve into the challenges of last-mile delivery <br>and explore strategies
+                        to overcome them.</p>
+                     <div class="blog-3-rearmore">
+                        <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- single-blog-item -->
+            <div class="col-lg-4 col-md-6 mb-30">
+               <div class="ca-team-box ca-blg-box-3 cream-bg-3 br-7 fix p-relative z-index-1">
+                  <div class="ca-team-img">
+                     <img class="w-100" src="{% static 'public/cargon/img/blog/ca-blog-1.3.png' %}" alt="">
+                  </div>
+                  <div class="ca-blog-date-3 ca-blg-date-3">
+                     <a href="#" class="blg-date-3">March 20, 2024</a>
+                  </div>
+                  <div class="ca-blog-box-content ca-blog-box-content-3">
+                     <div class="ca-b-meta">
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Henry Nicolls</span>
+                           </div>
+                        </a>
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Transport &amp; Logistics</span>
+                           </div>
+                        </a>
+                     </div>
+                     <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="#">Handling Project Cargo: Expert<br>
+                           Tips and Strategies</a></h4>
+                     <p class="pt-16 pb-18">Get expert tips on managing project cargo <br> logistics. From planning and
+                        coordination.</p>
+                     <div class="blog-3-rearmore">
+                        <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- single-blog-item -->
+            <div class="col-lg-4 col-md-6 mb-30">
+               <div class="ca-team-box ca-blg-box-3 cream-bg-3 br-7 fix p-relative z-index-1">
+                  <div class="ca-team-img">
+                     <img class="w-100" src="{% static 'public/cargon/img/blog/ca-blog-1.1.png' %}" alt="">
+                  </div>
+                  <div class="ca-blog-date-3 ca-blg-date-3">
+                     <a href="#" class="blg-date-3">March 18, 2024</a>
+                  </div>
+                  <div class="ca-blog-box-content ca-blog-box-content-3">
+                     <div class="ca-b-meta">
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Henry Nicolls</span>
+                           </div>
+                        </a>
+                        <!-- blog meta box -->
+                        <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                           <div class="ca-meta-icon">
+                              <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
+                           </div>
+                           <div class="ca-meta-title">
+                              <span>Transport &amp; Logistics</span>
+                           </div>
+                        </a>
+                     </div>
+                     <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="#">The Importance of Reliable Freight
+                           Forwarding Services</a></h4>
+                     <p class="pt-16 pb-18">Learn practical strategies for optimizing your<br> supply chain operations,
+                        improve delivery.</p>
+                     <div class="blog-3-rearmore">
+                        <a href="{% url 'public:blog_single' %}" class="read-more3">Read More <span><i
+                                 class="fa-solid fa-angle-right"></i></span></a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</main>
+
+{% endblock page_content %}

@@ -1,0 +1,137 @@
+{% extends 'public/landing.html' %}
+{% load static %}
+
+{% block title %}Cargon-Contact{% endblock %}
+
+{% block page_content %}
+
+<main>
+   <!-- breadcrumb area start -->
+   <section class="ca-breadcrumb-area cream-bg-3 p-relative z-index-1 fix">
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-1">
+         <img src="{% static 'public/cargon/img/shape/breadcrumn-shape.png' %}" alt="">
+      </div>
+      <div class="ca-breadcrumb-shape p-absolute bre-sh-2">
+         <img src="{% static 'public/cargon/img/shape/ca-line-shape.png' %}" alt="">
+      </div>
+      <div class="container">
+         <div class="ca-breadcrumb-content text-center">
+            <h2 class="ca-breadcrumb-title fnw-600">Contact Us </h2>
+            <div class="it-breadcum-link">
+               <a href="{% url 'public:home' %}">Home</a>
+               <span><i class="fa-solid fa-angle-right"></i></span>
+               <a class="active" href="#">Contact Us </a>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- breadcrumb area end -->
+   <section class="ca-contact-inner pt-100 pb-70">
+      <div class="container">
+         <div class="row">
+            <!-- single box item -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-location-3">
+                  <div class="ca-location-icbox">
+                     <div class="ca-location-icbox-img">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-map3.1.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-location-icbox-text">
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Our Address</h4>
+                        <p>55 Street, 2nd block, 3rd Floor<br>
+                           Melbourne, Australia
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- single box item -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-location-3">
+                  <div class="ca-location-icbox">
+                     <div class="ca-location-icbox-img">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-ph3.2.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-location-icbox-text">
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Contact Us</h4>
+                        <a href="tel:+0221234568806">+022 (123) 456 88 06</a> <br>
+                        <a href="tel:+47122109878">(+47) 1221 09 878</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- single box item -->
+            <div class="col-xl-4 col-md-6 mb-30">
+               <div class="ca-location-3">
+                  <div class="ca-location-icbox">
+                     <div class="ca-location-icbox-img">
+                        <span><img src="{% static 'public/cargon/img/icon/ca-envelop3.3.svg' %}" alt=""></span>
+                     </div>
+                     <div class="ca-location-icbox-text">
+                        <h4 class="ca-title fnw-600 theme-black-3 pb-16">Email Us</h4>
+                        <a href="mailto:">infocargon@gmail.com</a>
+                        <a href="mailto:">drmtech99.com</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- map area -->
+   <div class="ca-maps">
+      <iframe
+         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13879239.529449532!2d43.044947896897405!3d31.866193584077507!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ef7ec2ec16b1df1%3A0x40b095d39e51face!2sIran!5e0!3m2!1sen!2sbd!4v1723948083378!5m2!1sen!2sbd"
+         class="contact-page__google-map" allowfullscreen=""></iframe>
+   </div>
+   <!-- map area end -->
+   <!-- contact form start-->
+   <section class="ca-conatct-form1 pb-100">
+      <div class="container">
+         <div class="row">
+            <div class="ca-con-rep-form cream-bg-3 text-center">
+               <h4 class="ca-title fnw-600 theme-black-3 pb-16">Send Us Message</h4>
+               <p class="pb-32">Your email address will not be published. Required fields are marked *</p>
+               <div class="ca-cmt-from">
+                  <form action="#">
+                     <div class="row">
+                        <div class="col-lg-6 mb-20">
+                           <input type="text" placeholder="First Name">
+                        </div>
+                        <div class="col-lg-6 mb-20">
+                           <input type="text" placeholder="Last Name">
+                        </div>
+                        <div class="col-lg-6 mb-20">
+                           <input type="email" placeholder="Email">
+                        </div>
+                        <div class="col-lg-6 mb-20">
+                           <select class="nice-select wide ca-select" style="display: none;">
+                              <option data-display="Service Type">Nothing</option>
+                              <option value="1">01</option>
+                              <option value="2">02</option>
+                              <option value="3">03</option>
+                              <option value="4">04</option>
+                           </select>
+                        </div>
+                        <div class="col-lg-12 mb-20">
+                           <textarea name="message" id="message" placeholder="Message"></textarea>
+                        </div>
+                     </div>
+                     <div class="ca-radion-btn">
+                        <input type="radio" id="saveinfo" name="fav_language" value="saveinfo">
+                        <label for="saveinfo">Save the information's in this browser for next time use</label>
+                     </div>
+                     <div class="ca-blg-sen-btn text-start">
+                        <button type="submit" class="ca-btn-primary-3 theme-bg-3 text-white br-50"> Submit Now <span><i
+                                 class="fa-solid fa-angle-right"></i></span></button>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <!-- contact form end -->
+</main>
+
+{% endblock page_content %}
