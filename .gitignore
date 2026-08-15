@@ -18,3 +18,6 @@ logs/*
 *.log
 
 *.egg-info/
+
+private_documents/*
+!private_documents/.gitkeep

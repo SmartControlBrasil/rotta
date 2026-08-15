@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from src.audit.infrastructure.django.services import record_audit_event
@@ -30,3 +30,14 @@ def audit_role_assignment(sender, instance: MembershipRole, created: bool, **kwa
             target=instance.membership,
             after={"role": instance.role.code, "scope": instance.scope},
         )
+
+
+@receiver(post_delete, sender=MembershipRole)
+def audit_role_removal(sender, instance: MembershipRole, **kwargs) -> None:
+    record_audit_event(
+        action="role_removed",
+        actor=None,
+        organization=instance.membership.organization,
+        target=instance.membership,
+        before={"role": instance.role.code, "scope": instance.scope},
+    )

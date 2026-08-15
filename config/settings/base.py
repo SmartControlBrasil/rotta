@@ -5,6 +5,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parents[2]
 SRC_DIR = BASE_DIR / "src"
 
+
 env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=(str, "unsafe-local-development-key-change-me"),
@@ -92,12 +93,17 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+PRIVATE_DOCUMENT_STORAGE_ROOT = env.path(
+    "PRIVATE_DOCUMENT_STORAGE_ROOT",
+    default=BASE_DIR / "private_documents",
+)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SECURE_REFERRER_POLICY = "same-origin"
+SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
 LOGIN_REDIRECT_URL = "/"
@@ -106,16 +112,32 @@ LOGOUT_REDIRECT_URL = "/"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {
+            "()": "src.shared.infrastructure.django.logging.RequestIDLogFilter",
+        }
+    },
     "formatters": {
         "structured": {
-            "format": "%(levelname)s %(asctime)s %(name)s %(message)s",
+            "format": (
+                "level=%(levelname)s time=%(asctime)s logger=%(name)s "
+                "request_id=%(request_id)s message=%(message)s"
+            ),
         }
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "structured",
+            "filters": ["request_id"],
         }
     },
-    "root": {"handlers": ["console"], "level": "INFO"},
+    "root": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": env("DJANGO_REQUEST_LOG_LEVEL", default="WARNING"),
+            "propagate": False,
+        },
+    },
 }
