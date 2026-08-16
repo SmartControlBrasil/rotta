@@ -163,6 +163,22 @@ class FreightOperationDetailView(BackofficePermissionMixin, BackofficeContextMix
             context["stops"] = operation.selection.offer.freight_request.stops.all().order_by("sequence")
         else:
             context["stops"] = []
+
+        context["can_view_tracking"] = user_has_backoffice_permission(
+            self.request.user, PermissionCode.TRACKING_VIEW
+        )
+        if context["can_view_tracking"]:
+            latest_session = operation.tracking_sessions.first()
+            context["tracking_session"] = latest_session
+            if latest_session:
+                points_qs = latest_session.location_points.order_by("-recorded_at")
+                context["points_count"] = points_qs.count()
+                context["last_point"] = points_qs.first()
+                context["last_points"] = list(points_qs[:5])
+            else:
+                context["points_count"] = 0
+                context["last_point"] = None
+                context["last_points"] = []
             
         return context
 

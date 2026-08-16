@@ -238,6 +238,93 @@
                     {% endwith %}
                 {% endif %}
 
+                <!-- Rastreamento (Telemetria) -->
+                {% if can_view_tracking %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Rastreamento em Tempo Quase Real</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if tracking_session %}
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <p class="mb-1 text-muted">Sessão de Rastreamento</p>
+                                        <h6>{{ tracking_session.id|stringformat:'s'|slice:':8' }} ({{ tracking_session.status }})</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="mb-1 text-muted">Início</p>
+                                        <h6>{{ tracking_session.started_at|date:'d/m/Y H:i:s' }}</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="mb-1 text-muted">Fim</p>
+                                        <h6>{{ tracking_session.ended_at|date:'d/m/Y H:i:s'|default:'Sessão Ativa' }}</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p class="mb-1 text-muted">Total de Posições</p>
+                                        <h6>{{ points_count }}</h6>
+                                    </div>
+                                </div>
+
+                                {% if last_point %}
+                                    <div class="row mb-4 p-3 bg-light rounded">
+                                        <div class="col-md-4">
+                                            <p class="mb-1 text-muted">Última Posição</p>
+                                            <h6>{{ last_point.latitude }}, {{ last_point.longitude }}</h6>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p class="mb-1 text-muted">Horário (GPS)</p>
+                                            <h6>{{ last_point.recorded_at|date:'d/m/Y H:i:s' }}</h6>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p class="mb-1 text-muted">Precisão</p>
+                                            <h6>{{ last_point.accuracy_m }} m</h6>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p class="mb-1 text-muted">Velocidade</p>
+                                            <h6>{% if last_point.speed_kph is not None %}{{ last_point.speed_kph }} km/h{% else %}-{% endif %}</h6>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted mb-4">Nenhum ponto de localização recebido para esta sessão ainda.</p>
+                                {% endif %}
+
+                                {% if last_points %}
+                                    <h5 class="text-primary mb-3">Últimas Posições Recebidas</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Horário (GPS)</th>
+                                                    <th>Coordenadas</th>
+                                                    <th>Precisão</th>
+                                                    <th>Velocidade</th>
+                                                    <th>Direção</th>
+                                                    <th>Altitude</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for point in last_points %}
+                                                    <tr>
+                                                        <td>{{ point.recorded_at|date:'d/m/Y H:i:s' }}</td>
+                                                        <td>{{ point.latitude }}, {{ point.longitude }}</td>
+                                                        <td>{{ point.accuracy_m }} m</td>
+                                                        <td>{% if point.speed_kph is not None %}{{ point.speed_kph }} km/h{% else %}-{% endif %}</td>
+                                                        <td>{% if point.heading_deg is not None %}{{ point.heading_deg }}°{% else %}-{% endif %}</td>
+                                                        <td>{% if point.altitude_m is not None %}{{ point.altitude_m }} m{% else %}-{% endif %}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
+
+                            {% else %}
+                                <p class="text-muted mb-0">Nenhuma sessão de rastreamento registrada para esta operação ainda.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
                 <!-- Timeline -->
                 <div class="card">
                     <div class="card-header">

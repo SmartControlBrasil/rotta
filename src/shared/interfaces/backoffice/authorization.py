@@ -444,3 +444,36 @@ def scoped_freight_request_cargo_queryset(user, permission_code: str) -> QuerySe
     return queryset.filter(freight_request__organization_id__in=organization_ids)
 
 
+def scoped_tracking_sessions_queryset(user, permission_code: str) -> QuerySet:
+    from src.freights.infrastructure.django.models import TrackingSession
+
+    grant = permission_grant_for(user, permission_code)
+    queryset = TrackingSession.objects.all()
+    if not grant.allowed:
+        return queryset.none()
+    if grant.scope == AccessScope.ALL:
+        return queryset
+    if grant.scope == AccessScope.OWN:
+        return queryset.filter(operation__selection__offer__owner=user)
+
+    organization_ids = {membership.organization_id for membership in grant.memberships}
+    return queryset.filter(organization_id__in=organization_ids)
+
+
+def scoped_location_points_queryset(user, permission_code: str) -> QuerySet:
+    from src.freights.infrastructure.django.models import LocationPoint
+
+    grant = permission_grant_for(user, permission_code)
+    queryset = LocationPoint.objects.all()
+    if not grant.allowed:
+        return queryset.none()
+    if grant.scope == AccessScope.ALL:
+        return queryset
+    if grant.scope == AccessScope.OWN:
+        return queryset.filter(operation__selection__offer__owner=user)
+
+    organization_ids = {membership.organization_id for membership in grant.memberships}
+    return queryset.filter(organization_id__in=organization_ids)
+
+
+

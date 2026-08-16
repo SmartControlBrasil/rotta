@@ -123,6 +123,10 @@ PERMISSIONS: tuple[PermissionDefinition, ...] = (
     PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_CANCEL, "Cancel freight operation"),
     PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_RECORD_POD, "Record proof of delivery for freight operation"),
     PermissionDefinition(PermissionCode.LOADS_VIEW, "View loads"),
+    PermissionDefinition(PermissionCode.TRACKING_VIEW, "View tracking"),
+    PermissionDefinition(PermissionCode.TRACKING_START, "Start tracking session"),
+    PermissionDefinition(PermissionCode.TRACKING_RECORD, "Record location points"),
+    PermissionDefinition(PermissionCode.TRACKING_END, "End tracking session"),
 )
 
 ROLES: tuple[RoleDefinition, ...] = (
@@ -228,6 +232,10 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.FREIGHT_MARKETPLACE_SELECT,
         PermissionCode.FREIGHT_MARKETPLACE_CANCEL_SELECTION,
         PermissionCode.LOADS_VIEW,
+        PermissionCode.TRACKING_VIEW,
+        PermissionCode.TRACKING_START,
+        PermissionCode.TRACKING_RECORD,
+        PermissionCode.TRACKING_END,
     ),
     RoleCode.COMMERCIAL_MANAGER: (
         PermissionCode.ORGANIZATIONS_VIEW,
@@ -352,6 +360,10 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.FREIGHT_OPERATIONS_CANCEL,
         PermissionCode.FREIGHT_OPERATIONS_RECORD_POD,
         PermissionCode.LOADS_VIEW,
+        PermissionCode.TRACKING_VIEW,
+        PermissionCode.TRACKING_START,
+        PermissionCode.TRACKING_RECORD,
+        PermissionCode.TRACKING_END,
     ),
     RoleCode.DISPATCHER: (
         PermissionCode.ORGANIZATIONS_VIEW,
@@ -384,6 +396,7 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.FREIGHT_MARKETPLACE_SELECT,
         PermissionCode.FREIGHT_MARKETPLACE_CANCEL_SELECTION,
         PermissionCode.LOADS_VIEW,
+        PermissionCode.TRACKING_VIEW,
     ),
     RoleCode.FINANCIAL_MANAGER: (
         PermissionCode.ORGANIZATIONS_VIEW,

@@ -62,3 +62,10 @@ class OperationEventOrigin(StrEnum):
     MOBILE_APP = "MOBILE_APP"
     API = "API"
     SYSTEM = "SYSTEM"
+
+
+class TrackingSessionStatus(StrEnum):
+    ACTIVE = "ACTIVE"
+    ENDED = "ENDED"
+    CANCELLED = "CANCELLED"
+

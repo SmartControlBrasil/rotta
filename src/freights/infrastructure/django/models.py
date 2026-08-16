@@ -11,6 +11,7 @@ from src.freights.domain.enums import (
     OperationStatus,
     OperationEventOrigin,
     OperationEventType,
+    TrackingSessionStatus,
 )
 from src.freights.domain.matching_enums import (
     FreightOfferInterestStatus,
@@ -1167,6 +1168,106 @@ class ProofOfDelivery(UUIDTimestampedModel):
     notes = models.TextField(blank=True)
     # signature_image optional, enable only when media storage is configured
     # signature_image = models.ImageField(upload_to="pods/signatures/", blank=True, null=True)
+
+
+class TrackingSession(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="tracking_sessions",
+    )
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.PROTECT,
+        related_name="tracking_sessions",
+    )
+    driver = models.ForeignKey(
+        "drivers.Driver",
+        on_delete=models.PROTECT,
+        related_name="tracking_sessions",
+        blank=True,
+        null=True,
+    )
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.PROTECT,
+        related_name="tracking_sessions",
+        blank=True,
+        null=True,
+    )
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in TrackingSessionStatus],
+        default=TrackingSessionStatus.ACTIVE.value,
+    )
+    source = models.CharField(max_length=50, blank=True)
+    device_metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-started_at"]
+        indexes = [
+            models.Index(fields=["organization", "status"]),
+            models.Index(fields=["operation", "status"]),
+        ]
+
+
+class LocationPoint(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="location_points",
+    )
+    tracking_session = models.ForeignKey(
+        TrackingSession,
+        on_delete=models.CASCADE,
+        related_name="location_points",
+    )
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.PROTECT,
+        related_name="location_points",
+    )
+    driver = models.ForeignKey(
+        "drivers.Driver",
+        on_delete=models.PROTECT,
+        related_name="location_points",
+        blank=True,
+        null=True,
+    )
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    accuracy_m = models.DecimalField(max_digits=8, decimal_places=2)
+    speed_kph = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    heading_deg = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    altitude_m = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    recorded_at = models.DateTimeField()
+    received_at = models.DateTimeField(auto_now_add=True)
+    sequence = models.PositiveIntegerField(blank=True, null=True)
+    client_event_id = models.CharField(max_length=255, blank=True, null=True)
+    metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["recorded_at"]
+        indexes = [
+            models.Index(fields=["operation", "recorded_at"]),
+            models.Index(fields=["tracking_session", "recorded_at"]),
+            models.Index(fields=["organization", "recorded_at"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tracking_session", "client_event_id"],
+                condition=models.Q(client_event_id__isnull=False),
+                name="unique_location_point_client_event_id",
+            ),
+            models.UniqueConstraint(
+                fields=["tracking_session", "sequence"],
+                condition=models.Q(sequence__isnull=False),
+                name="unique_location_point_sequence",
+            ),
+        ]
+
 
 
 
