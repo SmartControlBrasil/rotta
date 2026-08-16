@@ -67,6 +67,10 @@ from .freight_operation_views import (
     FreightOperationCancelView,
     FreightOperationRecordPODView,
 )
+from .cargas_views import (
+    FreightRequestCargoListView,
+    FreightRequestCargoDetailView,
+)
 from .views import (
     AuditLogDetailView,
     AuditLogListView,
@@ -459,5 +463,15 @@ urlpatterns = [
         "freight-operations/<uuid:pk>/record-pod/",
         FreightOperationRecordPODView.as_view(),
         name="freight_operation_record_pod",
+    ),
+    path(
+        "cargas/",
+        FreightRequestCargoListView.as_view(),
+        name="cargas",
+    ),
+    path(
+        "cargas/<uuid:pk>/",
+        FreightRequestCargoDetailView.as_view(),
+        name="cargas_detail",
     ),
 ]

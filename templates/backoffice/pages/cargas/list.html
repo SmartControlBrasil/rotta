@@ -1,0 +1,125 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Cargas</h4>
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3">
+                        <select class="form-control" name="customer">
+                            <option value="">Cliente (Todos)</option>
+                            {% for customer in customers %}
+                                <option value="{{ customer.id }}" {% if filters.customer == customer.id|stringformat:'s' %}selected{% endif %}>{{ customer.legal_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="cargo_profile">
+                            <option value="">Perfil (Todos)</option>
+                            {% for profile in cargo_profiles %}
+                                <option value="{{ profile }}" {% if filters.cargo_profile == profile %}selected{% endif %}>
+                                    {% if profile == 'DRY_CARGO' %}Carga seca{% elif profile == 'REFRIGERATED_CARGO' %}Refrigerada{% else %}{{ profile }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="cargo_type">
+                            <option value="">Tipo (Todos)</option>
+                            {% for type_val in cargo_types %}
+                                <option value="{{ type_val }}" {% if filters.cargo_type == type_val %}selected{% endif %}>{{ type_val }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control" name="status">
+                            <option value="">Status da Solicit. (Todos)</option>
+                            {% for status_val in statuses %}
+                                <option value="{{ status_val }}" {% if filters.status == status_val %}selected{% endif %}>
+                                    {{ status_labels|default:''|default:status_val }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+                    </div>
+                </form>
+                
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Carga</th>
+                                <th>Solicitação</th>
+                                <th>Cliente</th>
+                                <th>Origem</th>
+                                <th>Destino</th>
+                                <th>Perfil</th>
+                                <th>Peso / Vol</th>
+                                <th>Temp. Mín/Máx</th>
+                                <th>Status Sol.</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cargo in cargas %}
+                                <tr>
+                                    <td><strong>{{ cargo.id|stringformat:'s'|slice:':8' }}</strong></td>
+                                    <td>
+                                        <a href="{% url 'backoffice:freight_request_detail' cargo.freight_request.id %}" class="text-primary">
+                                            {{ cargo.freight_request.reference_code|default:'-' }}
+                                        </a>
+                                    </td>
+                                    <td>{{ cargo.freight_request.customer.legal_name|default:'-' }}</td>
+                                    <td>{{ cargo.freight_request.pickup_stop.city|default:'-' }}/{{ cargo.freight_request.pickup_stop.state|default:'-' }}</td>
+                                    <td>{{ cargo.freight_request.delivery_stop.city|default:'-' }}/{{ cargo.freight_request.delivery_stop.state|default:'-' }}</td>
+                                    <td>
+                                        {% if cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                                            <span class="badge badge-info light">Refrigerada</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary light">Seca</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if cargo.weight_kg %}{{ cargo.weight_kg }} kg{% else %}-{% endif %} /
+                                        {% if cargo.volume_m3 %}{{ cargo.volume_m3 }} m³{% else %}-{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                                            {{ cargo.temperature_min_c|default:'-' }}°C a {{ cargo.temperature_max_c|default:'-' }}°C
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if cargo.freight_request.status == 'DRAFT' %}
+                                            <span class="badge badge-warning light">Rascunho</span>
+                                        {% elif cargo.freight_request.status == 'SUBMITTED' %}
+                                            <span class="badge badge-primary light">Enviada</span>
+                                        {% elif cargo.freight_request.status == 'UNDER_REVIEW' %}
+                                            <span class="badge badge-info light">Em análise</span>
+                                        {% elif cargo.freight_request.status == 'CANCELLED' %}
+                                            <span class="badge badge-danger light">Cancelada</span>
+                                        {% else %}
+                                            <span class="badge badge-light light">{{ cargo.freight_request.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:cargas_detail' cargo.id %}">Abrir</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="10" class="text-center text-muted">Nenhuma carga encontrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

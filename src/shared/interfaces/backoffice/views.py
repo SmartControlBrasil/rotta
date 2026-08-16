@@ -200,6 +200,11 @@ class BackofficeContextMixin:
                 and user.is_authenticated
                 and _has_permission(user, PermissionCode.FREIGHT_OPERATIONS_VIEW)
             ),
+            "loads": bool(
+                user
+                and user.is_authenticated
+                and _has_permission(user, PermissionCode.LOADS_VIEW)
+            ),
         }
         context.update(
             active_menu=self.active_menu,

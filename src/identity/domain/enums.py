@@ -107,3 +107,5 @@ class PermissionCode(StrEnum):
     FREIGHT_OPERATIONS_REPORT_INCIDENT = "freight_operations.report_incident"
     FREIGHT_OPERATIONS_CANCEL = "freight_operations.cancel"
     FREIGHT_OPERATIONS_RECORD_POD = "freight_operations.record_pod"
+    LOADS_VIEW = "loads.view"
+

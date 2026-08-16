@@ -1,0 +1,240 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <!-- Sidebar: Resumo / Ações -->
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Resumo da Carga</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Carga ID:</strong> {{ cargo.id }}</p>
+                        <p><strong>Cliente:</strong> {{ cargo.freight_request.customer.legal_name }}</p>
+                        <p><strong>Solicitação:</strong> 
+                            <a href="{% url 'backoffice:freight_request_detail' cargo.freight_request.id %}" class="text-primary">
+                                {{ cargo.freight_request.reference_code|default:'-' }}
+                            </a>
+                        </p>
+                        <p><strong>Status Sol.:</strong>
+                            {% if cargo.freight_request.status == 'DRAFT' %}
+                                <span class="badge badge-warning light">Rascunho</span>
+                            {% elif cargo.freight_request.status == 'SUBMITTED' %}
+                                <span class="badge badge-primary light">Enviada</span>
+                            {% elif cargo.freight_request.status == 'UNDER_REVIEW' %}
+                                <span class="badge badge-info light">Em análise</span>
+                            {% elif cargo.freight_request.status == 'CANCELLED' %}
+                                <span class="badge badge-danger light">Cancelada</span>
+                            {% else %}
+                                <span class="badge badge-light light">{{ cargo.freight_request.status }}</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Perfil de Carga:</strong>
+                            {% if cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                                <span class="badge badge-info light">Refrigerada</span>
+                            {% else %}
+                                <span class="badge badge-secondary light">Seca</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Criada em:</strong> {{ cargo.created_at|date:'d/m/Y H:i' }}</p>
+                        
+                        <hr>
+                        <div class="mt-3">
+                            <a class="btn btn-outline-primary btn-sm w-100" href="{% url 'backoffice:freight_request_detail' cargo.freight_request.id %}">
+                                Ver Solicitação Completa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contexto Operacional se existir -->
+                {% if operation %}
+                    <div class="card border border-success">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="card-title text-white">Operação Relacionada</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Operação:</strong> 
+                                <a href="{% url 'backoffice:freight_operation_detail' operation.id %}" class="text-primary font-weight-bold">
+                                    {{ operation.id|stringformat:'s'|slice:':8' }}
+                                </a>
+                            </p>
+                            <p><strong>Status Operacional:</strong>
+                                <span class="badge badge-success light">{{ operation.status }}</span>
+                            </p>
+                            <p><strong>Transportadora:</strong> {{ operation.carrier.trade_name|default:'-' }}</p>
+                            <p><strong>Motorista:</strong> {{ operation.driver.full_name|default:'-' }}</p>
+                            <p><strong>Veículo:</strong> {{ operation.vehicle.plate|default:'-' }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Main Info -->
+            <div class="col-xl-8">
+                <!-- Características físicas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Características Físicas</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1 text-muted">Descrição</p>
+                                <h6>{{ cargo.description|default:'Sem descrição' }}</h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1 text-muted">Tipo de Carga</p>
+                                <h6>{{ cargo.cargo_type }}</h6>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <p class="mb-1 text-muted">Peso total</p>
+                                <h6>{% if cargo.weight_kg %}{{ cargo.weight_kg }} kg{% else %}-{% endif %}</h6>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <p class="mb-1 text-muted">Volume</p>
+                                <h6>{% if cargo.volume_m3 %}{{ cargo.volume_m3 }} m³{% else %}-{% endif %}</h6>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <p class="mb-1 text-muted">Volumes / Embalagem</p>
+                                <h6>{% if cargo.package_count %}{{ cargo.package_count }}x {{ cargo.package_type }}{% else %}-{% endif %}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condições de Transporte e Requisitos -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Condições de Transporte</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1 text-muted">Tipo de Veículo Requerido</p>
+                                <h6>{{ cargo.freight_request.vehicle_type_required|default:'Sem restrição' }}</h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1 text-muted">Carroceria Requerida</p>
+                                <h6>{{ cargo.freight_request.body_type_required|default:'Sem restrição' }}</h6>
+                            </div>
+                        </div>
+                        
+                        {% if cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                            <hr>
+                            <h6 class="text-primary mb-3">Requisitos de Temperatura e Refrigeração</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p class="mb-1 text-muted">Temp. Mínima</p>
+                                    <h6 class="text-danger">{{ cargo.temperature_min_c|default:'-' }} °C</h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="mb-1 text-muted">Temp. Máxima</p>
+                                    <h6 class="text-danger">{{ cargo.temperature_max_c|default:'-' }} °C</h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="mb-1 text-muted">Setpoint</p>
+                                    <h6 class="text-primary">{{ cargo.target_temperature_c|default:'-' }} °C</h6>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Rota e Paradas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Rota da Carga</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if stops %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Seq</th>
+                                            <th>Tipo</th>
+                                            <th>Localidade</th>
+                                            <th>Data Agendada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stop in stops %}
+                                            <tr>
+                                                <td>{{ stop.sequence }}</td>
+                                                <td>
+                                                    {% if stop.stop_type == 'PICKUP' %}
+                                                        <span class="badge badge-success light">Coleta</span>
+                                                    {% else %}
+                                                        <span class="badge badge-info light">Entrega</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ stop.city }}/{{ stop.state }}<br><small class="text-muted">{{ stop.street }} {{ stop.number }}</small></td>
+                                                <td>{{ stop.scheduled_date|date:'d/m/Y' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Nenhuma informação de rota disponível.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Contexto Comercial -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Contexto Comercial</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Cotação de Frete Relacionada:</strong> 
+                            {% if cargo.freight_request.freight_quote %}
+                                <a href="{% url 'backoffice:freight_quote_detail' cargo.freight_request.freight_quote.id %}" class="text-primary">
+                                    {{ cargo.freight_request.freight_quote.reference_code|default:cargo.freight_request.freight_quote.id }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Nenhuma cotação vinculada</span>
+                            {% endif %}
+                        </p>
+                        
+                        <hr>
+                        <h6 class="text-muted mb-3">Ofertas de Frete</h6>
+                        {% if offers %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Ref Oferta</th>
+                                            <th>Criado por</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for offer in offers %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'backoffice:freight_offer_detail' offer.id %}" class="text-primary">
+                                                        {{ offer.reference_code|default:offer.id }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ offer.created_by.email }}</td>
+                                                <td>{{ offer.status }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">Nenhuma oferta de frete vinculada.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

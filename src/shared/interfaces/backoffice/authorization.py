@@ -427,3 +427,20 @@ def scoped_freight_operations_queryset(user, permission_code: str) -> QuerySet:
     organization_ids = {membership.organization_id for membership in grant.memberships}
     return queryset.filter(organization_id__in=organization_ids)
 
+
+def scoped_freight_request_cargo_queryset(user, permission_code: str) -> QuerySet:
+    from src.freights.infrastructure.django.models import FreightRequestCargo
+
+    grant = permission_grant_for(user, permission_code)
+    queryset = FreightRequestCargo.objects.all()
+    if not grant.allowed:
+        return queryset.none()
+    if grant.scope == AccessScope.ALL:
+        return queryset
+    if grant.scope == AccessScope.OWN:
+        return queryset.filter(freight_request__owner=user)
+
+    organization_ids = {membership.organization_id for membership in grant.memberships}
+    return queryset.filter(freight_request__organization_id__in=organization_ids)
+
+
