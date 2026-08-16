@@ -1,0 +1,137 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="row">
+            <!-- Empresa Card Group -->
+            <div class="col-xl-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-layer-1 me-2"></i> Empresa</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Parâmetros institucionais e filiais.</p>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'backoffice:setting_organization' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Organização</h6>
+                                    <small class="text-muted">Razão social, nome fantasia e documento.</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">Ativo</span>
+                            </a>
+                            <a href="{% url 'backoffice:setting_structure' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Estrutura Organizacional</h6>
+                                    <small class="text-muted">Filiais, departamentos e equipes.</small>
+                                </div>
+                                <span class="badge bg-secondary rounded-pill">{{ units_count }} Unidades</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pessoas e Segurança Card Group -->
+            <div class="col-xl-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-success"><i class="flaticon-381-lock me-2"></i> Pessoas e Acessos</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Usuários, papéis de acesso e permissões.</p>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'backoffice:setting_access' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Membros e Acessos</h6>
+                                    <small class="text-muted">Mapeamento de usuários a papéis operacionais.</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill">{{ users_count }} Usuários</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operação Card Group -->
+            <div class="col-xl-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-warning"><i class="flaticon-381-networking me-2"></i> Operação</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Políticas, tolerâncias e regras de fretes e refrigeração.</p>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'backoffice:setting_operation' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Políticas e Tolerâncias</h6>
+                                    <small class="text-muted">Regras de matching e tolerâncias operacionais.</small>
+                                </div>
+                                <span class="badge bg-light text-dark">Configurado</span>
+                            </a>
+                            <a href="{% url 'backoffice:setting_marketplace' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Fretes e Marketplace</h6>
+                                    <small class="text-muted">Monetização e limites de veículos.</small>
+                                </div>
+                                <span class="badge bg-light text-dark">Configurado</span>
+                            </a>
+                            <a href="{% url 'backoffice:setting_thermal' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Carga Refrigerada</h6>
+                                    <small class="text-muted">Tempo limite para validade térmica e excursão.</small>
+                                </div>
+                                <span class="badge bg-info rounded-pill">Ativo</span>
+                            </a>
+                            <a href="{% url 'backoffice:setting_notifications' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Notificações</h6>
+                                    <small class="text-muted">Configurações de alerta operacional.</small>
+                                </div>
+                                <span class="badge bg-light text-dark">Backlog</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plataforma Card Group -->
+            <div class="col-xl-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-info"><i class="flaticon-381-settings-2 me-2"></i> Plataforma</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Integrações, segurança de rede e logs de auditoria.</p>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'backoffice:setting_integrations' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">API e Integrações</h6>
+                                    <small class="text-muted">APIs externas e credenciais de integração.</small>
+                                </div>
+                                <span class="badge bg-success rounded-pill">Ativo</span>
+                            </a>
+                            <a href="{% url 'backoffice:setting_security' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Políticas de Segurança</h6>
+                                    <small class="text-muted">Configurações de sessões e autenticação de dois fatores.</small>
+                                </div>
+                                <span class="badge bg-light text-dark">Padrão</span>
+                            </a>
+                            <a href="{% url 'backoffice:audit' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Auditoria (AuditLog)</h6>
+                                    <small class="text-muted">Rastreabilidade completa de eventos administrativos.</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">Rastreável</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

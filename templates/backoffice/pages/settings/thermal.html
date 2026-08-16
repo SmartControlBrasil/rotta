@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-notepad me-2"></i> Configurações Térmicas</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Parâmetros de validação de telemetria fria e controle de qualidade de carga.</p>
+                        
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Threshold de Stale (Inatividade)</h5>
+                                        <h3>{{ stale_threshold_minutes }} min</h3>
+                                        <p class="card-text text-muted small">Tempo máximo sem leitura antes de considerar o sensor inativo.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Leituras para Excursão</h5>
+                                        <h3>{{ excursion_validation_readings }} Leituras</h3>
+                                        <p class="card-text text-muted small">Leituras consecutivas fora do limite para disparar evento de excursão.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-info"><i class="fa fa-info-circle me-2"></i> Escopo Térmico</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-0">
+                            <strong>Limites por Carga</strong>
+                            <p class="mb-0 mt-2 small">Atenção: Os limites de temperatura mínima, máxima e de segurança são definidos individualmente em cada solicitação de frete ou veículo para garantir a integridade da carga específica.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

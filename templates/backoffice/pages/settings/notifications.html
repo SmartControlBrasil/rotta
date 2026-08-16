@@ -1,0 +1,75 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="fa fa-bell me-2"></i> Central de Notificações</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Configure quais eventos disparam alertas via e-mail, SMS ou push.</p>
+                        
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Atrasos de SLA e Desvios</h6>
+                                    <small class="text-muted">Notificar se uma operação atrasar ou violar janela planejada.</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked disabled>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Excursões Térmicas Ativas</h6>
+                                    <small class="text-muted">Notificar incidentes de temperatura na carga refrigerada.</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked disabled>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Incidentes Operacionais (Geral)</h6>
+                                    <small class="text-muted">Notificar incidentes reportados pelo motorista.</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked disabled>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Comprovantes de Entrega (POD)</h6>
+                                    <small class="text-muted">Notificar quando a entrega for concluída e o POD registrado.</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-warning"><i class="fa fa-info-circle me-2"></i> Motor de Notificações</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-0">
+                            <strong>Configuração Geral</strong>
+                            <p class="mb-0 mt-2 small">O motor de envio assíncrono de notificações de eventos operacionais está em fase de homologação. O recebimento está habilitado por padrão para todos os administradores da organização.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

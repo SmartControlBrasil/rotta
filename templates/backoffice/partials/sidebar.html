@@ -21,5 +21,21 @@
 </ul>
 </li>
 {% endif %}
-<li><a href="javascript:void(0);"><div class="menu-icon"><i class="flaticon-381-settings-2"></i></div><span class="nav-text">Configurações</span></a></li>
+{% if dashboard_menu.settings %}
+<li><a class="has-arrow {% if active_menu == 'settings' %}mm-active{% endif %}" href="javascript:void(0);"><div class="menu-icon"><i class="flaticon-381-settings-2"></i></div><span class="nav-text">Configurações</span></a>
+<ul aria-expanded="false">
+    <li><a class="{% if setting_key == 'overview' %}mm-active{% endif %}" href="{% url 'backoffice:setting_overview' %}">Visão Geral</a></li>
+    <li><a class="{% if setting_key == 'organization' %}mm-active{% endif %}" href="{% url 'backoffice:setting_organization' %}">Organização</a></li>
+    <li><a class="{% if setting_key == 'structure' %}mm-active{% endif %}" href="{% url 'backoffice:setting_structure' %}">Estrutura Organizacional</a></li>
+    <li><a class="{% if setting_key == 'access' %}mm-active{% endif %}" href="{% url 'backoffice:setting_access' %}">Usuários e Acessos</a></li>
+    <li><a class="{% if setting_key == 'operation' %}mm-active{% endif %}" href="{% url 'backoffice:setting_operation' %}">Operação</a></li>
+    <li><a class="{% if setting_key == 'marketplace' %}mm-active{% endif %}" href="{% url 'backoffice:setting_marketplace' %}">Fretes e Marketplace</a></li>
+    <li><a class="{% if setting_key == 'thermal' %}mm-active{% endif %}" href="{% url 'backoffice:setting_thermal' %}">Carga Refrigerada</a></li>
+    <li><a class="{% if setting_key == 'notifications' %}mm-active{% endif %}" href="{% url 'backoffice:setting_notifications' %}">Notificações</a></li>
+    <li><a class="{% if setting_key == 'integrations' %}mm-active{% endif %}" href="{% url 'backoffice:setting_integrations' %}">Integrações e API</a></li>
+    <li><a class="{% if setting_key == 'security' %}mm-active{% endif %}" href="{% url 'backoffice:setting_security' %}">Segurança</a></li>
+    <li><a href="{% url 'backoffice:audit' %}">Auditoria</a></li>
+</ul>
+</li>
+{% endif %}
 </ul></div></div>

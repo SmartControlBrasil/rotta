@@ -83,6 +83,18 @@ from .report_views import (
     ReportThermalView,
     ReportLoadTypesView,
 )
+from .setting_views import (
+    SettingOverviewView,
+    SettingOrganizationView,
+    SettingStructureView,
+    SettingAccessView,
+    SettingOperationView,
+    SettingMarketplaceView,
+    SettingThermalView,
+    SettingNotificationsView,
+    SettingIntegrationsView,
+    SettingSecurityView,
+)
 from .views import (
     AuditLogDetailView,
     AuditLogListView,
@@ -498,4 +510,16 @@ urlpatterns = [
     path("reports/incidents/", ReportIncidentsView.as_view(), name="report_incidents"),
     path("reports/thermal/", ReportThermalView.as_view(), name="report_thermal"),
     path("reports/load-types/", ReportLoadTypesView.as_view(), name="report_load_types"),
+    
+    # Settings
+    path("settings/", SettingOverviewView.as_view(), name="setting_overview"),
+    path("settings/organization/", SettingOrganizationView.as_view(), name="setting_organization"),
+    path("settings/structure/", SettingStructureView.as_view(), name="setting_structure"),
+    path("settings/access/", SettingAccessView.as_view(), name="setting_access"),
+    path("settings/operation/", SettingOperationView.as_view(), name="setting_operation"),
+    path("settings/marketplace/", SettingMarketplaceView.as_view(), name="setting_marketplace"),
+    path("settings/thermal/", SettingThermalView.as_view(), name="setting_thermal"),
+    path("settings/notifications/", SettingNotificationsView.as_view(), name="setting_notifications"),
+    path("settings/integrations/", SettingIntegrationsView.as_view(), name="setting_integrations"),
+    path("settings/security/", SettingSecurityView.as_view(), name="setting_security"),
 ]

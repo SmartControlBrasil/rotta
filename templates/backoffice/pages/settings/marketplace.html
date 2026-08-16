@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-networking me-2"></i> Fretes e Marketplace</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Parâmetros de comissões e limites de plano vigentes.</p>
+                        
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Comissão do Marketplace</h5>
+                                        <h3>{{ commission_percentage }}%</h3>
+                                        <p class="card-text text-muted small">Cobrado sobre o valor bruto de cada frete fechado.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Limite de Veículos (Plano Gratuito)</h5>
+                                        <h3>{{ free_tier_vehicle_limit }} Veículos</h3>
+                                        <p class="card-text text-muted small">Máximo de veículos cadastrados sem cobrança de assinatura.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-info"><i class="fa fa-info-circle me-2"></i> Monetização</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-0">
+                            <strong>Plano SaaS / Billing</strong>
+                            <p class="mb-0 mt-2 small">O módulo de cobranças recorrentes, assinaturas adicionais e regras comerciais avançadas está em desenvolvimento. No momento, o tenant opera no plano padrão gratuito.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

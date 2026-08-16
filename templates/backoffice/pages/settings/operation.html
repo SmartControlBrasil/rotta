@@ -1,0 +1,64 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-networking me-2"></i> Políticas e Tolerâncias Operacionais</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Parâmetros de monitoramento ativo e regras de matching da plataforma.</p>
+                        <div class="table-responsive">
+                            <table class="table table-responsive-md">
+                                <thead>
+                                    <tr>
+                                        <th>Parâmetro</th>
+                                        <th>Valor Atual</th>
+                                        <th>Tipo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Tolerância de Atraso Operacional</strong></td>
+                                        <td>{{ max_delay_tolerance_minutes }} min</td>
+                                        <td><span class="badge bg-secondary">Constante</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Raio de Busca (Matching)</strong></td>
+                                        <td>{{ matching_radius_km }} km</td>
+                                        <td><span class="badge bg-secondary">Constante</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Limite de Cancelamento sem Penalidade</strong></td>
+                                        <td>{{ cancel_deadline_hours }} horas</td>
+                                        <td><span class="badge bg-secondary">Constante</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-warning"><i class="fa fa-info-circle me-2"></i> Backlog de Configuração</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-0">
+                            <strong>Aviso Importante:</strong>
+                            <p class="mb-0 mt-2 small">Estes parâmetros estão definidos como constantes da plataforma. A persistência em banco de dados para edição dinâmica por tenant está mapeada no backlog do time de produto.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

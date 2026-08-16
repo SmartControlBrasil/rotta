@@ -1,0 +1,60 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-lock me-2"></i> Políticas de Segurança</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Parâmetros de autenticação e controle de sessões da plataforma.</p>
+                        
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Expiração de Sessão Inativa</h6>
+                                    <small class="text-muted">Desconectar usuários inativos após tempo limite.</small>
+                                </div>
+                                <span class="badge bg-secondary">60 Minutos</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Autenticação Multifator (MFA)</h6>
+                                    <small class="text-muted">Exigir validação adicional por aplicativo autenticador.</small>
+                                </div>
+                                <span class="badge bg-light text-dark">Opcional</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Complexidade de Senha Mínima</h6>
+                                    <small class="text-muted">Exigir letras, números e caracteres especiais.</small>
+                                </div>
+                                <span class="badge bg-secondary">Ativo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-info"><i class="fa fa-shield-alt me-2"></i> Proteção RBAC</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-0">
+                            <strong>Controle Baseado em Papéis</strong>
+                            <p class="mb-0 mt-2 small">A segurança da plataforma é controlada pelo motor nativo de papéis e permissões (RBAC), protegendo rotas no lado do servidor para garantir isolamento absoluto por tenant e organização.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

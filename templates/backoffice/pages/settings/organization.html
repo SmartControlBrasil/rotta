@@ -1,0 +1,107 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-layer-1 me-2"></i> Dados da Organização</h4>
+                        {% if not can_edit %}
+                            <span class="badge bg-warning text-dark"><i class="fa fa-eye me-1"></i> Apenas Leitura</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'backoffice:setting_organization' %}?org_id={{ organization.id }}">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="{{ form.name.id_for_label }}">Nome Fantasia</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="{{ form.legal_name.id_for_label }}">Razão Social</label>
+                                    {{ form.legal_name }}
+                                    {% if form.legal_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.legal_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="{{ form.document.id_for_label }}">CNPJ/Documento</label>
+                                    {{ form.document }}
+                                    {% if form.document.errors %}
+                                        <div class="text-danger small mt-1">{{ form.document.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="{{ form.type.id_for_label }}">Tipo de Organização</label>
+                                    {{ form.type }}
+                                    {% if form.type.errors %}
+                                        <div class="text-danger small mt-1">{{ form.type.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form.is_active }}
+                                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Organização Ativa</label>
+                                    </div>
+                                    {% if form.is_active.errors %}
+                                        <div class="text-danger small mt-1">{{ form.is_active.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if can_edit %}
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-save me-2"></i>Salvar Alterações</button>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title">Outras Organizações</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Selecione uma organização associada ao seu usuário para configurar.</p>
+                        <!-- Selector snippet in case of multiple memberships -->
+                        <div class="list-group">
+                            <a href="?org_id={{ organization.id }}" class="list-group-item list-group-item-action active">
+                                {{ organization.name }} <small class="d-block text-white-50">{{ organization.document }}</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

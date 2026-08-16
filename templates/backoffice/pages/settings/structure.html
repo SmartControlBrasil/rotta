@@ -1,0 +1,76 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <!-- Business Units card -->
+            <div class="col-xl-4 col-md-6 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-layer-1 text-primary display-4 mb-3"></i>
+                        <h4 class="card-title">Unidades de Negócio</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ units_count }}</h2>
+                        <p class="card-text text-muted mb-4">Gerencie as divisões de negócio corporativo.</p>
+                        <a href="{% url 'backoffice:business_units' %}" class="btn btn-outline-primary w-100"><i class="fa fa-list me-2"></i>Ver Unidades</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branches card -->
+            <div class="col-xl-4 col-md-6 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-home text-success display-4 mb-3"></i>
+                        <h4 class="card-title">Filiais</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ branches_count }}</h2>
+                        <p class="card-text text-muted mb-4">Filiais e centros de distribuição.</p>
+                        <a href="{% url 'backoffice:branches' %}" class="btn btn-outline-success w-100"><i class="fa fa-list me-2"></i>Ver Filiais</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Departments card -->
+            <div class="col-xl-4 col-md-6 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-networking-1 text-warning display-4 mb-3"></i>
+                        <h4 class="card-title">Departamentos</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ departments_count }}</h2>
+                        <p class="card-text text-muted mb-4">Setores administrativos e operacionais.</p>
+                        <a href="{% url 'backoffice:departments' %}" class="btn btn-outline-warning w-100"><i class="fa fa-list me-2"></i>Ver Departamentos</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teams card -->
+            <div class="col-xl-6 col-md-6 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-user-9 text-info display-4 mb-3"></i>
+                        <h4 class="card-title">Equipes</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ teams_count }}</h2>
+                        <p class="card-text text-muted mb-4">Times internos de execução operacional.</p>
+                        <a href="{% url 'backoffice:teams' %}" class="btn btn-outline-info w-100"><i class="fa fa-list me-2"></i>Ver Equipes</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memberships card -->
+            <div class="col-xl-6 col-md-12 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-id-card text-danger display-4 mb-3"></i>
+                        <h4 class="card-title">Vínculos Organizacionais</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ memberships_count }}</h2>
+                        <p class="card-text text-muted mb-4">Associação de usuários a filiais e departamentos.</p>
+                        <a href="{% url 'backoffice:memberships' %}" class="btn btn-outline-danger w-100"><i class="fa fa-list me-2"></i>Ver Vínculos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

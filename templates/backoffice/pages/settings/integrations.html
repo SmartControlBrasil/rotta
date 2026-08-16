@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-primary"><i class="flaticon-381-networking me-2"></i> API & Credenciais Externas</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Acesse suas chaves de API para integrar sistemas de TMS ou ERP externos.</p>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Status da API v1</label>
+                            <div>
+                                <span class="badge bg-success">ATIVO</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Chave de API (Live Token)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" value="{{ masked_api_key }}" readonly>
+                                <button class="btn btn-outline-secondary" type="button" disabled><i class="fa fa-copy"></i> Copiar</button>
+                            </div>
+                            <span class="text-muted small d-block mt-1">Sua chave é confidencial e não deve ser compartilhada ou exposta abertamente.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="card-title text-info"><i class="fa fa-plug me-2"></i> Integrações Futuras</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Integração ERP Protheus</span>
+                                <span class="badge bg-secondary">Backlog</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Integração SAP TM</span>
+                                <span class="badge bg-secondary">Backlog</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

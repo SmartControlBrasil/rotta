@@ -1,0 +1,50 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+
+        <div class="row">
+            <!-- Users card -->
+            <div class="col-xl-4 col-md-6 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-user text-success display-4 mb-3"></i>
+                        <h4 class="card-title">Usuários</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ users_count }}</h2>
+                        <p class="card-text text-muted mb-4">Gerencie as contas de usuário administrativas e operacionais.</p>
+                        <a href="{% url 'backoffice:users' %}" class="btn btn-outline-success w-100"><i class="fa fa-list me-2"></i>Ver Usuários</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roles card -->
+            <div class="col-xl-4 col-md-6 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-id-card-1 text-primary display-4 mb-3"></i>
+                        <h4 class="card-title">Papéis (Roles)</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ roles_count }}</h2>
+                        <p class="card-text text-muted mb-4">Defina perfis e níveis de permissão da plataforma.</p>
+                        <a href="{% url 'backoffice:roles' %}" class="btn btn-outline-primary w-100"><i class="fa fa-list me-2"></i>Ver Roles</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Permissions card -->
+            <div class="col-xl-4 col-md-12 col-sm-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="flaticon-381-lock text-warning display-4 mb-3"></i>
+                        <h4 class="card-title">Permissões Cadastradas</h4>
+                        <h2 class="font-w600 text-black mb-3">{{ permissions_count }}</h2>
+                        <p class="card-text text-muted mb-4">Consulte as chaves de controle de acessos (RBAC).</p>
+                        <a href="{% url 'backoffice:permissions' %}" class="btn btn-outline-warning w-100"><i class="fa fa-list me-2"></i>Ver Permissões</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
