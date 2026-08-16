@@ -293,7 +293,7 @@ def test_filters(client, org_a, user_a, rbac_ready):
 
 
 @pytest.mark.django_db
-def test_sidebar_contains_cargas_link_and_embarques_placeholder(client, org_a, user_a, rbac_ready):
+def test_sidebar_contains_cargas_link(client, org_a, user_a, rbac_ready):
     grant(user_a, org_a, RoleCode.OPERATIONS_MANAGER.value, AccessScope.COMPANY.value)
     client.force_login(user_a)
 
@@ -304,6 +304,5 @@ def test_sidebar_contains_cargas_link_and_embarques_placeholder(client, org_a, u
     # Cargas is functional
     assert "/app/cargas/" in content
     
-    # Embarques is placeholder and unclickable / show "Em breve"
-    assert "Embarques" in content
-    assert "Em breve" in content
+    # Embarques has been removed
+    assert "Embarques" not in content
