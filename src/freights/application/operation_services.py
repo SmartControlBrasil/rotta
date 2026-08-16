@@ -28,24 +28,49 @@ from src.freights.infrastructure.django.models import (
 )
 from src.carriers.infrastructure.django.models import CarrierProfile
 
-# Helper to fetch operation with tenant isolation and locking.
-def _get_operation_for_user(user, operation_id):
+def _get_operation_for_user(user, operation_id, *, driver_only: bool = False):
     """Return FreightOperation locked for update if user has access.
-    Uses existing RBAC helper to restrict to organizations the user can view.
+    Uses existing RBAC helper to restrict to organizations the user can view,
+    or permits direct access if the user is the driver assigned to the operation.
+    If driver_only is true, it strictly limits the search to the user's driver profiles.
     """
+    from django.db.models import Q
     from src.shared.interfaces.backoffice.authorization import scoped_organization_queryset
     from src.identity.domain.enums import PermissionCode
 
+    if driver_only:
+        if not hasattr(user, "driver_profiles"):
+            raise ValidationError({"operation": "Usuário não possui perfil de motorista."})
+        driver_ids = list(user.driver_profiles.values_list("id", flat=True))
+        try:
+            return (
+                FreightOperation.objects.select_for_update()
+                .filter(driver_id__in=driver_ids, id=operation_id)
+                .get()
+            )
+        except FreightOperation.DoesNotExist:
+            raise ValidationError({"operation": "Operação não encontrada ou sem permissão."})
+
     org_qs = scoped_organization_queryset(user, PermissionCode.FREIGHT_OPERATIONS_VIEW)
+    
+    driver_ids = []
+    if hasattr(user, "driver_profiles"):
+        driver_ids = list(user.driver_profiles.values_list("id", flat=True))
+
     try:
         operation = (
             FreightOperation.objects.select_for_update()
-            .filter(id=operation_id, organization__in=org_qs)
+            .filter(
+                Q(organization__in=org_qs) | Q(driver_id__in=driver_ids),
+                id=operation_id,
+            )
             .get()
         )
     except FreightOperation.DoesNotExist:
         raise ValidationError({"operation": "Operação não encontrada ou sem permissão."})
     return operation
+
+
 
 
 def _ensure_carrier_active(carrier: CarrierProfile) -> None:
@@ -175,9 +200,10 @@ def change_operation_status(
     new_status: OperationStatus,
     actor,
     client_event_id: str | None = None,
+    driver_only: bool = False,
 ) -> FreightOperation:
     """Change operation status respecting the state machine and idempotency."""
-    operation = _get_operation_for_user(actor, operation_id)
+    operation = _get_operation_for_user(actor, operation_id, driver_only=driver_only)
     current_status = OperationStatus(operation.status)
     # Validate transition via state machine
     if not can_operation_transition(current=current_status, target=new_status):
@@ -227,9 +253,10 @@ def report_operation_incident(
     description: str,
     actor,
     client_event_id: str | None = None,
+    driver_only: bool = False,
 ) -> FreightOperationEvent:
     """Record an incident without changing operation status."""
-    operation = _get_operation_for_user(actor, operation_id)
+    operation = _get_operation_for_user(actor, operation_id, driver_only=driver_only)
     event = _create_event(
         operation=operation,
         event_type=OperationEventType.INCIDENT_REPORTED,
@@ -295,9 +322,10 @@ def record_proof_of_delivery(
     longitude: float | None = None,
     notes: str = "",
     actor,
+    driver_only: bool = False,
 ) -> ProofOfDelivery:
     """Create ProofOfDelivery linked to operation. Only one POD per operation is allowed."""
-    operation = _get_operation_for_user(actor, operation_id)
+    operation = _get_operation_for_user(actor, operation_id, driver_only=driver_only)
     # POD can only be recorded when operation is in UNLOADING state
     if OperationStatus(operation.status) != OperationStatus.UNLOADING:
         raise ValidationError({"status": "Proof of Delivery só pode ser registrado em estado UNLOADING."})
@@ -325,3 +353,152 @@ def record_proof_of_delivery(
         origin=OperationEventOrigin.SYSTEM,
     )
     return pod
+
+
+@transaction.atomic
+def record_thermal_reading(
+    *,
+    operation_id: int,
+    device_id: str,
+    sensor_timestamp: timezone.datetime,
+    temperature_c: Decimal,
+    quality: str = "VALID",
+    validity: str = "VALID",
+    client_event_id: str | None = None,
+    metadata: dict | None = None,
+    actor,
+    driver_only: bool = False,
+) -> tuple[ThermalReading, bool]:
+    """Record a thermal reading for a freight operation.
+    Idempotent – returns existing reading and True if duplicate.
+    Detects and manages ThermalExcursions based on cargo limits.
+    """
+    from decimal import Decimal
+    from src.freights.infrastructure.django.models import ThermalReading, ThermalExcursion
+    from src.freights.domain.enums import (
+        ThermalReadingQuality,
+        ThermalReadingValidity,
+        ThermalExcursionStatus,
+        ThermalExcursionDirection,
+    )
+    
+    # 1. Validate operation and driver access
+    operation = _get_operation_for_user(actor, operation_id, driver_only=driver_only)
+    
+    # 2. Idempotency checks
+    if client_event_id:
+        existing = ThermalReading.objects.filter(
+            operation=operation,
+            client_event_id=client_event_id
+        ).first()
+        if existing:
+            return existing, True
+
+    existing_ts = ThermalReading.objects.filter(
+        operation=operation,
+        device_id=device_id,
+        sensor_timestamp=sensor_timestamp
+    ).first()
+    if existing_ts:
+        return existing_ts, True
+
+    # 3. Validate timestamp
+    now = timezone.now()
+    if sensor_timestamp > now + timezone.timedelta(minutes=5):
+        raise ValidationError({"sensor_timestamp": "Timestamp no futuro não é permitido."})
+
+    # Normalise quality/validity
+    val_enum = ThermalReadingValidity.VALID
+    if validity in [item.value for item in ThermalReadingValidity]:
+        val_enum = ThermalReadingValidity(validity)
+    
+    if sensor_timestamp < now - timezone.timedelta(hours=24):
+        val_enum = ThermalReadingValidity.STALE
+
+    qual_enum = ThermalReadingQuality.VALID
+    if quality in [item.value for item in ThermalReadingQuality]:
+        qual_enum = ThermalReadingQuality(quality)
+
+    # 4. Save reading
+    reading = ThermalReading.objects.create(
+        operation=operation,
+        device_id=device_id,
+        sensor_timestamp=sensor_timestamp,
+        temperature_c=temperature_c,
+        quality=qual_enum.value,
+        validity=val_enum.value,
+        client_event_id=client_event_id,
+        metadata=metadata or {},
+        vehicle=operation.vehicle,
+    )
+
+    # 5. Evaluate Thermal Excursion
+    # Only calculate if reading is VALID
+    if val_enum == ThermalReadingValidity.VALID:
+        cargo = None
+        try:
+            offer = operation.selection.offer
+            if offer and offer.freight_request:
+                cargo = getattr(offer.freight_request, 'cargo', None)
+        except Exception:
+            pass
+
+        if cargo:
+            min_c = cargo.temperature_min_c
+            max_c = cargo.temperature_max_c
+            
+            if min_c is not None or max_c is not None:
+                temp = Decimal(str(temperature_c))
+                is_below = (min_c is not None and temp < min_c)
+                is_above = (max_c is not None and temp > max_c)
+                
+                # Fetch active excursion for this operation and device
+                active_excursion = ThermalExcursion.objects.select_for_update().filter(
+                    operation=operation,
+                    sensor_id=device_id,
+                    status=ThermalExcursionStatus.ACTIVE.value
+                ).first()
+
+                if is_below or is_above:
+                    direction = ThermalExcursionDirection.BELOW_MIN if is_below else ThermalExcursionDirection.ABOVE_MAX
+                    
+                    if active_excursion:
+                        if active_excursion.direction == direction.value:
+                            # Update bounds
+                            active_excursion.min_observed = min(active_excursion.min_observed, temp)
+                            active_excursion.max_observed = max(active_excursion.max_observed, temp)
+                            active_excursion.save(update_fields=["min_observed", "max_observed", "updated_at"])
+                        else:
+                            # Direction changed! Resolve current active and open a new one
+                            active_excursion.status = ThermalExcursionStatus.RESOLVED.value
+                            active_excursion.ended_at = sensor_timestamp
+                            active_excursion.save(update_fields=["status", "ended_at", "updated_at"])
+                            
+                            ThermalExcursion.objects.create(
+                                operation=operation,
+                                sensor_id=device_id,
+                                started_at=sensor_timestamp,
+                                direction=direction.value,
+                                min_observed=temp,
+                                max_observed=temp,
+                                status=ThermalExcursionStatus.ACTIVE.value
+                            )
+                    else:
+                        # Create new excursion
+                        ThermalExcursion.objects.create(
+                            operation=operation,
+                            sensor_id=device_id,
+                            started_at=sensor_timestamp,
+                            direction=direction.value,
+                            min_observed=temp,
+                            max_observed=temp,
+                            status=ThermalExcursionStatus.ACTIVE.value
+                        )
+                else:
+                    # Within bounds! Resolve active excursion if any
+                    if active_excursion:
+                        active_excursion.status = ThermalExcursionStatus.RESOLVED.value
+                        active_excursion.ended_at = sensor_timestamp
+                        active_excursion.save(update_fields=["status", "ended_at", "updated_at"])
+
+    return reading, False

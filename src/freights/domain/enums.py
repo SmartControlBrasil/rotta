@@ -35,9 +35,8 @@ class FreightCargoType(StrEnum):
 class FreightRequestPriority(StrEnum):
     NORMAL = "NORMAL"
     URGENT = "URGENT"
-    SCHEDULED = "SCHEDULED"
 
-# New enums for operational flow
+
 class OperationStatus(StrEnum):
     ASSIGNED = "ASSIGNED"
     DRIVER_EN_ROUTE_TO_PICKUP = "DRIVER_EN_ROUTE_TO_PICKUP"
@@ -47,14 +46,20 @@ class OperationStatus(StrEnum):
     ARRIVED_AT_DELIVERY = "ARRIVED_AT_DELIVERY"
     UNLOADING = "UNLOADING"
     DELIVERED = "DELIVERED"
-
     CANCELLED = "CANCELLED"
+
+
 class OperationEventType(StrEnum):
     OPERATION_CREATED = "OPERATION_CREATED"
     STATUS_CHANGED = "STATUS_CHANGED"
     INCIDENT_REPORTED = "INCIDENT_REPORTED"
     POD_CREATED = "POD_CREATED"
     CANCELLED = "CANCELLED"
+
+
+class LoadType(StrEnum):
+    FTL = "FTL"
+    LTL = "LTL"
 
 
 class OperationEventOrigin(StrEnum):
@@ -69,3 +74,26 @@ class TrackingSessionStatus(StrEnum):
     ENDED = "ENDED"
     CANCELLED = "CANCELLED"
 
+
+class ThermalReadingQuality(StrEnum):
+    VALID = "VALID"
+    INVALID = "INVALID"
+    SUSPECT = "SUSPECT"
+    STALE = "STALE"
+
+
+class ThermalReadingValidity(StrEnum):
+    VALID = "VALID"
+    INVALID = "INVALID"
+    SUSPECT = "SUSPECT"
+    STALE = "STALE"
+
+
+class ThermalExcursionStatus(StrEnum):
+    ACTIVE = "ACTIVE"
+    RESOLVED = "RESOLVED"
+
+
+class ThermalExcursionDirection(StrEnum):
+    BELOW_MIN = "BELOW_MIN"
+    ABOVE_MAX = "ABOVE_MAX"

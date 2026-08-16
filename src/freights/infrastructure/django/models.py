@@ -8,10 +8,15 @@ from src.freights.domain.enums import (
     FreightRequestPriority,
     FreightRequestStatus,
     FreightStopType,
+    LoadType,
     OperationStatus,
     OperationEventOrigin,
     OperationEventType,
     TrackingSessionStatus,
+    ThermalReadingQuality,
+    ThermalReadingValidity,
+    ThermalExcursionStatus,
+    ThermalExcursionDirection,
 )
 from src.freights.domain.matching_enums import (
     FreightOfferInterestStatus,
@@ -1095,10 +1100,26 @@ class FreightOperation(UUIDTimestampedModel):
     completed_at = models.DateTimeField(blank=True, null=True)
     # optional snapshot of origin request
     request_snapshot = models.JSONField(blank=True, null=True)
+    # --- Logistics enrichment fields (Fase 1 logística) ---
+    # Load type: FTL = Full Truck Load, LTL = Less than Truck Load
+    # Nullable; must be set explicitly by backoffice — never inferred automatically.
+    load_type = models.CharField(
+        max_length=3,
+        choices=[(item.value, item.value) for item in LoadType],
+        blank=True,
+        null=True,
+    )
+    # Estimated Time of Arrival at final delivery stop.
+    # Nullable; only present when explicitly informed — no artificial forecast.
+    eta = models.DateTimeField(blank=True, null=True)
+    # Delay in minutes relative to the planned window of the delivery stop.
+    # Nullable; never computed automatically; set by backoffice when known.
+    delay_minutes = models.IntegerField(blank=True, null=True)
 
     class Meta:
         indexes = [
             models.Index(fields=["organization", "status"]),
+            models.Index(fields=["organization", "load_type"]),
         ]
 
 class FreightOperationEvent(UUIDTimestampedModel):
@@ -1269,5 +1290,119 @@ class LocationPoint(UUIDTimestampedModel):
         ]
 
 
+class ThermalReading(UUIDTimestampedModel):
+    """Records a single temperature measurement from a refrigerated cargo sensor.
+
+    Intentionally independent of GPS/tracking infrastructure.
+    One reading per operation per sensor per sensor_timestamp (enforced by unique constraint).
+    """
+
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.PROTECT,
+        related_name="thermal_readings",
+    )
+    # Sensor / device identification — device_id is the physical sensor UUID or serial.
+    device_id = models.CharField(max_length=100)
+    # Optional link to an active tracking session (null when reading comes from static sensor).
+    tracking_session = models.ForeignKey(
+        TrackingSession,
+        on_delete=models.SET_NULL,
+        related_name="thermal_readings",
+        blank=True,
+        null=True,
+    )
+    # Optional vehicle link
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.SET_NULL,
+        related_name="thermal_readings",
+        blank=True,
+        null=True,
+    )
+    # Timestamp the sensor recorded the measurement (from device clock).
+    sensor_timestamp = models.DateTimeField()
+    # Timestamp the reading arrived at the server.
+    server_timestamp = models.DateTimeField(auto_now_add=True)
+    # Temperature in Celsius.
+    temperature_c = models.DecimalField(max_digits=6, decimal_places=2)
+    # Sensor-reported validity flag; True = reading passed onboard quality check.
+    is_valid = models.BooleanField(default=True)
+    
+    # State rich fields
+    quality = models.CharField(
+        max_length=20,
+        choices=[(item.value, item.value) for item in ThermalReadingQuality],
+        default=ThermalReadingQuality.VALID,
+    )
+    validity = models.CharField(
+        max_length=20,
+        choices=[(item.value, item.value) for item in ThermalReadingValidity],
+        default=ThermalReadingValidity.VALID,
+    )
+    client_event_id = models.CharField(max_length=255, blank=True, null=True)
+    # Free-form metadata (e.g. humidity, battery level, firmware version).
+    metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["sensor_timestamp"]
+        indexes = [
+            models.Index(fields=["operation", "sensor_timestamp"]),
+            models.Index(fields=["device_id", "sensor_timestamp"]),
+            models.Index(fields=["operation", "client_event_id"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["operation", "device_id", "sensor_timestamp"],
+                name="unique_thermal_reading_per_op_device_ts",
+            ),
+            models.UniqueConstraint(
+                fields=["operation", "client_event_id"],
+                condition=~models.Q(client_event_id__isnull=True),
+                name="unique_thermal_reading_client_event_id",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"ThermalReading op={self.operation_id} device={self.device_id} "
+            f"ts={self.sensor_timestamp} temp={self.temperature_c}°C"
+        )
 
 
+class ThermalExcursion(UUIDTimestampedModel):
+    """Represents a thermal excursion event where temperature was out of spec."""
+
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.PROTECT,
+        related_name="thermal_excursions",
+    )
+    sensor_id = models.CharField(max_length=100, blank=True, null=True)
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[(item.value, item.value) for item in ThermalExcursionStatus],
+        default=ThermalExcursionStatus.ACTIVE,
+    )
+    direction = models.CharField(
+        max_length=20,
+        choices=[(item.value, item.value) for item in ThermalExcursionDirection],
+    )
+    min_observed = models.DecimalField(max_digits=6, decimal_places=2)
+    max_observed = models.DecimalField(max_digits=6, decimal_places=2)
+    metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-started_at"]
+        indexes = [
+            models.Index(fields=["operation", "status"]),
+            models.Index(fields=["sensor_id", "status"]),
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"ThermalExcursion op={self.operation_id} sensor={self.sensor_id} "
+            f"status={self.status} dir={self.direction} bounds=[{self.min_observed}, {self.max_observed}]"
+        )
