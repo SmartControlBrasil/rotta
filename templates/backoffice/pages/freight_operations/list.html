@@ -1,0 +1,112 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Operações de Frete</h4>
+            </div>
+            <div class="card-body">
+                <form class="row g-3 mb-4" method="get">
+                    <div class="col-md-3">
+                        <select class="form-control" name="status">
+                            <option value="">Status (Todos)</option>
+                            {% for status_val in statuses %}
+                                <option value="{{ status_val }}" {% if filters.status == status_val %}selected{% endif %}>
+                                    {% if status_val == 'ASSIGNED' %}Designada
+                                    {% elif status_val == 'DRIVER_EN_ROUTE_TO_PICKUP' %}A caminho da coleta
+                                    {% elif status_val == 'ARRIVED_AT_PICKUP' %}Na coleta
+                                    {% elif status_val == 'LOADING' %}Carregando
+                                    {% elif status_val == 'IN_TRANSIT' %}Em trânsito
+                                    {% elif status_val == 'ARRIVED_AT_DELIVERY' %}No destino
+                                    {% elif status_val == 'UNLOADING' %}Descarregando
+                                    {% elif status_val == 'DELIVERED' %}Entregue
+                                    {% elif status_val == 'CANCELLED' %}Cancelada
+                                    {% else %}{{ status_val }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" name="carrier">
+                            <option value="">Transportadora (Todas)</option>
+                            {% for carrier in carriers %}
+                                <option value="{{ carrier.id }}" {% if filters.carrier == carrier.id|stringformat:'s' %}selected{% endif %}>{{ carrier.trade_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" name="driver">
+                            <option value="">Motorista (Todos)</option>
+                            {% for driver in drivers %}
+                                <option value="{{ driver.id }}" {% if filters.driver == driver.id|stringformat:'s' %}selected{% endif %}>{{ driver.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+                    </div>
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Operação</th>
+                                <th>Oferta</th>
+                                <th>Cliente</th>
+                                <th>Transportadora</th>
+                                <th>Motorista</th>
+                                <th>Veículo</th>
+                                <th>Status</th>
+                                <th>Criado em</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for operation in freight_operations %}
+                                <tr>
+                                    <td><strong>{{ operation.id|stringformat:'s'|slice:':8' }}</strong></td>
+                                    <td>{{ operation.selection.offer.reference_code|default:'-' }}</td>
+                                    <td>{{ operation.selection.offer.freight_request.customer.legal_name|default:'-' }}</td>
+                                    <td>{{ operation.carrier.trade_name|default:'-' }}</td>
+                                    <td>{{ operation.driver.full_name|default:'-' }}</td>
+                                    <td>{{ operation.vehicle.plate|default:'-' }}</td>
+                                    <td>
+                                        {% if operation.status == 'ASSIGNED' %}
+                                            <span class="badge badge-primary light">Designada</span>
+                                        {% elif operation.status == 'DRIVER_EN_ROUTE_TO_PICKUP' %}
+                                            <span class="badge badge-info light">A caminho da coleta</span>
+                                        {% elif operation.status == 'ARRIVED_AT_PICKUP' %}
+                                            <span class="badge badge-warning light">Na coleta</span>
+                                        {% elif operation.status == 'LOADING' %}
+                                            <span class="badge badge-warning light">Carregando</span>
+                                        {% elif operation.status == 'IN_TRANSIT' %}
+                                            <span class="badge badge-secondary light">Em trânsito</span>
+                                        {% elif operation.status == 'ARRIVED_AT_DELIVERY' %}
+                                            <span class="badge badge-info light">No destino</span>
+                                        {% elif operation.status == 'UNLOADING' %}
+                                            <span class="badge badge-warning light">Descarregando</span>
+                                        {% elif operation.status == 'DELIVERED' %}
+                                            <span class="badge badge-success light">Entregue</span>
+                                        {% elif operation.status == 'CANCELLED' %}
+                                            <span class="badge badge-danger light">Cancelada</span>
+                                        {% else %}
+                                            <span class="badge badge-light light">{{ operation.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ operation.created_at|date:'d/m/Y H:i' }}</td>
+                                    <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:freight_operation_detail' operation.id %}">Abrir</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="9" class="text-center text-muted">Nenhuma operação encontrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'backoffice/partials/pagination.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

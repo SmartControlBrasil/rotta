@@ -195,6 +195,11 @@ class BackofficeContextMixin:
                 and user.is_authenticated
                 and _has_permission(user, PermissionCode.FREIGHT_OFFERS_VIEW)
             ),
+            "freight_operations": bool(
+                user
+                and user.is_authenticated
+                and _has_permission(user, PermissionCode.FREIGHT_OPERATIONS_VIEW)
+            ),
         }
         context.update(
             active_menu=self.active_menu,

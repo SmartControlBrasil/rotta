@@ -59,6 +59,14 @@ from .freight_request_views import (
     FreightRequestSubmitView,
     FreightRequestUpdateView,
 )
+from .freight_operation_views import (
+    FreightOperationListView,
+    FreightOperationDetailView,
+    FreightOperationAdvanceStatusView,
+    FreightOperationReportIncidentView,
+    FreightOperationCancelView,
+    FreightOperationRecordPODView,
+)
 from .views import (
     AuditLogDetailView,
     AuditLogListView,
@@ -421,5 +429,35 @@ urlpatterns = [
         "driver-route-intents/<uuid:pk>/cancel/",
         DriverRouteIntentCancelView.as_view(),
         name="driver_route_intent_cancel",
+    ),
+    path(
+        "freight-operations/",
+        FreightOperationListView.as_view(),
+        name="freight_operations",
+    ),
+    path(
+        "freight-operations/<uuid:pk>/",
+        FreightOperationDetailView.as_view(),
+        name="freight_operation_detail",
+    ),
+    path(
+        "freight-operations/<uuid:pk>/advance-status/",
+        FreightOperationAdvanceStatusView.as_view(),
+        name="freight_operation_advance_status",
+    ),
+    path(
+        "freight-operations/<uuid:pk>/report-incident/",
+        FreightOperationReportIncidentView.as_view(),
+        name="freight_operation_report_incident",
+    ),
+    path(
+        "freight-operations/<uuid:pk>/cancel/",
+        FreightOperationCancelView.as_view(),
+        name="freight_operation_cancel",
+    ),
+    path(
+        "freight-operations/<uuid:pk>/record-pod/",
+        FreightOperationRecordPODView.as_view(),
+        name="freight_operation_record_pod",
     ),
 ]

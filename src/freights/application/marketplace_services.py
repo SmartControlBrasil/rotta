@@ -94,7 +94,7 @@ def _build_candidate_snapshots(
             "id": str(carrier.id),
             "trade_name": carrier.trade_name,
             "organization_name": carrier.organization.name,
-            "document_number": carrier.document_number,
+            "document_number": carrier.organization.document,
             "email": carrier.email,
         }
     if driver:
@@ -160,23 +160,42 @@ def express_interest_in_offer(
     if offer.is_expired:
         raise ValidationError({"offer": "Oferta expirada."})
 
-    # Tenant isolation validation
-    # Candidate organization must belong to the tenant scope or target
+    # Validate invitation belongs to this offer
+    if invitation:
+        if invitation.offer_id != offer.id:
+            raise ValidationError({"invitation": "Convite não pertence a esta oferta."})
+
+    # Propagate missing candidate fields from invitation.match_candidate and validate conflicts
+    if invitation and invitation.match_candidate:
+        candidate = invitation.match_candidate
+        # carrier
+        if carrier is None:
+            carrier = candidate.carrier
+        elif candidate.carrier is not None and carrier.id != candidate.carrier.id:
+            raise ValidationError({"carrier": "Carrier informado difere do candidato da convite."})
+        # driver
+        if driver is None:
+            driver = candidate.driver
+        elif candidate.driver is not None and driver.id != candidate.driver.id:
+            raise ValidationError({"driver": "Driver informado difere do candidato da convite."})
+        # vehicle
+        if vehicle is None:
+            vehicle = candidate.vehicle
+        elif candidate.vehicle is not None and vehicle.id != candidate.vehicle.id:
+            raise ValidationError({"vehicle": "Vehicle informado difere do candidato da convite."})
+
+    # Tenant isolation validation – recompute after possible propagation
     cand_org = carrier.organization if carrier else (driver.organization if driver else None)
     if not cand_org:
         raise ValidationError({"candidate": "Combinação de candidato inválida ou sem organização."})
 
-    # Revalidate eligibility
+    # Revalidate eligibility with possibly inferred entities
     if not check_candidate_eligibility(
         offer=offer, carrier=carrier, driver=driver, vehicle=vehicle
     ):
         raise ValidationError({"candidate": "Candidato não elegível para a oferta."})
 
-    if invitation:
-        if invitation.offer_id != offer.id:
-            raise ValidationError({"invitation": "Convite não pertence a esta oferta."})
-
-    # Duplicity checks
+    # Duplicity checks – using the final carrier/driver/vehicle values
     existing_active = FreightOfferInterest.objects.filter(
         offer=offer,
         carrier=carrier,
@@ -431,10 +450,22 @@ def confirm_selection(
         .select_related("offer", "interest")
         .get(pk=selection.pk)
     )
+    # Apply expiration if needed
     apply_selection_expiration_if_needed(selection)
+
+    # Idempotent handling: if already confirmed, ensure operation exists and return
+    if selection.status == FreightOfferSelectionStatus.CONFIRMED.value:
+        # Ensure operation exists (create if missing)
+        from src.freights.application.operation_services import create_operation_from_selection
+        create_operation_from_selection(
+            selection_id=selection.id,
+            actor=actor,
+        )
+        return selection
 
     if selection.status != FreightOfferSelectionStatus.PENDING_CONFIRMATION.value:
         raise ValidationError({"status": "Seleção não está pendente de confirmação."})
+
 
     offer = FreightOffer.objects.select_for_update().get(pk=selection.offer_id)
     interest = selection.interest
@@ -464,6 +495,7 @@ def confirm_selection(
     offer.status = FreightOfferStatus.CLOSED.value
     offer.save()
 
+    # Record audit and marketplace event for selection confirmation (already present)
     record_audit_event(
         action="freight_selection_confirmed",
         actor=actor,
@@ -483,6 +515,14 @@ def confirm_selection(
         carrier=interest.carrier,
         driver=interest.driver,
         metadata={"selection_id": str(selection.id)},
+    )
+
+    # ----- New: create FreightOperation within same transaction -----
+    # Import locally to avoid circular dependency
+    from src.freights.application.operation_services import create_operation_from_selection
+    create_operation_from_selection(
+        selection_id=selection.id,
+        actor=actor,
     )
 
     return selection

@@ -558,18 +558,31 @@ def test_selection_lifecycle_and_uniqueness(organization, user, customer):
 def test_confirmation_lifecycle_closes_offer(organization, user, customer):
     offer = make_published_offer(organization=organization, user=user, customer=customer)
 
+    from src.carriers.infrastructure.django.models import CarrierProfile, CarrierDriverLink
+    from src.carriers.domain.enums import CarrierStatus
+
+    carrier = CarrierProfile.objects.create(
+        organization=organization,
+        tenant=organization,
+        trade_name="Carrier Alpha",
+        email="carrier@example.com",
+        status=CarrierStatus.ACTIVE.value,
+    )
+
     driver_a = make_compliant_driver(organization=organization, name="Driver A")
+    CarrierDriverLink.objects.create(carrier=carrier, driver=driver_a)
     vehicle_a = make_compliant_vehicle(organization=organization, plate="DRV1A11")
     assign_driver_to_vehicle(driver=driver_a, vehicle=vehicle_a, valid_from=date.today())
     interest_a = express_interest_in_offer(
-        offer=offer, driver=driver_a, vehicle=vehicle_a, actor=user
+        offer=offer, carrier=carrier, driver=driver_a, vehicle=vehicle_a, actor=user
     )
 
     driver_b = make_compliant_driver(organization=organization, name="Driver B")
+    CarrierDriverLink.objects.create(carrier=carrier, driver=driver_b)
     vehicle_b = make_compliant_vehicle(organization=organization, plate="DRV2B22")
     assign_driver_to_vehicle(driver=driver_b, vehicle=vehicle_b, valid_from=date.today())
     interest_b = express_interest_in_offer(
-        offer=offer, driver=driver_b, vehicle=vehicle_b, actor=user
+        offer=offer, carrier=carrier, driver=driver_b, vehicle=vehicle_b, actor=user
     )
 
     selection = select_interested_candidate(interest_a, actor=user)

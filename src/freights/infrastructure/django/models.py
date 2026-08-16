@@ -8,6 +8,9 @@ from src.freights.domain.enums import (
     FreightRequestPriority,
     FreightRequestStatus,
     FreightStopType,
+    OperationStatus,
+    OperationEventOrigin,
+    OperationEventType,
 )
 from src.freights.domain.matching_enums import (
     FreightOfferInterestStatus,
@@ -1050,3 +1053,120 @@ class FreightOfferSelection(UUIDTimestampedModel):
                 name="unique_active_selection_per_offer",
             )
         ]
+
+class FreightOperation(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="freight_operations",
+    )
+    selection = models.OneToOneField(
+        "FreightOfferSelection",
+        on_delete=models.PROTECT,
+        related_name="operation",
+    )
+    carrier = models.ForeignKey(
+        "carriers.CarrierProfile",
+        on_delete=models.PROTECT,
+        related_name="operations",
+    )
+    driver = models.ForeignKey(
+        "drivers.Driver",
+        on_delete=models.PROTECT,
+        related_name="operations",
+        blank=True,
+        null=True,
+    )
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.PROTECT,
+        related_name="operations",
+        blank=True,
+        null=True,
+    )
+    status = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in OperationStatus],
+        default=OperationStatus.ASSIGNED,
+    )
+    assigned_at = models.DateTimeField(blank=True, null=True)
+    started_at = models.DateTimeField(blank=True, null=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+    # optional snapshot of origin request
+    request_snapshot = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["organization", "status"]),
+        ]
+
+class FreightOperationEvent(UUIDTimestampedModel):
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.PROTECT,
+        related_name="events",
+    )
+    event_type = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in OperationEventType],
+    )
+    previous_status = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in OperationStatus],
+        blank=True,
+        null=True,
+    )
+    new_status = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in OperationStatus],
+        blank=True,
+        null=True,
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='operation_events',
+        null=True,
+        blank=True,
+    )
+    origin = models.CharField(
+        max_length=20,
+        choices=[(item.value, item.value) for item in OperationEventOrigin],
+    )
+    occurred_at = models.DateTimeField(blank=True, null=True)
+    received_at = models.DateTimeField(auto_now_add=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    notes = models.TextField(blank=True)
+    client_event_id = models.CharField(max_length=255, blank=True, null=True)
+    metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["operation", "event_type"]),
+            models.Index(fields=["operation", "client_event_id"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["operation", "client_event_id"],
+                condition=~models.Q(client_event_id__isnull=True),
+                name="unique_event_per_operation",
+            )
+        ]
+
+class ProofOfDelivery(UUIDTimestampedModel):
+    operation = models.OneToOneField(
+        FreightOperation,
+        on_delete=models.PROTECT,
+        related_name="pod",
+    )
+    receiver_name = models.CharField(max_length=120, blank=True)
+    delivered_at = models.DateTimeField(blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    notes = models.TextField(blank=True)
+    # signature_image optional, enable only when media storage is configured
+    # signature_image = models.ImageField(upload_to="pods/signatures/", blank=True, null=True)
+
+
+

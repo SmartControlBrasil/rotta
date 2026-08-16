@@ -116,6 +116,12 @@ PERMISSIONS: tuple[PermissionDefinition, ...] = (
     ),
     PermissionDefinition(PermissionCode.FREIGHT_MARKETPLACE_SELECT, "Select candidate"),
     PermissionDefinition(PermissionCode.FREIGHT_MARKETPLACE_CANCEL_SELECTION, "Cancel selection"),
+    PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_VIEW, "View freight operations"),
+    PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_CREATE, "Create freight operations"),
+    PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS, "Change freight operation status"),
+    PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_REPORT_INCIDENT, "Report incident on freight operation"),
+    PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_CANCEL, "Cancel freight operation"),
+    PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_RECORD_POD, "Record proof of delivery for freight operation"),
 )
 
 ROLES: tuple[RoleDefinition, ...] = (
@@ -337,6 +343,12 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.FREIGHT_MARKETPLACE_SELECTION_VIEW,
         PermissionCode.FREIGHT_MARKETPLACE_SELECT,
         PermissionCode.FREIGHT_MARKETPLACE_CANCEL_SELECTION,
+        PermissionCode.FREIGHT_OPERATIONS_VIEW,
+        PermissionCode.FREIGHT_OPERATIONS_CREATE,
+        PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS,
+        PermissionCode.FREIGHT_OPERATIONS_REPORT_INCIDENT,
+        PermissionCode.FREIGHT_OPERATIONS_CANCEL,
+        PermissionCode.FREIGHT_OPERATIONS_RECORD_POD,
     ),
     RoleCode.DISPATCHER: (
         PermissionCode.ORGANIZATIONS_VIEW,
@@ -359,7 +371,11 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.DRIVER_ROUTE_INTENTS_VIEW,
         PermissionCode.DRIVER_ROUTE_INTENTS_CREATE,
         PermissionCode.DRIVER_ROUTE_INTENTS_UPDATE,
-        PermissionCode.DRIVER_ROUTE_INTENTS_CANCEL,
+        PermissionCode.FREIGHT_OPERATIONS_VIEW,
+        PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS,
+        PermissionCode.FREIGHT_OPERATIONS_REPORT_INCIDENT,
+        PermissionCode.FREIGHT_OPERATIONS_CANCEL,
+        PermissionCode.FREIGHT_OPERATIONS_RECORD_POD,
         PermissionCode.FREIGHT_MARKETPLACE_INTEREST_VIEW,
         PermissionCode.FREIGHT_MARKETPLACE_SELECTION_VIEW,
         PermissionCode.FREIGHT_MARKETPLACE_SELECT,

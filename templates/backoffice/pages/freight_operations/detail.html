@@ -1,0 +1,287 @@
+{% extends 'backoffice/base.html' %}
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <!-- Sidebar: Resumo & Ações -->
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Resumo Operacional</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>ID da Operação:</strong> {{ operation.id }}</p>
+                        <p><strong>Oferta:</strong> 
+                            {% if operation.selection.offer %}
+                                <a href="{% url 'backoffice:freight_offer_detail' operation.selection.offer.id %}" class="text-primary">
+                                    {{ operation.selection.offer.reference_code|default:operation.selection.offer.id }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                        <p><strong>Status:</strong>
+                            <span class="badge {{ status_badge_classes|default:'badge-light'|default:'' }} light">
+                                {{ status_labels|default:''|default:operation.status }}
+                            </span>
+                        </p>
+                        <p><strong>Criada em:</strong> {{ operation.created_at|date:'d/m/Y H:i' }}</p>
+                        <p><strong>Última atualização:</strong> {{ operation.updated_at|date:'d/m/Y H:i' }}</p>
+                        
+                        <hr>
+                        
+                        <!-- Ações: Avançar Status -->
+                        {% if can_change_status and next_status %}
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-2">Avançar Status</h5>
+                                <form method="post" action="{% url 'backoffice:freight_operation_advance_status' operation.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next_status" value="{{ next_status }}">
+                                    <button class="btn btn-success btn-sm w-100" type="submit">
+                                        {{ next_label }}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+
+                        <!-- Ações: Registrar POD (Apenas em UNLOADING) -->
+                        {% if can_record_pod %}
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-2">Registrar Comprovante de Entrega (POD)</h5>
+                                <form method="post" action="{% url 'backoffice:freight_operation_record_pod' operation.id %}">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-2">
+                                        <label class="form-label text-muted">Nome do Recebedor</label>
+                                        <input type="text" class="form-control" name="receiver_name" required placeholder="Ex: João da Silva">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label class="form-label text-muted">Data/Hora da Entrega</label>
+                                        <input type="datetime-local" class="form-control" name="delivered_at" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label text-muted">Observações</label>
+                                        <textarea class="form-control" name="notes" rows="2" placeholder="Ex: Carga entregue intacta"></textarea>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm w-100" type="submit">
+                                        Registrar POD
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+
+                        <!-- Ações: Registrar Incidente -->
+                        {% if can_report_incident %}
+                            <div class="mb-4">
+                                <h5 class="text-warning mb-2">Reportar Incidente</h5>
+                                <form method="post" action="{% url 'backoffice:freight_operation_report_incident' operation.id %}">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-2">
+                                        <textarea class="form-control" name="description" rows="2" placeholder="Descreva o incidente..." required></textarea>
+                                    </div>
+                                    <button class="btn btn-warning btn-sm w-100 text-white" type="submit">
+                                        Reportar Incidente
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+
+                        <!-- Ações: Cancelar Operação -->
+                        {% if can_cancel %}
+                            <div class="mb-2">
+                                <h5 class="text-danger mb-2">Cancelar Operação</h5>
+                                <form method="post" action="{% url 'backoffice:freight_operation_cancel' operation.id %}">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-2">
+                                        <input type="text" class="form-control" name="reason" placeholder="Motivo do cancelamento" required>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm w-100" type="submit">
+                                        Cancelar Operação
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Transport, Route, Cargo, POD, Timeline -->
+            <div class="col-xl-8">
+                <!-- Transport details -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Dados de Transporte</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="mb-1 text-muted">Transportadora</p>
+                                <h6>{{ operation.carrier.trade_name|default:'-' }}</h6>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1 text-muted">Motorista</p>
+                                <h6>{{ operation.driver.full_name|default:'-' }}</h6>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1 text-muted">Veículo</p>
+                                <h6>Placa: {{ operation.vehicle.plate|default:'-' }} ({{ operation.vehicle.vehicle_type|default:'-' }})</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proof of Delivery (POD) details -->
+                {% if has_pod and pod %}
+                    <div class="card border border-success">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="card-title text-white">Proof of Delivery (POD)</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1 text-muted">Recebedor</p>
+                                    <h6>{{ pod.receiver_name }}</h6>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1 text-muted">Data/Hora de Entrega</p>
+                                    <h6>{{ pod.delivered_at|date:'d/m/Y H:i' }}</h6>
+                                </div>
+                            </div>
+                            {% if pod.notes %}
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <p class="mb-1 text-muted">Observações</p>
+                                        <p class="mb-0 text-dark">{{ pod.notes }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Route & Stops -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Rota da Viagem</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if stops %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Seq</th>
+                                            <th>Tipo</th>
+                                            <th>Localidade</th>
+                                            <th>Data Agendada</th>
+                                            <th>Janela</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stop in stops %}
+                                            <tr>
+                                                <td>{{ stop.sequence }}</td>
+                                                <td>
+                                                    {% if stop.stop_type == 'PICKUP' %}
+                                                        <span class="badge badge-success light">Coleta</span>
+                                                    {% else %}
+                                                        <span class="badge badge-info light">Entrega</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ stop.city }}/{{ stop.state }}<br><small class="text-muted">{{ stop.street }} {{ stop.number }}</small></td>
+                                                <td>{{ stop.scheduled_date|date:'d/m/Y' }}</td>
+                                                <td>{{ stop.window_start|time:'H:i' }} - {{ stop.window_end|time:'H:i' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Nenhuma informação de parada disponível.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Cargo -->
+                {% if operation.selection.offer.freight_request.cargo %}
+                    {% with cargo=operation.selection.offer.freight_request.cargo %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Dados da Carga</h4>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> {{ cargo.description|default:'-' }}</p>
+                                <p><strong>Tipo:</strong> {{ cargo.cargo_type }}</p>
+                                <p><strong>Perfil de Carga:</strong> 
+                                    {% if cargo.cargo_profile == 'REFRIGERATED_CARGO' %}
+                                        <span class="badge badge-info light">Refrigerada</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary light">Seca</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Peso:</strong> {{ cargo.weight_kg }} kg</p>
+                                <p><strong>Volume:</strong> {{ cargo.volume_m3|default:'-' }} m³</p>
+                            </div>
+                        </div>
+                    {% endwith %}
+                {% endif %}
+
+                <!-- Timeline -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Linha do Tempo (Histórico)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="DZ_W_TimeLine" class="widget-timeline dz-scroll height300">
+                            <ul class="timeline">
+                                {% for event in events %}
+                                    <li>
+                                        <div class="timeline-badge {% if event.event_type == 'INCIDENT_REPORTED' %}warning{% elif event.event_type == 'CANCELLED' %}danger{% elif event.event_type == 'OPERATION_CREATED' %}primary{% else %}success{% endif %}"></div>
+                                        <a class="timeline-panel text-muted" href="javascript:void(0);">
+                                            <span>{{ event.occurred_at|date:'d/m/Y H:i:s' }}</span>
+                                            <h6 class="mb-0 text-dark">
+                                                {% if event.event_type == 'OPERATION_CREATED' %}Operação Criada
+                                                {% elif event.event_type == 'STATUS_CHANGED' %}Status Alterado
+                                                {% elif event.event_type == 'INCIDENT_REPORTED' %}Incidente Reportado
+                                                {% elif event.event_type == 'POD_CREATED' %}POD Registrado
+                                                {% elif event.event_type == 'CANCELLED' %}Operação Cancelada
+                                                {% else %}{{ event.event_type }}{% endif %}
+                                            </h6>
+                                            <p class="mb-0">
+                                                {% if event.previous_status and event.new_status %}
+                                                    De <strong>{{ event.previous_status }}</strong> para <strong>{{ event.new_status }}</strong><br>
+                                                {% endif %}
+                                                {% if event.metadata.description %}
+                                                    <strong>Descrição:</strong> {{ event.metadata.description }}<br>
+                                                {% endif %}
+                                                {% if event.metadata.reason %}
+                                                    <strong>Motivo:</strong> {{ event.metadata.reason }}<br>
+                                                {% endif %}
+                                                <small class="text-muted">Por: {{ event.actor.email|default:event.actor.username|default:'Sistema' }}</small>
+                                            </p>
+                                        </a>
+                                    </li>
+                                {% empty %}
+                                    <p class="text-muted">Nenhum evento registrado ainda.</p>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
