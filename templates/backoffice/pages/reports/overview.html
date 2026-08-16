@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=False %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Mapeamentos Totais</p><h3 class="mb-0">{{ kpis.operations_total }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Entregas Concluídas</p><h3 class="mb-0 text-success">{{ kpis.operations_completed }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Em Andamento</p><h3 class="mb-0 text-info">{{ kpis.operations_in_progress }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Canceladas</p><h3 class="mb-0 text-danger">{{ kpis.operations_cancelled }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">No Prazo (SLA)</p><h3 class="mb-0">{{ kpis.on_time_percentage }}%</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Operações Atrasadas</p><h3 class="mb-0 text-warning">{{ kpis.operations_delayed }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Incidentes Registrados</p><h3 class="mb-0 text-danger">{{ kpis.incidents_total }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">PODs Concluídos</p><h3 class="mb-0 text-success">{{ kpis.pods_completed }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Transportadoras Ativas</p><h3 class="mb-0">{{ kpis.carriers_active }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Motoristas Ativos</p><h3 class="mb-0">{{ kpis.drivers_active }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Veículos Utilizados</p><h3 class="mb-0">{{ kpis.vehicles_used }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Monitoramento Térmico</p><h3 class="mb-0">{{ kpis.refrigerated_monitored }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Excursões Térmicas</p><h3 class="mb-0 text-danger">{{ kpis.excursions_total }}</h3></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">FTL</p><h3 class="mb-0">{{ kpis.ftl_total }}</h3></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">LTL</p><h3 class="mb-0">{{ kpis.ltl_total }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Evolução do Volume Operacional</h4></div>
+                    <div class="card-body">
+                        <div id="overview_activity" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

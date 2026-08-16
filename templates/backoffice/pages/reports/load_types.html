@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=False %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Operações com Carga</p><h3 class="mb-0">{{ kpis.total }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">FTL (Lotação)</p><h3 class="mb-0 text-success">{{ kpis.ftl }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">LTL (Fracionado)</p><h3 class="mb-0 text-info">{{ kpis.ltl }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Não Informado</p><h3 class="mb-0 text-warning">{{ kpis.not_informed }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Participação: FTL</p><h4 class="mb-0">{{ kpis.ftl_percentage }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Participação: LTL</p><h4 class="mb-0">{{ kpis.ltl_percentage }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">SLA no Prazo: FTL</p><h4 class="mb-0 text-success">{{ kpis.ftl_sla_percentage }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">SLA no Prazo: LTL</p><h4 class="mb-0 text-success">{{ kpis.ltl_sla_percentage }}%</h4></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Composição FTL vs LTL</h4></div>
+                    <div class="card-body">
+                        <div id="load_type_mix" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Definições Logísticas</h4></div>
+                    <div class="card-body">
+                        <p>
+                            <strong>FTL (Full Truckload / Carga Fechada):</strong> Viagens em que o veículo é dedicado a uma única expedição de carga, otimizando o tempo de trânsito e o SLA de pontualidade.
+                        </p>
+                        <p>
+                            <strong>LTL (Less Than Truckload / Carga Fracionada):</strong> Viagens com compartilhamento de veículo entre múltiplas remessas de carga, o que pode impactar os tempos de trânsito.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

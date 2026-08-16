@@ -1,0 +1,82 @@
+<form class="row g-3 mb-4" method="get">
+    <div class="col-md-3">
+        <label class="form-label">Data inicial</label>
+        <input class="form-control" type="date" name="start_date" value="{{ filters.start_date }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Data final</label>
+        <input class="form-control" type="date" name="end_date" value="{{ filters.end_date }}">
+    </div>
+    {% if organizations.count > 1 %}
+    <div class="col-md-3">
+        <label class="form-label">Organização</label>
+        <select class="form-control" name="organization_id">
+            <option value="">Todas</option>
+            {% for org in organizations %}
+                <option value="{{ org.id }}" {% if filters.organization_id == org.id|stringformat:'s' %}selected{% endif %}>{{ org.trade_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    <div class="col-md-3">
+        <label class="form-label">Transportadora</label>
+        <select class="form-control" name="carrier_id">
+            <option value="">Todas</option>
+            {% for carrier in carriers %}
+                <option value="{{ carrier.id }}" {% if filters.carrier_id == carrier.id|stringformat:'s' %}selected{% endif %}>{{ carrier.trade_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Motorista</label>
+        <select class="form-control" name="driver_id">
+            <option value="">Todos</option>
+            {% for driver in drivers %}
+                <option value="{{ driver.id }}" {% if filters.driver_id == driver.id|stringformat:'s' %}selected{% endif %}>{{ driver.full_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Veículo</label>
+        <select class="form-control" name="vehicle_id">
+            <option value="">Todos</option>
+            {% for vehicle in vehicles %}
+                <option value="{{ vehicle.id }}" {% if filters.vehicle_id == vehicle.id|stringformat:'s' %}selected{% endif %}>{{ vehicle.plate }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-control" name="status">
+            <option value="">Todos</option>
+            {% for status_val in statuses %}
+                <option value="{{ status_val }}" {% if filters.status == status_val %}selected{% endif %}>{{ status_val }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tipo de Carga</label>
+        <select class="form-control" name="cargo_profile">
+            <option value="">Todos</option>
+            {% for profile in cargo_profiles %}
+                <option value="{{ profile }}" {% if filters.cargo_profile == profile %}selected{% endif %}>{{ profile }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tipo de Serviço (FTL x LTL)</label>
+        <select class="form-control" name="load_type">
+            <option value="">Todos</option>
+            <option value="FTL" {% if filters.load_type == 'FTL' %}selected{% endif %}>FTL (Carga Fechada)</option>
+            <option value="LTL" {% if filters.load_type == 'LTL' %}selected{% endif %}>LTL (Carga Fracionada)</option>
+            <option value="NULL" {% if filters.load_type == 'NULL' %}selected{% endif %}>Não Informado</option>
+        </select>
+    </div>
+    <div class="col-md-12 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Filtrar</button>
+        <a class="btn btn-light" href="?">Limpar Filtros</a>
+        {% if export_url_needed %}
+        <button class="btn btn-outline-success" type="submit" name="export" value="csv">Exportar CSV</button>
+        {% endif %}
+    </div>
+</form>

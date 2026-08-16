@@ -1,0 +1,94 @@
+{% extends 'backoffice/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=True %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Total de Operações</p><h3 class="mb-0">{{ kpis.total_ops }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Concluídas</p><h3 class="mb-0 text-success">{{ kpis.completed }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Em Trânsito</p><h3 class="mb-0 text-info">{{ kpis.in_transit }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Canceladas</p><h3 class="mb-0 text-danger">{{ kpis.cancelled }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Valor Total da Operação</p><h3 class="mb-0 text-success">R$ {{ kpis.total_value|floatformat:2 }}</h3></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Peso Total Transportado</p><h3 class="mb-0">{{ kpis.total_weight|floatformat:2 }} kg</h3></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Volume Total Transportado</p><h3 class="mb-0">{{ kpis.total_volume|floatformat:2 }} m³</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Mapeamento por Status</h4></div>
+                    <div class="card-body">
+                        <div id="ops_by_status" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Operações Recentes (Limite: 100)</h4></div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Referência</th>
+                                        <th>Data</th>
+                                        <th>Transportadora</th>
+                                        <th>Motorista</th>
+                                        <th>Veículo</th>
+                                        <th>Tipo de Carga</th>
+                                        <th>FTL/LTL</th>
+                                        <th>Status</th>
+                                        <th>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for op in table_data %}
+                                    <tr>
+                                        <td><strong>{{ op.selection.offer.reference_code }}</strong></td>
+                                        <td>{{ op.created_at|date:"d/m/Y" }}</td>
+                                        <td>{{ op.carrier.trade_name }}</td>
+                                        <td>{{ op.driver.full_name|default:"-" }}</td>
+                                        <td>{{ op.vehicle.plate|default:"-" }}</td>
+                                        <td>{{ op.selection.offer.freight_request.cargo.cargo_profile }}</td>
+                                        <td>
+                                            {% if op.load_type %}
+                                                <span class="badge badge-info">{{ op.load_type }}</span>
+                                            {% else %}
+                                                <span class="badge badge-light">Não informado</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><span class="badge badge-success">{{ op.status }}</span></td>
+                                        <td>R$ {{ op.selection.offer.offer_amount|floatformat:2 }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4">Nenhuma operação encontrada no período.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

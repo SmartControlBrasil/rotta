@@ -1,0 +1,99 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=True %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Cargas Refrigeradas</p><h3 class="mb-0">{{ kpis.refrigerated_operations }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Operações Monitoradas</p><h3 class="mb-0 text-success">{{ kpis.monitored_operations }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Leituras Registradas</p><h3 class="mb-0 text-info">{{ kpis.thermal_readings }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Excursões Ativas</p><h3 class="mb-0 text-danger">{{ kpis.open_excursions }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Excursões Resolvidas</p><h4 class="mb-0 text-success">{{ kpis.resolved_excursions }}</h4></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Alertas: Acima da Temperatura</p><h4 class="mb-0 text-danger">{{ kpis.above_max }}</h4></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Alertas: Abaixo da Temperatura</p><h4 class="mb-0 text-info">{{ kpis.below_min }}</h4></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Alertas de Temperatura por Direção</h4></div>
+                    <div class="card-body">
+                        <div id="excursions_by_direction" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Registros de Excursão Térmica</h4></div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Operação</th>
+                                        <th>Carga</th>
+                                        <th>Veículo</th>
+                                        <th>Sensor</th>
+                                        <th>Início</th>
+                                        <th>Fim / Duração</th>
+                                        <th>Direção</th>
+                                        <th>Faixa</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ex in table_data %}
+                                    <tr>
+                                        <td><strong>{{ ex.operation.selection.offer.reference_code }}</strong></td>
+                                        <td>{{ ex.operation.selection.offer.freight_request.cargo.description }}</td>
+                                        <td>{{ ex.operation.vehicle.plate|default:"-" }}</td>
+                                        <td>{{ ex.sensor_id }}</td>
+                                        <td>{{ ex.started_at|date:"d/m/Y H:i" }}</td>
+                                        <td>
+                                            {% if ex.ended_at %}
+                                                {{ ex.ended_at|date:"d/m/Y H:i" }}
+                                            {% else %}
+                                                <span class="badge badge-danger">Em andamento</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if ex.direction == 'ABOVE_MAX' %}
+                                                <span class="text-danger"><i class="fa fa-arrow-up"></i> Acima do Máx</span>
+                                            {% else %}
+                                                <span class="text-info"><i class="fa fa-arrow-down"></i> Abaixo do Mín</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>Min Obs: {{ ex.min_observed }}°C / Max Obs: {{ ex.max_observed }}°C</td>
+                                        <td><span class="badge badge-warning">{{ ex.status }}</span></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4">Nenhuma excursão térmica registrada no período.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

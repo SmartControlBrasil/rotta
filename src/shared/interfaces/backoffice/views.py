@@ -205,6 +205,11 @@ class BackofficeContextMixin:
                 and user.is_authenticated
                 and _has_permission(user, PermissionCode.LOADS_VIEW)
             ),
+            "reports": bool(
+                user
+                and user.is_authenticated
+                and _has_permission(user, PermissionCode.REPORTS_VIEW)
+            ),
         }
         context.update(
             active_menu=self.active_menu,

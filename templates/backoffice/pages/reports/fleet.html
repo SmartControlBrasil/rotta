@@ -1,0 +1,60 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=True %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Total de Veículos</p><h3 class="mb-0">{{ kpis.total_vehicles }}</h3></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Veículos Ativos</p><h3 class="mb-0 text-success">{{ kpis.active_vehicles }}</h3></div></div></div>
+            <div class="col-xl-4 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Veículos Utilizados no Período</p><h3 class="mb-0 text-info">{{ kpis.used_vehicles }}</h3></div></div></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h4 class="card-title">Utilização e Produtividade da Frota</h4></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Capacidade de Peso (kg)</th>
+                                <th>Status do Veículo</th>
+                                <th>Total de Viagens</th>
+                                <th>Carga Seca</th>
+                                <th>Carga Refrigerada</th>
+                                <th>Total Transportado (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in table_data %}
+                            <tr>
+                                <td><strong>{{ v.plate }}</strong></td>
+                                <td>{{ v.capacity|floatformat:2 }} kg</td>
+                                <td><span class="badge badge-success">{{ v.status }}</span></td>
+                                <td>{{ v.ops_count }}</td>
+                                <td>{{ v.dry_ops }}</td>
+                                <td>{{ v.refrigerated_ops }}</td>
+                                <td>{{ v.weight_kg|floatformat:2 }} kg</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">Nenhum veículo utilizado no período.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

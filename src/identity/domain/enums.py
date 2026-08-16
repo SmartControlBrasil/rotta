@@ -112,5 +112,6 @@ class PermissionCode(StrEnum):
     TRACKING_START = "tracking.start"
     TRACKING_RECORD = "tracking.record"
     TRACKING_END = "tracking.end"
+    REPORTS_VIEW = "reports.view"
 
 

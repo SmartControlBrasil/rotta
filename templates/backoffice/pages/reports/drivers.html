@@ -1,0 +1,69 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=True %}
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-xl-4 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="mb-1 text-muted">Motoristas Ativos no Período</p>
+                        <h3 class="mb-0">{{ kpis.active_drivers }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h4 class="card-title">Performance Operacional dos Motoristas</h4></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nome Completo</th>
+                                <th>Operações Atribuídas</th>
+                                <th>Entregas Concluídas</th>
+                                <th>Cancelamentos</th>
+                                <th>SLA no Prazo</th>
+                                <th>Incidentes</th>
+                                <th>Comprovantes Entregues (POD)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in table_data %}
+                            <tr>
+                                <td><strong>{{ d.full_name }}</strong></td>
+                                <td>{{ d.ops_count }}</td>
+                                <td>{{ d.completed_count }}</td>
+                                <td>{{ d.cancelled_count }}</td>
+                                <td>
+                                    <span class="badge {% if d.sla_percentage >= 90 %}badge-success{% elif d.sla_percentage >= 75 %}badge-warning{% else %}badge-danger{% endif %}">
+                                        {{ d.sla_percentage }}%
+                                    </span>
+                                </td>
+                                <td>{{ d.incidents }}</td>
+                                <td>{{ d.pods }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">Nenhum motorista com operações no período.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

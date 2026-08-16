@@ -1,0 +1,58 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=False %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Entregas Avaliadas</p><h3 class="mb-0">{{ kpis.total_completed }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">No Prazo</p><h3 class="mb-0 text-success">{{ kpis.on_time }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Em Atraso</p><h3 class="mb-0 text-danger">{{ kpis.late }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Em Risco</p><h3 class="mb-0 text-warning">{{ kpis.at_risk }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Taxa de Pontualidade (SLA)</p><h4 class="mb-0 text-success">{{ kpis.on_time_percentage }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Taxa de Atraso</p><h4 class="mb-0 text-danger">{{ kpis.late_percentage }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Atraso Médio</p><h4 class="mb-0">{{ kpis.avg_delay_minutes }} min</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Atraso Máximo Registrado</p><h4 class="mb-0 text-danger">{{ kpis.max_delay_minutes }} min</h4></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Distribuição do Status de SLA</h4></div>
+                    <div class="card-body">
+                        <div id="sla_mix" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Análise de Indicador de Atraso</h4></div>
+                    <div class="card-body">
+                        <p>
+                            A conformidade de SLA é baseada na comparação dos marcos de horários planejados e reais para cada ponto de parada da rota de entrega da operação.
+                        </p>
+                        <p class="text-muted">
+                            Status <strong>Em Risco</strong> é atribuído a viagens ativas cujo tempo estimado de chegada (ETA) excede a janela operacional prevista na programação inicial.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

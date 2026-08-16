@@ -1,0 +1,55 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=False %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Solicitações de Frete</p><h3 class="mb-0">{{ kpis.requests_created }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Ofertas Publicadas</p><h3 class="mb-0 text-success">{{ kpis.offers_published }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Interesses Declarados</p><h3 class="mb-0 text-info">{{ kpis.interests_received }}</h3></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card"><div class="card-body"><p class="mb-1 text-muted">Operações Convertidas</p><h3 class="mb-0 text-success">{{ kpis.operations_converted }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Conversão: Solicitação -> Oferta</p><h4 class="mb-0">{{ kpis.rate_req_to_offer }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Conversão: Oferta -> Interesse</p><h4 class="mb-0">{{ kpis.rate_offer_to_interest }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Conversão: Interesse -> Seleção</p><h4 class="mb-0">{{ kpis.rate_interest_to_selection }}%</h4></div></div></div>
+            <div class="col-xl-3 col-md-6"><div class="card bg-light"><div class="card-body"><p class="mb-1 text-muted">Conversão: Seleção -> Operação</p><h4 class="mb-0">{{ kpis.rate_selection_to_op }}%</h4></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Mapeamento de Conversão (Funil)</h4></div>
+                    <div class="card-body">
+                        <div id="funnel_chart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card text-white bg-warning">
+                    <div class="card-header"><h4 class="card-title text-white">Backlog de Recursos Financeiros</h4></div>
+                    <div class="card-body">
+                        <p class="card-text text-white">
+                            Indicadores financeiros adicionais (GMV acumulado, comissão da Rotta 116 e ticket médio do marketplace) encontram-se atualmente na fila de desenvolvimento e serão integrados à interface de relatórios assim que o modelo financeiro unificado for validado e as tabelas correspondentes estiverem persistidas no banco de dados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+{{ chart_payload|json_script:"rotta-dashboard-data" }}
+{% endblock %}

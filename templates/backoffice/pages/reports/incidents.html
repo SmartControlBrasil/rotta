@@ -1,0 +1,90 @@
+{% extends 'backoffice/base.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        {% include 'backoffice/partials/breadcrumbs.html' %}
+        
+        <div class="card mb-4">
+            <div class="card-header"><h4 class="card-title">Filtros de Relatório</h4></div>
+            <div class="card-body">
+                {% include 'backoffice/partials/reports_filter.html' with export_url_needed=True %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6 col-md-6"><div class="card bg-danger-light"><div class="card-body"><p class="mb-1 text-danger">Incidentes Registrados</p><h3 class="mb-0 text-danger">{{ kpis.incidents_count }}</h3></div></div></div>
+            <div class="col-xl-6 col-md-6"><div class="card bg-success-light"><div class="card-body"><p class="mb-1 text-success">PODs Recebidos (Canhotos)</p><h3 class="mb-0 text-success">{{ kpis.pods_count }}</h3></div></div></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Log de Incidentes Recentes</h4></div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Operação</th>
+                                        <th>Data/Hora</th>
+                                        <th>Transportadora</th>
+                                        <th>Notas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for inc in incidents %}
+                                    <tr>
+                                        <td><strong>{{ inc.operation.selection.offer.reference_code }}</strong></td>
+                                        <td>{{ inc.occurred_at|date:"d/m/Y H:i" }}</td>
+                                        <td>{{ inc.operation.carrier.trade_name }}</td>
+                                        <td>{{ inc.notes }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">Nenhum incidente relatado no período.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">Log de Comprovantes de Entrega (POD)</h4></div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Operação</th>
+                                        <th>Data/Hora Entrega</th>
+                                        <th>Recebedor</th>
+                                        <th>Documento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for op in pods %}
+                                    <tr>
+                                        <td><strong>{{ op.selection.offer.reference_code }}</strong></td>
+                                        <td>{{ op.pod.delivered_at|date:"d/m/Y H:i" }}</td>
+                                        <td>{{ op.pod.receiver_name }}</td>
+                                        <td>{{ op.pod.receiver_document|default:"-" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">Nenhum comprovante de entrega (POD) recebido no período.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

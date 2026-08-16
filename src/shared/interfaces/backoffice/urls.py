@@ -71,6 +71,18 @@ from .cargas_views import (
     FreightRequestCargoListView,
     FreightRequestCargoDetailView,
 )
+from .report_views import (
+    ReportOverviewView,
+    ReportOperationsView,
+    ReportMarketplaceView,
+    ReportCarriersView,
+    ReportDriversView,
+    ReportFleetView,
+    ReportSLAView,
+    ReportIncidentsView,
+    ReportThermalView,
+    ReportLoadTypesView,
+)
 from .views import (
     AuditLogDetailView,
     AuditLogListView,
@@ -474,4 +486,16 @@ urlpatterns = [
         FreightRequestCargoDetailView.as_view(),
         name="cargas_detail",
     ),
+    
+    # Reports
+    path("reports/", ReportOverviewView.as_view(), name="report_overview"),
+    path("reports/operations/", ReportOperationsView.as_view(), name="report_operations"),
+    path("reports/marketplace/", ReportMarketplaceView.as_view(), name="report_marketplace"),
+    path("reports/carriers/", ReportCarriersView.as_view(), name="report_carriers"),
+    path("reports/drivers/", ReportDriversView.as_view(), name="report_drivers"),
+    path("reports/fleet/", ReportFleetView.as_view(), name="report_fleet"),
+    path("reports/sla/", ReportSLAView.as_view(), name="report_sla"),
+    path("reports/incidents/", ReportIncidentsView.as_view(), name="report_incidents"),
+    path("reports/thermal/", ReportThermalView.as_view(), name="report_thermal"),
+    path("reports/load-types/", ReportLoadTypesView.as_view(), name="report_load_types"),
 ]
