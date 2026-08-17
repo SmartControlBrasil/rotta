@@ -502,3 +502,208 @@ def record_thermal_reading(
                         active_excursion.save(update_fields=["status", "ended_at", "updated_at"])
 
     return reading, False
+
+
+@transaction.atomic
+def assign_carrier_driver_to_operation(
+    *,
+    actor,
+    operation_id,
+    driver_id,
+) -> FreightOperation:
+    """Assign a driver belonging to the carrier to a FreightOperation."""
+    from src.identity.domain.enums import PermissionCode
+    from src.shared.interfaces.backoffice.authorization import user_has_backoffice_permission, active_memberships_for
+    from src.carriers.infrastructure.django.models import CarrierDriverLink
+    from src.vehicles.infrastructure.django.models import DriverVehicleAssignment
+    from src.drivers.infrastructure.django.models import Driver
+
+    # 1. Fetch operation and check state machine
+    try:
+        operation = FreightOperation.objects.select_for_update().get(id=operation_id)
+    except FreightOperation.DoesNotExist:
+        raise ValidationError({"operation": "Operação não encontrada."})
+
+    # Operation in final states cannot have driver reassigned
+    if operation.status in [OperationStatus.DELIVERED.value, OperationStatus.CANCELLED.value]:
+        raise ValidationError({"operation": "Não é possível alterar motorista em uma operação finalizada."})
+
+    # 2. Check actor permission
+    if not user_has_backoffice_permission(actor, PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS.value):
+        raise ValidationError({"actor": "Usuário não possui permissão para atualizar operações de frete."})
+
+    # 3. Check actor membership / relationship to the operation's carrier
+    carrier = operation.carrier
+    if not carrier:
+        raise ValidationError({"operation": "Operação não está vinculada a nenhuma transportadora."})
+
+    # Superuser has absolute access
+    if not actor.is_superuser:
+        memberships = active_memberships_for(actor, PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS.value)
+        actor_org_ids = {m.organization_id for m in memberships}
+        if carrier.organization_id not in actor_org_ids:
+            raise ValidationError({"actor": "Acesso negado: Usuário não pertence à transportadora responsável."})
+
+    # 4. Fetch and validate driver
+    try:
+        driver = Driver.objects.get(id=driver_id)
+    except Driver.DoesNotExist:
+        raise ValidationError({"driver": "Motorista não encontrado."})
+
+    if driver.status != "ACTIVE":
+        raise ValidationError({"driver": "Motorista deve estar com status ACTIVE."})
+
+    # 5. Check if driver belongs to the same carrier via an active link
+    link_exists = CarrierDriverLink.objects.filter(carrier=carrier, driver=driver, active=True).exists()
+    if not link_exists:
+        raise ValidationError({"driver": "Motorista não está vinculado a esta transportadora."})
+
+    # 6. Check driver tenant / organization compatibility
+    if carrier.tenant_id != driver.organization_id:
+        raise ValidationError({"driver": "Motorista pertence a um tenant incompatível."})
+
+    # 7. Driver vehicle assignment compatibility
+    if operation.vehicle:
+        # Check if driver has an active assignment to a different vehicle
+        active_assignment = DriverVehicleAssignment.objects.filter(
+            driver=driver, active=True
+        ).first()
+        if active_assignment and active_assignment.vehicle_id != operation.vehicle_id:
+            raise ValidationError({"driver": "Motorista possui vínculo incompatível com o veículo da operação."})
+
+    # 8. Record audit log and transition
+    before = {
+        "driver_id": str(operation.driver_id) if operation.driver_id else None,
+        "driver_name": operation.driver.full_name if operation.driver else None,
+    }
+    after = {
+        "driver_id": str(driver.id),
+        "driver_name": driver.full_name,
+    }
+
+    operation.driver = driver
+    operation.save(update_fields=["driver", "updated_at"])
+
+    record_audit_event(
+        action="driver_assigned" if before["driver_id"] is None else "driver_reassigned",
+        actor=actor,
+        organization=operation.organization,
+        target=operation,
+        before=before,
+        after=after,
+    )
+
+    return operation
+
+
+@transaction.atomic
+def assign_carrier_vehicle_to_operation(
+    *,
+    actor,
+    operation_id,
+    vehicle_id,
+) -> FreightOperation:
+    """Assign a vehicle belonging to the carrier to a FreightOperation."""
+    from src.identity.domain.enums import PermissionCode
+    from src.shared.interfaces.backoffice.authorization import user_has_backoffice_permission, active_memberships_for
+    from src.carriers.infrastructure.django.models import CarrierVehicleLink
+    from src.vehicles.infrastructure.django.models import DriverVehicleAssignment, Vehicle
+
+    # 1. Fetch operation and check state machine
+    try:
+        operation = FreightOperation.objects.select_for_update().get(id=operation_id)
+    except FreightOperation.DoesNotExist:
+        raise ValidationError({"operation": "Operação não encontrada."})
+
+    # Operation in final states cannot have vehicle reassigned
+    if operation.status in [OperationStatus.DELIVERED.value, OperationStatus.CANCELLED.value]:
+        raise ValidationError({"operation": "Não é possível alterar veículo em uma operação finalizada."})
+
+    # 2. Check actor permission
+    if not user_has_backoffice_permission(actor, PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS.value):
+        raise ValidationError({"actor": "Usuário não possui permissão para atualizar operações de frete."})
+
+    # 3. Check actor membership / relationship to the operation's carrier
+    carrier = operation.carrier
+    if not carrier:
+        raise ValidationError({"operation": "Operação não está vinculada a nenhuma transportadora."})
+
+    # Superuser has absolute access
+    if not actor.is_superuser:
+        memberships = active_memberships_for(actor, PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS.value)
+        actor_org_ids = {m.organization_id for m in memberships}
+        if carrier.organization_id not in actor_org_ids:
+            raise ValidationError({"actor": "Acesso negado: Usuário não pertence à transportadora responsável."})
+
+    # 4. Fetch and validate vehicle
+    try:
+        vehicle = Vehicle.objects.get(id=vehicle_id)
+    except Vehicle.DoesNotExist:
+        raise ValidationError({"vehicle": "Veículo não encontrado."})
+
+    if vehicle.status != "ACTIVE":
+        raise ValidationError({"vehicle": "Veículo deve estar com status ACTIVE."})
+
+    # 5. Check if vehicle belongs to the same carrier via an active link
+    link_exists = CarrierVehicleLink.objects.filter(carrier=carrier, vehicle=vehicle, active=True).exists()
+    if not link_exists:
+        raise ValidationError({"vehicle": "Veículo não está vinculado a esta transportadora."})
+
+    # 6. Check vehicle tenant / organization compatibility
+    if carrier.tenant_id != vehicle.organization_id:
+        raise ValidationError({"vehicle": "Veículo pertence a um tenant incompatível."})
+
+    # 7. Driver vehicle assignment compatibility
+    if operation.driver:
+        # Check if operation's current driver has an active assignment to a different vehicle
+        active_assignment = DriverVehicleAssignment.objects.filter(
+            driver=operation.driver, active=True
+        ).first()
+        if active_assignment and active_assignment.vehicle_id != vehicle.id:
+            raise ValidationError({"vehicle": "Veículo é incompatível com o motorista ativo na operação."})
+
+    # 8. Record audit log and transition
+    before = {
+        "vehicle_id": str(operation.vehicle_id) if operation.vehicle_id else None,
+        "vehicle_plate": operation.vehicle.plate if operation.vehicle else None,
+    }
+    after = {
+        "vehicle_id": str(vehicle.id),
+        "vehicle_plate": vehicle.plate,
+    }
+
+    operation.vehicle = vehicle
+    operation.save(update_fields=["vehicle", "updated_at"])
+
+    record_audit_event(
+        action="vehicle_assigned" if before["vehicle_id"] is None else "vehicle_reassigned",
+        actor=actor,
+        organization=operation.organization,
+        target=operation,
+        before=before,
+        after=after,
+    )
+
+    return operation
+
+
+def carrier_operations_visible_to(actor, permission_code: str):
+    """Retrieve FreightOperations visible to a carrier user based on their active memberships."""
+    from src.shared.interfaces.backoffice.authorization import permission_grant_for
+    from src.shared.domain.enums import AccessScope
+    from django.db.models import Q
+
+    grant = permission_grant_for(actor, permission_code)
+    queryset = FreightOperation.objects.all()
+    if not grant.allowed:
+        return queryset.none()
+    if grant.scope == AccessScope.ALL:
+        return queryset
+    if grant.scope == AccessScope.OWN:
+        return queryset.filter(selection__offer__owner=actor)
+
+    organization_ids = {membership.organization_id for membership in grant.memberships}
+    return queryset.filter(
+        Q(organization_id__in=organization_ids) | Q(carrier__organization_id__in=organization_ids)
+    )
+
