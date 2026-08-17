@@ -189,7 +189,7 @@ class FreightOperationAdvanceStatusView(BackofficePermissionMixin, View):
 
     def post(self, request, pk):
         operation = get_object_or_404(
-            scoped_freight_operations_queryset(request.user, PermissionCode.FREIGHT_OPERATIONS_VIEW.value),
+            scoped_freight_operations_queryset(request.user, self.permission_code.value),
             pk=pk
         )
         next_status_val = request.POST.get("next_status")
@@ -220,7 +220,7 @@ class FreightOperationReportIncidentView(BackofficePermissionMixin, View):
 
     def post(self, request, pk):
         operation = get_object_or_404(
-            scoped_freight_operations_queryset(request.user, PermissionCode.FREIGHT_OPERATIONS_VIEW.value),
+            scoped_freight_operations_queryset(request.user, self.permission_code.value),
             pk=pk
         )
         description = request.POST.get("description")
@@ -250,7 +250,7 @@ class FreightOperationCancelView(BackofficePermissionMixin, View):
 
     def post(self, request, pk):
         operation = get_object_or_404(
-            scoped_freight_operations_queryset(request.user, PermissionCode.FREIGHT_OPERATIONS_VIEW.value),
+            scoped_freight_operations_queryset(request.user, self.permission_code.value),
             pk=pk
         )
         reason = request.POST.get("reason")
@@ -280,7 +280,7 @@ class FreightOperationRecordPODView(BackofficePermissionMixin, View):
 
     def post(self, request, pk):
         operation = get_object_or_404(
-            scoped_freight_operations_queryset(request.user, PermissionCode.FREIGHT_OPERATIONS_VIEW.value),
+            scoped_freight_operations_queryset(request.user, self.permission_code.value),
             pk=pk
         )
         receiver_name = request.POST.get("receiver_name")

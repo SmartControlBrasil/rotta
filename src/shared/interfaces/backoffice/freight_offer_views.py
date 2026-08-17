@@ -695,7 +695,10 @@ class FreightOfferWithdrawInterestView(BackofficePermissionMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        interest = get_object_or_404(FreightOfferInterest, pk=kwargs["interest_pk"])
+        interest = get_object_or_404(
+            FreightOfferInterest.objects.filter(offer__in=_offer_queryset(request.user)),
+            pk=kwargs["interest_pk"]
+        )
         from src.freights.application.marketplace_services import withdraw_interest
 
         try:
@@ -710,7 +713,10 @@ class FreightOfferSelectCandidateView(BackofficePermissionMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        interest = get_object_or_404(FreightOfferInterest, pk=kwargs["interest_pk"])
+        interest = get_object_or_404(
+            FreightOfferInterest.objects.filter(offer__in=_offer_queryset(request.user)),
+            pk=kwargs["interest_pk"]
+        )
         from src.freights.application.marketplace_services import select_interested_candidate
 
         try:
@@ -725,7 +731,10 @@ class FreightOfferCancelSelectionView(BackofficePermissionMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        selection = get_object_or_404(FreightOfferSelection, pk=kwargs["selection_pk"])
+        selection = get_object_or_404(
+            FreightOfferSelection.objects.filter(offer__in=_offer_queryset(request.user)),
+            pk=kwargs["selection_pk"]
+        )
         reason = request.POST.get("reason", "Cancelamento via backoffice.")
         from src.freights.application.marketplace_services import cancel_selection
 
@@ -741,7 +750,10 @@ class FreightOfferConfirmSelectionView(BackofficePermissionMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        selection = get_object_or_404(FreightOfferSelection, pk=kwargs["selection_pk"])
+        selection = get_object_or_404(
+            FreightOfferSelection.objects.filter(offer__in=_offer_queryset(request.user)),
+            pk=kwargs["selection_pk"]
+        )
         from src.freights.application.marketplace_services import confirm_selection
 
         try:
@@ -756,7 +768,10 @@ class FreightOfferDeclineSelectionView(BackofficePermissionMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        selection = get_object_or_404(FreightOfferSelection, pk=kwargs["selection_pk"])
+        selection = get_object_or_404(
+            FreightOfferSelection.objects.filter(offer__in=_offer_queryset(request.user)),
+            pk=kwargs["selection_pk"]
+        )
         reason_str = request.POST.get("reason", "OTHER")
         from src.freights.domain.matching_enums import SelectionDeclineReason
 
