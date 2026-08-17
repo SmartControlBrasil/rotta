@@ -1,0 +1,83 @@
+{% extends 'customer/base.html' %}
+
+{% block title %}Início - Rotta 116 Portal do Cliente{% endblock %}
+{% block page_title %}Olá, {{ request.user.get_full_name|default:request.user.username }}!{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'customer:freight_requests_new' %}" class="btn btn-primary">Solicitar Novo Frete</a>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Summary -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Aguardando</span>
+        <span class="stat-val" style="color: var(--info);">{{ awaiting_freights }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Rascunhos</span>
+        <span class="stat-val" style="color: var(--warning);">{{ in_progress_freights }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Concluídos</span>
+        <span class="stat-val" style="color: var(--success);">{{ completed_freights }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Total de Pedidos</span>
+        <span class="stat-val">{{ total_freights }}</span>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<div class="table-card">
+    <div class="table-title-bar">
+        <h2 class="table-title">Últimas Solicitações</h2>
+        <a href="{% url 'customer:freight_requests_list' %}" style="color: var(--primary); font-size: 0.9rem; font-weight: 600;">Ver todos</a>
+    </div>
+    
+    <div class="responsive-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ref</th>
+                    <th>Carga</th>
+                    <th>Origem</th>
+                    <th>Destino</th>
+                    <th>Data Prevista</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in recent_requests %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--text-muted);">{{ req.reference_code|default:req.id|slice:":8" }}</td>
+                    <td style="font-weight: 600;">
+                        {{ req.cargo_description }}
+                        {% if req.refrigerated %}
+                        <span style="font-size: 0.7rem; background-color: #e0f2fe; color: #0284c7; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.25rem;">Refri</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.origin }}</td>
+                    <td>{{ req.destination }}</td>
+                    <td>{{ req.scheduled_date|date:"d/m/Y"|default:"Imediata" }}</td>
+                    <td>
+                        <span class="badge badge-{{ req.status|lower }}">{{ req.status_label }}</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'customer:freight_request_detail' uuid=req.id %}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Detalhes</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                        Você ainda não realizou nenhuma solicitação de frete.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

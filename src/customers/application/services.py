@@ -296,8 +296,8 @@ def create_customer_freight_request(
         customer=customer,
         created_by=actor,
         owner=actor,
-        instructions=payload.get("notes", ""),
-        handling_requirements=payload.get("contact", ""),
+        instructions=payload.get("notes") or "",
+        handling_requirements=payload.get("contact") or "",
         stops=(origin_stop, dest_stop),
         cargo=cargo_data,
     )

@@ -1,0 +1,112 @@
+{% extends 'customer/base.html' %}
+
+{% block title %}Solicitar Novo Frete - Rotta 116 Portal do Cliente{% endblock %}
+{% block page_title %}Solicitar Novo Frete{% endblock %}
+{% block nav_new %}active{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    {% if non_field_errors %}
+    <div class="alert-box alert-danger">
+        {{ non_field_errors }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'customer:freight_requests_new' %}">
+        {% csrf_token %}
+        
+        <!-- Step 1: Route & Time -->
+        <h3 class="section-title">1. Rota e Agendamento</h3>
+        <div class="form-group row">
+            <div>
+                <label for="origin">Cidade de Origem (Coleta)*</label>
+                <input type="text" id="origin" name="origin" value="{{ payload.origin|default:'' }}" placeholder="Ex: Itapevi - SP" required>
+                {% if errors.origin %}<span style="color: var(--danger); font-size: 0.8rem;">{{ errors.origin }}</span>{% endif %}
+            </div>
+            <div>
+                <label for="destination">Cidade de Destino (Entrega)*</label>
+                <input type="text" id="destination" name="destination" value="{{ payload.destination|default:'' }}" placeholder="Ex: Barueri - SP" required>
+                {% if errors.destination %}<span style="color: var(--danger); font-size: 0.8rem;">{{ errors.destination }}</span>{% endif %}
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div>
+                <label for="service_type">Tipo de Atendimento*</label>
+                <select id="service_type" name="service_type" onchange="toggleScheduledDate()">
+                    <option value="ON_DEMAND" {% if payload.service_type == 'ON_DEMAND' %}selected{% endif %}>Preciso agora (Sob Demanda)</option>
+                    <option value="SCHEDULED" {% if payload.service_type == 'SCHEDULED' %}selected{% endif %}>Agendar Coleta</option>
+                </select>
+            </div>
+            <div id="scheduled_date_wrapper" style="display: {% if payload.service_type == 'SCHEDULED' %}block{% else %}none{% endif %};">
+                <label for="when">Data da Coleta*</label>
+                <input type="date" id="when" name="when" value="{{ payload.when|default:'' }}">
+                {% if errors.when %}<span style="color: var(--danger); font-size: 0.8rem;">{{ errors.when }}</span>{% endif %}
+            </div>
+        </div>
+
+        <!-- Step 2: Cargo Specifications -->
+        <h3 class="section-title" style="margin-top: 2rem;">2. Carga e Especificações</h3>
+        <div class="form-group">
+            <label for="cargo_description">Descrição da Carga*</label>
+            <input type="text" id="cargo_description" name="cargo_description" value="{{ payload.cargo.description|default:'' }}" placeholder="Ex: 3 pallets de bobinas metálicas" required>
+            {% if errors.cargo_description %}<span style="color: var(--danger); font-size: 0.8rem;">{{ errors.cargo_description }}</span>{% endif %}
+        </div>
+
+        <div class="form-group row">
+            <div>
+                <label for="weight_kg">Peso Aproximado (kg)*</label>
+                <input type="number" id="weight_kg" name="weight_kg" step="0.1" value="{{ payload.cargo.weight_kg|default:'' }}" placeholder="Ex: 1800" required>
+                {% if errors.weight_kg %}<span style="color: var(--danger); font-size: 0.8rem;">{{ errors.weight_kg }}</span>{% endif %}
+            </div>
+            <div>
+                <label for="volume_m3">Volume Estimado (m³ - opcional)</label>
+                <input type="number" id="volume_m3" name="volume_m3" step="0.1" value="{{ payload.cargo.volume_m3|default:'' }}" placeholder="Ex: 5">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="switch-container">
+                <span style="font-weight: 600; font-size: 0.9rem;">Carga refrigerada?</span>
+                <label class="switch">
+                    <input type="checkbox" id="refrigerated" name="refrigerated" {% if payload.cargo.refrigerated %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Step 3: Additional Details -->
+        <h3 class="section-title" style="margin-top: 2rem;">3. Observações e Contato</h3>
+        <div class="form-group">
+            <label for="notes">Instruções de Coleta/Entrega</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Ex: Entrar pela portaria 2, doca 15.">{{ payload.notes|default:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Nome do Contato e Telefone</label>
+            <input type="text" id="contact" name="contact" value="{{ payload.contact|default:'' }}" placeholder="Ex: João Silva - (11) 99999-9999">
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'customer:dashboard' %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Confirmar Solicitação</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleScheduledDate() {
+    var select = document.getElementById("service_type");
+    var wrapper = document.getElementById("scheduled_date_wrapper");
+    var dateInput = document.getElementById("when");
+    if (select.value === "SCHEDULED") {
+        wrapper.style.display = "block";
+        dateInput.required = true;
+    } else {
+        wrapper.style.display = "none";
+        dateInput.required = false;
+        dateInput.value = "";
+    }
+}
+</script>
+{% endblock %}

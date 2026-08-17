@@ -1,0 +1,63 @@
+{% extends 'customer/base.html' %}
+
+{% block title %}Meus Fretes - Rotta 116 Portal do Cliente{% endblock %}
+{% block page_title %}Meus Fretes{% endblock %}
+{% block nav_list %}active{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'customer:freight_requests_new' %}" class="btn btn-primary">Solicitar Novo Frete</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-card" style="margin-top: 0;">
+    <div class="table-title-bar">
+        <h2 class="table-title">Histórico de Solicitações</h2>
+    </div>
+    
+    <div class="responsive-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ref</th>
+                    <th>Carga</th>
+                    <th>Origem</th>
+                    <th>Destino</th>
+                    <th>Data Prevista</th>
+                    <th>Peso (kg)</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in serialized_requests %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--text-muted);">{{ req.reference_code|default:req.id|slice:":8" }}</td>
+                    <td style="font-weight: 600;">
+                        {{ req.cargo_description }}
+                        {% if req.refrigerated %}
+                        <span style="font-size: 0.7rem; background-color: #e0f2fe; color: #0284c7; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.25rem;">Refri</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.origin }}</td>
+                    <td>{{ req.destination }}</td>
+                    <td>{{ req.scheduled_date|date:"d/m/Y"|default:"Imediata" }}</td>
+                    <td>{{ req.weight_kg|floatformat:1|default:"-" }}</td>
+                    <td>
+                        <span class="badge badge-{{ req.status|lower }}">{{ req.status_label }}</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'customer:freight_request_detail' uuid=req.id %}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Detalhes</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                        Nenhuma solicitação encontrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
