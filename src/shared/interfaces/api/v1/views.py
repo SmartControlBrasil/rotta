@@ -15,6 +15,7 @@ from src.shared.interfaces.api.v1.auth import (
     validate_refresh_token,
     revoke_token,
     mobile_auth_required,
+    customer_auth_required,
 )
 
 from src.freights.application.operation_services import (
@@ -848,3 +849,94 @@ def record_thermal_reading_view(request, uuid):
         "within_range": within_range,
         "active_excursion": active_excursion_data,
     }, status=201 if not duplicate else 200)
+
+
+@csrf_exempt
+@customer_auth_required
+def customer_freight_requests_view(request):
+    from src.freights.infrastructure.django.models import FreightRequest
+    from src.customers.application.services import create_customer_freight_request
+
+    if request.method == "GET":
+        qs = FreightRequest.objects.filter(customer=request.customer).order_by("-created_at")
+        results = [serialize_customer_freight_request(req) for req in qs]
+        return JsonResponse({"count": len(results), "results": results})
+
+    elif request.method == "POST":
+        body = parse_json_body(request)
+        if body is None:
+            return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
+            
+        origin = body.get("origin")
+        destination = body.get("destination")
+        if not origin or not destination:
+            return error_response("bad_request", "Origem e destino são obrigatórios.", 400)
+            
+        cargo = body.get("cargo", {})
+        if not cargo or not cargo.get("description"):
+            return error_response("bad_request", "A descrição da carga é obrigatória.", 400)
+            
+        try:
+            req = create_customer_freight_request(
+                actor=request.user,
+                customer=request.customer,
+                payload=body
+            )
+            return JsonResponse(serialize_customer_freight_request(req), status=201)
+        except ValidationError as e:
+            msg = e.message_dict if hasattr(e, "message_dict") else str(e)
+            return error_response("validation_error", f"Erro de validação: {msg}", 400)
+        except PermissionDenied as e:
+            return error_response("forbidden", str(e), 403)
+        except Exception as e:
+            return error_response("internal_error", f"Erro inesperado: {str(e)}", 500)
+
+    else:
+        return error_response("method_not_allowed", f"Método {request.method} não suportado.", 405)
+
+
+@csrf_exempt
+@customer_auth_required
+def customer_freight_request_detail_view(request, uuid):
+    from django.shortcuts import get_object_or_404
+    from src.freights.infrastructure.django.models import FreightRequest
+
+    if request.method != "GET":
+        return error_response("method_not_allowed", f"Método {request.method} não suportado.", 405)
+
+    req = get_object_or_404(FreightRequest.objects.filter(customer=request.customer), pk=uuid)
+    return JsonResponse(serialize_customer_freight_request(req))
+
+
+def serialize_customer_freight_request(req) -> dict:
+    from src.freights.domain.enums import FreightCargoProfile
+    
+    pickup = req.pickup_stop
+    delivery = req.delivery_stop
+    cargo = getattr(req, "cargo", None)
+    
+    return {
+        "id": str(req.id),
+        "status": req.status,
+        "reference_code": req.reference_code,
+        "origin": {
+            "city": pickup.city if pickup else "",
+            "state": pickup.state if pickup else "",
+            "street": pickup.street if pickup else "",
+        } if pickup else None,
+        "destination": {
+            "city": delivery.city if delivery else "",
+            "state": delivery.state if delivery else "",
+            "street": delivery.street if delivery else "",
+        } if delivery else None,
+        "scheduled_date": pickup.scheduled_date.isoformat() if pickup and pickup.scheduled_date else None,
+        "cargo": {
+            "description": cargo.description if cargo else "",
+            "weight_kg": float(cargo.weight_kg) if cargo and cargo.weight_kg else None,
+            "volume_m3": float(cargo.volume_m3) if cargo and cargo.volume_m3 else None,
+            "refrigerated": cargo.cargo_profile == FreightCargoProfile.REFRIGERATED_CARGO.value if cargo else False,
+        } if cargo else None,
+        "notes": req.instructions,
+        "contact": req.handling_requirements,
+        "created_at": req.created_at.isoformat(),
+    }

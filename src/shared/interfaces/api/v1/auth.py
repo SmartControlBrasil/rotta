@@ -118,3 +118,64 @@ def mobile_auth_required(view_func):
         return view_func(request, *args, **kwargs)
 
     return wrapped_view
+
+
+def customer_auth_required(view_func):
+    """Decorator to enforce customer authentication.
+    Injects request.user, request.customer, and request.organization.
+    """
+    @wraps(view_func)
+    def wrapped_view(request, *args, **kwargs):
+        auth_header = request.headers.get("Authorization", "")
+        token = None
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+        elif auth_header.startswith("Token "):
+            token = auth_header[6:]
+
+        if not token:
+            return JsonResponse({
+                "error": {
+                    "code": "unauthorized",
+                    "message": "Authentication token required."
+                }
+            }, status=401)
+
+        user = validate_access_token(token)
+        if not user:
+            return JsonResponse({
+                "error": {
+                    "code": "unauthorized",
+                    "message": "Invalid or expired token."
+                }
+            }, status=401)
+
+        request.user = user
+        request.auth_token = token
+        
+        from src.customers.infrastructure.django.models import Customer
+        from src.organizations.infrastructure.django.models import Membership
+        
+        customer = Customer.objects.filter(owner=user).first()
+        if not customer:
+            active_membership = Membership.objects.filter(
+                user=user,
+                status="ACTIVE",
+                organization__type="CUSTOMER"
+            ).first()
+            if active_membership:
+                customer = Customer.objects.filter(organization=active_membership.organization).first()
+                
+        if not customer:
+            return JsonResponse({
+                "error": {
+                    "code": "forbidden",
+                    "message": "Authenticated user is not linked to any Customer profile."
+                }
+            }, status=403)
+            
+        request.customer = customer
+        request.organization = customer.organization
+        return view_func(request, *args, **kwargs)
+
+    return wrapped_view

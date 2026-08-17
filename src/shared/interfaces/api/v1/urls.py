@@ -23,4 +23,8 @@ urlpatterns = [
     path("tracking/<uuid:session_uuid>/locations/", views.record_location_view, name="record_location"),
     path("tracking/<uuid:session_uuid>/locations/batch/", views.record_location_batch_view, name="record_location_batch"),
     path("tracking/<uuid:session_uuid>/end/", views.end_tracking_view, name="end_tracking"),
+
+    # Customer Freight Requests
+    path("customer/freight-requests/", views.customer_freight_requests_view, name="customer_freight_requests"),
+    path("customer/freight-requests/<uuid:uuid>/", views.customer_freight_request_detail_view, name="customer_freight_request_detail"),
 ]

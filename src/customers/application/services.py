@@ -166,3 +166,141 @@ def _customer_audit_payload(customer: Customer) -> dict[str, Any]:
         "business_unit_id": str(customer.business_unit_id) if customer.business_unit_id else "",
         "owner_id": str(customer.owner_id) if customer.owner_id else "",
     }
+
+
+def _parse_simplified_address(address_data, stop_type, sequence, default_date=None):
+    from src.freights.application.services import StopData
+    from src.freights.domain.enums import FreightStopType
+    
+    if isinstance(address_data, str):
+        parts = [p.strip() for p in address_data.split("-")]
+        city = ""
+        state = ""
+        if len(parts) >= 2:
+            city = parts[0]
+            state = parts[1][:2].upper()
+        else:
+            city = address_data
+        return StopData(
+            stop_type=stop_type,
+            sequence=sequence,
+            city=city,
+            state=state,
+            scheduled_date=default_date
+        )
+    elif isinstance(address_data, dict):
+        return StopData(
+            stop_type=stop_type,
+            sequence=sequence,
+            postal_code=address_data.get("postal_code", ""),
+            street=address_data.get("street", ""),
+            number=address_data.get("number", ""),
+            complement=address_data.get("complement", ""),
+            district=address_data.get("district", ""),
+            city=address_data.get("city", ""),
+            state=address_data.get("state", "").upper() if address_data.get("state") else "",
+            scheduled_date=address_data.get("scheduled_date") or default_date,
+            window_start=address_data.get("window_start"),
+            window_end=address_data.get("window_end"),
+        )
+    else:
+        raise ValidationError({"address": "Formato de endereço inválido."})
+
+
+@transaction.atomic
+def create_customer_freight_request(
+    *,
+    actor: Any,
+    customer: Customer,
+    payload: dict[str, Any],
+) -> Any:
+    from decimal import Decimal
+    from django.utils import timezone
+    from django.core.exceptions import PermissionDenied
+    from src.organizations.infrastructure.django.models import Membership
+    from src.freights.application.services import (
+        CargoData,
+        FreightRequestData,
+        create_freight_request
+    )
+    from src.freights.domain.enums import FreightStopType, FreightCargoProfile, FreightCargoType
+    
+    # 1. Validate active membership
+    membership = Membership.objects.filter(
+        user=actor,
+        organization=customer.organization,
+        status="ACTIVE"
+    ).first()
+    if not membership:
+        raise PermissionDenied("Usuário sem vínculo ativo com a organização do cliente.")
+        
+    # 2. Parse scheduled date / service type
+    service_type = payload.get("service_type", "ON_DEMAND")
+    when = payload.get("when")
+    
+    scheduled_date = timezone.localdate()
+    if service_type == "SCHEDULED":
+        if not when:
+            raise ValidationError({"when": "Data de agendamento é obrigatória para serviços agendados."})
+        
+        if isinstance(when, str):
+            from django.utils.dateparse import parse_date
+            parsed = parse_date(when)
+            if not parsed:
+                from django.utils.dateparse import parse_datetime
+                dt = parse_datetime(when)
+                parsed = dt.date() if dt else None
+            if not parsed:
+                raise ValidationError({"when": "Formato de data inválido. Use AAAA-MM-DD."})
+            scheduled_date = parsed
+        elif isinstance(when, (timezone.datetime, timezone.datetime.date)):
+            scheduled_date = when.date() if isinstance(when, timezone.datetime) else when
+            
+        if scheduled_date < timezone.localdate():
+            raise ValidationError({"when": "A data de agendamento não pode ser no passado."})
+            
+    # 3. Parse cargo
+    cargo_payload = payload.get("cargo", {})
+    refrigerated = cargo_payload.get("refrigerated", False)
+    profile = FreightCargoProfile.REFRIGERATED_CARGO if refrigerated else FreightCargoProfile.DRY_CARGO
+    
+    weight_kg = cargo_payload.get("weight_kg") or cargo_payload.get("approx_weight_kg")
+    if weight_kg is not None:
+        try:
+            weight_kg = Decimal(str(weight_kg))
+        except (ValueError, TypeError):
+            raise ValidationError({"weight_kg": "Peso inválido."})
+            
+    volume_m3 = cargo_payload.get("volume_m3")
+    if volume_m3 is not None:
+        try:
+            volume_m3 = Decimal(str(volume_m3))
+        except (ValueError, TypeError):
+            raise ValidationError({"volume_m3": "Volume inválido."})
+            
+    cargo_data = CargoData(
+        description=cargo_payload.get("description", "Carga Geral"),
+        cargo_type=FreightCargoType.GENERAL_CARGO,
+        cargo_profile=profile,
+        weight_kg=weight_kg,
+        volume_m3=volume_m3,
+    )
+    
+    # 4. Parse stops
+    origin_stop = _parse_simplified_address(payload.get("origin"), FreightStopType.PICKUP, 1, scheduled_date)
+    dest_stop = _parse_simplified_address(payload.get("destination"), FreightStopType.DELIVERY, 2, scheduled_date)
+    
+    # 5. Build freight request DTO
+    req_data = FreightRequestData(
+        organization=customer.organization,
+        customer=customer,
+        created_by=actor,
+        owner=actor,
+        instructions=payload.get("notes", ""),
+        handling_requirements=payload.get("contact", ""),
+        stops=(origin_stop, dest_stop),
+        cargo=cargo_data,
+    )
+    
+    # 6. Execute backend creation service
+    return create_freight_request(data=req_data, actor=actor)
