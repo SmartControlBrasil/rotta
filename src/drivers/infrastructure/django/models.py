@@ -322,3 +322,96 @@ class DriverRouteIntent(UUIDTimestampedModel):
 
     def __str__(self) -> str:
         return f"{self.driver} · {self.route_label}"
+
+
+class DriverPreference(UUIDTimestampedModel):
+    driver = models.OneToOneField(
+        Driver,
+        on_delete=models.CASCADE,
+        related_name="preferences",
+    )
+    base_city = models.CharField(max_length=80, blank=True)
+    base_state = models.CharField(max_length=2, blank=True)
+    base_postal_code = models.CharField(max_length=20, blank=True)
+    base_latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, blank=True, null=True
+    )
+    base_longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, blank=True, null=True
+    )
+    preferred_radius_km = models.PositiveIntegerField(blank=True, null=True)
+
+    def clean(self):
+        super().clean()
+        if self.base_state:
+            self.base_state = self.base_state.upper()
+            if len(self.base_state) != 2:
+                raise ValidationError({"base_state": "Estado deve ter 2 caracteres."})
+        if self.base_latitude is not None:
+            self.base_latitude = round(self.base_latitude, 6)
+            if not (-90 <= self.base_latitude <= 90):
+                raise ValidationError({"base_latitude": "Latitude deve estar entre -90 e 90."})
+        if self.base_longitude is not None:
+            self.base_longitude = round(self.base_longitude, 6)
+            if not (-180 <= self.base_longitude <= 180):
+                raise ValidationError({"base_longitude": "Longitude deve estar entre -180 e 180."})
+        if self.preferred_radius_km is not None:
+            if self.preferred_radius_km <= 0:
+                raise ValidationError({"preferred_radius_km": "Raio preferencial deve ser maior que zero."})
+
+    def save(self, *args, **kwargs):
+        if self.base_state:
+            self.base_state = self.base_state.upper()
+        if self.base_latitude is not None:
+            self.base_latitude = round(self.base_latitude, 6)
+        if self.base_longitude is not None:
+            self.base_longitude = round(self.base_longitude, 6)
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f"Preferences for {self.driver.full_name}"
+
+
+class DriverRegionPreferenceType(models.TextChoices):
+    PREFER = "PREFER", "Preferida"
+    AVOID = "AVOID", "Evitada"
+
+
+class DriverRegionPreference(UUIDTimestampedModel):
+    driver = models.ForeignKey(
+        Driver,
+        on_delete=models.CASCADE,
+        related_name="region_preferences",
+    )
+    city = models.CharField(max_length=80)
+    state = models.CharField(max_length=2)
+    preference_type = models.CharField(
+        max_length=10,
+        choices=DriverRegionPreferenceType.choices,
+        default=DriverRegionPreferenceType.PREFER,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["driver", "city", "state", "preference_type"],
+                name="unique_driver_region_preference",
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.state:
+            self.state = self.state.upper()
+            if len(self.state) != 2:
+                raise ValidationError({"state": "Estado deve ter 2 caracteres."})
+
+    def save(self, *args, **kwargs):
+        if self.state:
+            self.state = self.state.upper()
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        type_str = "Preferred" if self.preference_type == DriverRegionPreferenceType.PREFER else "Avoided"
+        return f"{self.driver.full_name} -> {type_str} region: {self.city}/{self.state}"
+

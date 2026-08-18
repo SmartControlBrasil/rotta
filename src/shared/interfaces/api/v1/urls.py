@@ -9,6 +9,11 @@ urlpatterns = [
     path("auth/token/refresh/", views.token_refresh_view, name="token_refresh"),
     path("auth/token/revoke/", views.token_revoke_view, name="token_revoke"),
     path("me/", views.me_view, name="me"),
+
+    # Driver Preferences & Route Intents
+    path("driver/preferences/", views.driver_preferences_view, name="driver_preferences"),
+    path("driver/route-intents/", views.driver_route_intents_view, name="driver_route_intents"),
+    path("driver/route-intents/<uuid:uuid>/cancel/", views.cancel_driver_route_intent_view, name="cancel_driver_route_intent"),
     
     # Operations
     path("driver/operations/", views.driver_operations_view, name="driver_operations"),

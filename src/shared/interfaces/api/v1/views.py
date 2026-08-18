@@ -940,3 +940,192 @@ def serialize_customer_freight_request(req) -> dict:
         "contact": req.handling_requirements,
         "created_at": req.created_at.isoformat(),
     }
+
+
+@csrf_exempt
+@mobile_auth_required
+def driver_preferences_view(request):
+    driver = request.driver
+    if request.method == "GET":
+        from src.drivers.application.preferences_services import get_driver_preferences
+        prefs = get_driver_preferences(driver)
+        return JsonResponse(prefs, status=200)
+        
+    elif request.method == "PUT":
+        from src.drivers.application.preferences_services import update_driver_preferences
+        payload = parse_json_body(request)
+        if payload is None:
+            return error_response("bad_request", "JSON inválido no corpo da requisição.", 400)
+            
+        try:
+            update_driver_preferences(driver, payload, actor=request.user)
+            from src.drivers.application.preferences_services import get_driver_preferences
+            prefs = get_driver_preferences(driver)
+            return JsonResponse(prefs, status=200)
+        except ValidationError as e:
+            msg = e.message_dict if hasattr(e, "message_dict") else str(e)
+            return error_response("validation_error", str(msg), 400)
+            
+    else:
+        return error_response("method_not_allowed", "Método não permitido.", 405)
+
+
+@csrf_exempt
+@mobile_auth_required
+def driver_route_intents_view(request):
+    from datetime import datetime
+    from src.drivers.infrastructure.django.models import DriverRouteIntent
+    from src.drivers.application.route_intent_services import apply_route_intent_expiration_if_needed, create_driver_route_intent, DriverRouteIntentData
+    from src.drivers.domain.route_intent_enums import DriverRouteIntentType, DriverRouteIntentStatus, DriverRouteIntentSource, RouteIntentCargoPreference
+    from src.vehicles.infrastructure.django.models import DriverVehicleAssignment, Vehicle
+    from decimal import Decimal
+
+    driver = request.driver
+    if request.method == "GET":
+        intents = DriverRouteIntent.objects.filter(driver=driver).order_by("-created_at")
+        results = []
+        for intent in intents:
+            intent = apply_route_intent_expiration_if_needed(intent, actor=request.user)
+            results.append({
+                "id": str(intent.id),
+                "intent_type": intent.intent_type,
+                "origin_city": intent.origin_city,
+                "origin_state": intent.origin_state,
+                "destination_city": intent.destination_city,
+                "destination_state": intent.destination_state,
+                "available_from": intent.available_from.isoformat() if intent.available_from else None,
+                "available_until": intent.available_until.isoformat() if intent.available_until else None,
+                "status": intent.status,
+                "vehicle_id": str(intent.vehicle_id) if intent.vehicle_id else None,
+                "notes": intent.notes,
+            })
+        return JsonResponse({"results": results}, status=200)
+
+    elif request.method == "POST":
+        payload = parse_json_body(request)
+        if payload is None:
+            return error_response("bad_request", "JSON inválido no corpo da requisição.", 400)
+
+        vehicle_id = payload.get("vehicle_id")
+        vehicle = None
+        if vehicle_id:
+            try:
+                vehicle = Vehicle.objects.get(id=vehicle_id)
+            except (Vehicle.DoesNotExist, ValueError, ValidationError):
+                return error_response("validation_error", "Veículo inválido ou não encontrado.", 400)
+            
+            if vehicle.organization_id != driver.organization_id:
+                return error_response("validation_error", "Veículo pertence a outra organização.", 400)
+            
+            active_assignment = DriverVehicleAssignment.objects.filter(
+                driver=driver,
+                vehicle=vehicle,
+                active=True,
+            ).exists()
+            if not active_assignment:
+                return error_response("validation_error", "Veículo deve possuir vínculo operacional ativo com o motorista.", 400)
+
+        try:
+            available_from = datetime.fromisoformat(payload.get("available_from"))
+            available_until = datetime.fromisoformat(payload.get("available_until"))
+        except (TypeError, ValueError):
+            return error_response("validation_error", "Datas inválidas ou em formato incorreto.", 400)
+
+        try:
+            intent_type = DriverRouteIntentType(payload.get("intent_type"))
+        except ValueError:
+            return error_response("validation_error", "Tipo de intenção inválido.", 400)
+
+        cargo_pref_str = payload.get("cargo_preference", "DRY_CARGO")
+        try:
+            cargo_pref = RouteIntentCargoPreference(cargo_pref_str)
+        except ValueError:
+            cargo_pref = RouteIntentCargoPreference.DRY_CARGO
+
+        max_origin = payload.get("max_origin_deviation_km")
+        max_dest = payload.get("max_destination_deviation_km")
+
+        intent_data = DriverRouteIntentData(
+            organization=driver.organization,
+            driver=driver,
+            intent_type=intent_type,
+            origin_city=payload.get("origin_city", ""),
+            origin_state=payload.get("origin_state", ""),
+            destination_city=payload.get("destination_city", ""),
+            destination_state=payload.get("destination_state", ""),
+            available_from=available_from,
+            available_until=available_until,
+            vehicle=vehicle,
+            max_origin_deviation_km=Decimal(str(max_origin)) if max_origin is not None else None,
+            max_destination_deviation_km=Decimal(str(max_dest)) if max_dest is not None else None,
+            cargo_preference=cargo_pref,
+            source=DriverRouteIntentSource.DRIVER_APP,
+            notes=payload.get("notes", ""),
+        )
+
+        try:
+            intent = create_driver_route_intent(data=intent_data, actor=request.user)
+            
+            from src.drivers.application.route_intent_services import _transition_intent
+            intent = _transition_intent(
+                intent,
+                target=DriverRouteIntentStatus.ACTIVE,
+                actor=request.user,
+                audit_action="driver_route_intent_activated"
+            )
+            
+            return JsonResponse({
+                "id": str(intent.id),
+                "intent_type": intent.intent_type,
+                "origin_city": intent.origin_city,
+                "origin_state": intent.origin_state,
+                "destination_city": intent.destination_city,
+                "destination_state": intent.destination_state,
+                "available_from": intent.available_from.isoformat(),
+                "available_until": intent.available_until.isoformat(),
+                "status": intent.status,
+            }, status=201)
+        except ValidationError as e:
+            msg = e.message_dict if hasattr(e, "message_dict") else str(e)
+            return error_response("validation_error", str(msg), 400)
+
+    else:
+        return error_response("method_not_allowed", "Método não permitido.", 405)
+
+
+@csrf_exempt
+@mobile_auth_required
+def cancel_driver_route_intent_view(request, uuid):
+    from src.drivers.infrastructure.django.models import DriverRouteIntent
+
+    if request.method != "POST":
+        return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
+        
+    driver = request.driver
+    try:
+        intent = DriverRouteIntent.objects.get(id=uuid)
+    except (DriverRouteIntent.DoesNotExist, ValueError, ValidationError):
+        return error_response("not_found", "Intenção de rota não encontrada.", 404)
+        
+    if intent.driver_id != driver.id:
+        return error_response("not_found", "Intenção de rota não encontrada.", 404)
+        
+    from src.drivers.application.route_intent_services import _transition_intent
+    from src.drivers.domain.route_intent_enums import DriverRouteIntentStatus
+    
+    try:
+        intent = _transition_intent(
+            intent,
+            target=DriverRouteIntentStatus.CANCELLED,
+            actor=request.user,
+            audit_action="driver_route_intent_cancelled"
+        )
+        return JsonResponse({
+            "id": str(intent.id),
+            "status": intent.status,
+        }, status=200)
+    except ValidationError as e:
+        msg = e.message_dict if hasattr(e, "message_dict") else str(e)
+        return error_response("validation_error", str(msg), 400)
+
+
