@@ -24,13 +24,26 @@
                     </div>
                     <div class="card-body">
                         <p><strong>ID da Operação:</strong> {{ operation.id }}</p>
-                        <p><strong>Oferta:</strong> 
-                            {% if operation.selection.offer %}
-                                <a href="{% url 'backoffice:freight_offer_detail' operation.selection.offer.id %}" class="text-primary">
-                                    {{ operation.selection.offer.reference_code|default:operation.selection.offer.id }}
-                                </a>
+                        <p><strong>Origem:</strong>
+                            {% if operation.source_type == 'MARKETPLACE' %}
+                                <span class="badge badge-light">Marketplace</span>
+                                {% if operation.selection.offer %}
+                                    <div class="mt-1 small">
+                                        Oferta: 
+                                        <a href="{% url 'backoffice:freight_offer_detail' operation.selection.offer.id %}" class="text-primary">
+                                            {{ operation.selection.offer.reference_code|default:operation.selection.offer.id }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% elif operation.source_type == 'CONTRACTED_ROUTE' %}
+                                <span class="badge badge-info light">Rota Contratada</span>
+                                {% if contracted_route %}
+                                    <div class="mt-1 small text-muted">
+                                        Rota: <strong>{{ contracted_route.name }}</strong>
+                                    </div>
+                                {% endif %}
                             {% else %}
-                                -
+                                <span class="badge badge-light">{{ operation.source_type }}</span>
                             {% endif %}
                         </p>
                         <p><strong>Status:</strong>
@@ -57,12 +70,29 @@
                             </div>
                         {% endif %}
 
-                        <!-- Ações: Registrar POD (Apenas em UNLOADING) -->
+                        <!-- Ações: Registrar POD (Apenas se tiver paradas de entrega pendentes de POD) -->
                         {% if can_record_pod %}
                             <div class="mb-4">
                                 <h5 class="text-primary mb-2">Registrar Comprovante de Entrega (POD)</h5>
                                 <form method="post" action="{% url 'backoffice:freight_operation_record_pod' operation.id %}">
                                     {% csrf_token %}
+                                    
+                                    {% if stops %}
+                                        <div class="form-group mb-2">
+                                            <label class="form-label text-muted">Parada de Entrega</label>
+                                            <select class="form-control" name="stop_id" required>
+                                                <option value="">Selecione o destino...</option>
+                                                {% for stop in stops %}
+                                                    {% if stop.stop_type == 'DELIVERY' and not stop.pod %}
+                                                        <option value="{{ stop.id }}">#{{ stop.sequence }} - {{ stop.city }}/{{ stop.state }} (Status: {% if stop.status == 'PENDING' %}Pendente{% elif stop.status == 'ARRIVED' %}Chegou{% elif stop.status == 'COMPLETED' %}Concluído{% else %}{{ stop.status }}{% endif %})</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% else %}
+                                        <input type="hidden" name="stop_id" value="">
+                                    {% endif %}
+
                                     <div class="form-group mb-2">
                                         <label class="form-label text-muted">Nome do Recebedor</label>
                                         <input type="text" class="form-control" name="receiver_name" required placeholder="Ex: João da Silva">
@@ -119,6 +149,135 @@
 
             <!-- Main Content: Transport, Route, Cargo, POD, Timeline -->
             <div class="col-xl-8">
+                <!-- Operational Intelligence -->
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h4 class="card-title">Inteligência Operacional</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if latest_intelligence and latest_intelligence.risk_level != 'NOT_ASSESSED' %}
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-6">
+                                    <p class="mb-1 text-muted">Nível de Risco Atual</p>
+                                    <h3>
+                                        {% if latest_intelligence.risk_level == 'LOW' %}
+                                            <span class="badge badge-success">{{ latest_intelligence.risk_level }}</span>
+                                        {% elif latest_intelligence.risk_level == 'MEDIUM' %}
+                                            <span class="badge badge-warning light">{{ latest_intelligence.risk_level }}</span>
+                                        {% elif latest_intelligence.risk_level == 'HIGH' %}
+                                            <span class="badge badge-warning">{{ latest_intelligence.risk_level }}</span>
+                                        {% elif latest_intelligence.risk_level == 'CRITICAL' %}
+                                            <span class="badge badge-danger">{{ latest_intelligence.risk_level }}</span>
+                                        {% else %}
+                                            <span class="badge badge-light">{{ latest_intelligence.risk_level }}</span>
+                                        {% endif %}
+                                    </h3>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1 text-muted">Score de Risco (Modelo)</p>
+                                    <h3 class="text-primary">{{ latest_intelligence.risk_score|floatformat:2 }}</h3>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="text-primary">Fatores de Risco Detectados</h5>
+                                {% if latest_intelligence.reasons %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for reason in latest_intelligence.reasons %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="fa fa-exclamation-triangle text-warning mr-2"></i>{{ reason }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-muted">Nenhum fator de risco ativo detectado no momento.</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="text-primary">Recomendações da Engine (Advisory)</h5>
+                                {% if latest_intelligence.recommendations %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm px-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Prioridade</th>
+                                                    <th>Ação Sugerida</th>
+                                                    <th>Motivo</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for rec in latest_intelligence.recommendations %}
+                                                    <tr>
+                                                        <td>
+                                                            {% if rec.priority == 'HIGH' or rec.priority == 'CRITICAL' %}
+                                                                <span class="text-danger"><strong>{{ rec.priority }}</strong></span>
+                                                            {% else %}
+                                                                <span class="text-muted">{{ rec.priority }}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ rec.suggested_action }}</td>
+                                                        <td>{{ rec.reason }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Nenhuma recomendação gerada para o estado atual.</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="text-muted small">
+                                <p class="mb-0">Modelo: <code>{{ latest_intelligence.model_name }}</code> (v<code>{{ latest_intelligence.model_version }}</code>) | Feature Schema: v<code>{{ latest_intelligence.feature_schema_version }}</code></p>
+                                <p>Última Avaliação: {{ latest_intelligence.assessed_at|date:'d/m/Y H:i:s' }}</p>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted mb-0"><i class="fa fa-info-circle mr-2"></i>Nenhuma avaliação de inteligência disponível para esta operação.</p>
+                            </div>
+                        {% endif %}
+
+                        {% if intelligence_history %}
+                            <div class="mt-4">
+                                <h5 class="text-primary mb-3">Histórico de Risco</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Data/Hora</th>
+                                                <th>Nível de Risco</th>
+                                                <th>Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for hist in intelligence_history %}
+                                                <tr>
+                                                    <td>{{ hist.assessed_at|date:'d/m/Y H:i:s' }}</td>
+                                                    <td>
+                                                        {% if hist.risk_level == 'LOW' %}
+                                                            <span class="badge badge-success">{{ hist.risk_level }}</span>
+                                                        {% elif hist.risk_level == 'MEDIUM' %}
+                                                            <span class="badge badge-warning light">{{ hist.risk_level }}</span>
+                                                        {% elif hist.risk_level == 'HIGH' %}
+                                                            <span class="badge badge-warning">{{ hist.risk_level }}</span>
+                                                        {% elif hist.risk_level == 'CRITICAL' %}
+                                                            <span class="badge badge-danger">{{ hist.risk_level }}</span>
+                                                        {% else %}
+                                                            <span class="badge badge-light">{{ hist.risk_level }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ hist.risk_score|floatformat:2 }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <!-- Transport details -->
                 <div class="card">
                     <div class="card-header">
@@ -142,35 +301,6 @@
                     </div>
                 </div>
 
-                <!-- Proof of Delivery (POD) details -->
-                {% if has_pod and pod %}
-                    <div class="card border border-success">
-                        <div class="card-header bg-success text-white">
-                            <h4 class="card-title text-white">Proof of Delivery (POD)</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="mb-1 text-muted">Recebedor</p>
-                                    <h6>{{ pod.receiver_name }}</h6>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="mb-1 text-muted">Data/Hora de Entrega</p>
-                                    <h6>{{ pod.delivered_at|date:'d/m/Y H:i' }}</h6>
-                                </div>
-                            </div>
-                            {% if pod.notes %}
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <p class="mb-1 text-muted">Observações</p>
-                                        <p class="mb-0 text-dark">{{ pod.notes }}</p>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-
                 <!-- Route & Stops -->
                 <div class="card">
                     <div class="card-header">
@@ -187,6 +317,8 @@
                                             <th>Localidade</th>
                                             <th>Data Agendada</th>
                                             <th>Janela</th>
+                                            <th>Status</th>
+                                            <th>POD</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -203,6 +335,30 @@
                                                 <td>{{ stop.city }}/{{ stop.state }}<br><small class="text-muted">{{ stop.street }} {{ stop.number }}</small></td>
                                                 <td>{{ stop.scheduled_date|date:'d/m/Y' }}</td>
                                                 <td>{{ stop.window_start|time:'H:i' }} - {{ stop.window_end|time:'H:i' }}</td>
+                                                <td>
+                                                    {% if stop.status == 'PENDING' %}
+                                                        <span class="badge badge-light light">Pendente</span>
+                                                    {% elif stop.status == 'ARRIVED' %}
+                                                        <span class="badge badge-warning light">Chegou</span>
+                                                    {% elif stop.status == 'COMPLETED' %}
+                                                        <span class="badge badge-success light">Concluído</span>
+                                                    {% elif stop.status == 'CANCELLED' %}
+                                                        <span class="badge badge-danger light">Cancelado</span>
+                                                    {% else %}
+                                                        <span class="badge badge-light light">{{ stop.status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if stop.stop_type == 'DELIVERY' %}
+                                                        {% if stop.pod %}
+                                                            <span class="badge badge-success light" title="Recebedor: {{ stop.pod.receiver_name }}"><i class="fa fa-check mr-1"></i>Enviado</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning light"><i class="fa fa-clock mr-1"></i>Pendente</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -213,6 +369,49 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <!-- Proof of Delivery (POD) details -->
+                {% if pods %}
+                    <div class="card border border-success">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="card-title text-white">Proof of Delivery (POD)</h4>
+                        </div>
+                        <div class="card-body">
+                            {% for pod in pods %}
+                                <div class="mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <p class="mb-1 text-muted">Escopo / Parada</p>
+                                            <h6>
+                                                {% if pod.stop %}
+                                                    Parada #{{ pod.stop.sequence }} ({{ pod.stop.city }}/{{ pod.stop.state }})
+                                                {% else %}
+                                                    Operação (Geral)
+                                                {% endif %}
+                                            </h6>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p class="mb-1 text-muted">Recebedor</p>
+                                            <h6>{{ pod.receiver_name }}</h6>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p class="mb-1 text-muted">Data/Hora da Entrega</p>
+                                            <h6>{{ pod.delivered_at|date:'d/m/Y H:i' }}</h6>
+                                        </div>
+                                    </div>
+                                    {% if pod.notes %}
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <p class="mb-1 text-muted">Observações</p>
+                                                <p class="mb-0 text-dark small">{{ pod.notes }}</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
 
                 <!-- Cargo -->
                 {% if operation.selection.offer.freight_request.cargo %}
@@ -237,6 +436,45 @@
                         </div>
                     {% endwith %}
                 {% endif %}
+
+                <!-- Controle Térmico -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Controle Térmico</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if operation.temperature_min_c is not None or operation.temperature_max_c is not None %}
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <p class="mb-1 text-muted">Faixa Exigida</p>
+                                    <h6>{{ operation.temperature_min_c }} °C a {{ operation.temperature_max_c }} °C</h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="mb-1 text-muted">Última Leitura</p>
+                                    <h6>
+                                        {% if latest_intelligence.feature_payload.last_temperature_c is not None %}
+                                            {{ latest_intelligence.feature_payload.last_temperature_c }} °C
+                                        {% else %}
+                                            Sem medição
+                                        {% endif %}
+                                    </h6>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="mb-1 text-muted">Estado de Excursão</p>
+                                    <h6>
+                                        {% if latest_intelligence.feature_payload.temperature_below_min or latest_intelligence.feature_payload.temperature_above_max %}
+                                            <span class="badge badge-danger">EXCURSÃO ATIVA</span>
+                                        {% else %}
+                                            <span class="badge badge-success light">Dentro da faixa</span>
+                                        {% endif %}
+                                    </h6>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">Not applicable</p>
+                        {% endif %}
+                    </div>
+                </div>
 
                 <!-- Rastreamento (Telemetria) -->
                 {% if can_view_tracking %}
@@ -324,6 +562,41 @@
                         </div>
                     </div>
                 {% endif %}
+
+                <!-- Incidents list -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Incidentes Registrados</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if incidents %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Horário</th>
+                                            <th>Origem</th>
+                                            <th>Descrição</th>
+                                            <th>Registrado por</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for incident in incidents %}
+                                            <tr>
+                                                <td>{{ incident.created_at|date:'d/m/Y H:i:s' }}</td>
+                                                <td><span class="badge badge-warning light">{{ incident.origin }}</span></td>
+                                                <td>{{ incident.metadata.description }}</td>
+                                                <td>{{ incident.actor.username|default:'Sistema' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">Nenhum incidente registrado para esta operação.</p>
+                        {% endif %}
+                    </div>
+                </div>
 
                 <!-- Timeline -->
                 <div class="card">

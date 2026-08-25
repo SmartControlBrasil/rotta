@@ -5,11 +5,17 @@
         {% include 'backoffice/partials/breadcrumbs.html' %}
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Operações de Frete</h4>
+                <h4 class="card-title">Operações de Frete (Control Tower)</h4>
             </div>
             <div class="card-body">
                 <form class="row g-3 mb-4" method="get">
+                    <!-- Text Search -->
                     <div class="col-md-3">
+                        <input type="text" class="form-control" name="search" placeholder="Busca por ID, motorista, placa, ref..." value="{{ filters.search|default:'' }}">
+                    </div>
+                    
+                    <!-- Status Filter -->
+                    <div class="col-md-2">
                         <select class="form-control" name="status">
                             <option value="">Status (Todos)</option>
                             {% for status_val in statuses %}
@@ -28,14 +34,30 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <select class="form-control" name="carrier">
-                            <option value="">Transportadora (Todas)</option>
-                            {% for carrier in carriers %}
-                                <option value="{{ carrier.id }}" {% if filters.carrier == carrier.id|stringformat:'s' %}selected{% endif %}>{{ carrier.trade_name }}</option>
+
+                    <!-- Risk Level Filter -->
+                    <div class="col-md-2">
+                        <select class="form-control" name="risk_level">
+                            <option value="">Risco (Todos)</option>
+                            <option value="LOW" {% if filters.risk_level == 'LOW' %}selected{% endif %}>LOW</option>
+                            <option value="MEDIUM" {% if filters.risk_level == 'MEDIUM' %}selected{% endif %}>MEDIUM</option>
+                            <option value="HIGH" {% if filters.risk_level == 'HIGH' %}selected{% endif %}>HIGH</option>
+                            <option value="CRITICAL" {% if filters.risk_level == 'CRITICAL' %}selected{% endif %}>CRITICAL</option>
+                            <option value="NOT_ASSESSED" {% if filters.risk_level == 'NOT_ASSESSED' %}selected{% endif %}>NOT ASSESSED</option>
+                        </select>
+                    </div>
+
+                    <!-- Origin Filter -->
+                    <div class="col-md-2">
+                        <select class="form-control" name="origin">
+                            <option value="">Origem (Todas)</option>
+                            {% for key, val in origins %}
+                                <option value="{{ key }}" {% if filters.origin == key %}selected{% endif %}>{{ val }}</option>
                             {% endfor %}
                         </select>
                     </div>
+
+                    <!-- Driver Filter -->
                     <div class="col-md-3">
                         <select class="form-control" name="driver">
                             <option value="">Motorista (Todos)</option>
@@ -44,22 +66,56 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
+
+                    <!-- Vehicle Filter -->
+                    <div class="col-md-2">
+                        <select class="form-control" name="vehicle">
+                            <option value="">Veículo (Todos)</option>
+                            {% for vehicle in vehicles %}
+                                <option value="{{ vehicle.id }}" {% if filters.vehicle == vehicle.id|stringformat:'s' %}selected{% endif %}>{{ vehicle.plate }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Date Start -->
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" name="date_start" title="Data Inicial" value="{{ filters.date_start|default:'' }}">
+                    </div>
+
+                    <!-- Date End -->
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" name="date_end" title="Data Final" value="{{ filters.date_end|default:'' }}">
+                    </div>
+
+                    <!-- Order By -->
+                    <div class="col-md-2">
+                        <select class="form-control" name="order_by">
+                            <option value="">Ordenar por (Padrão)</option>
+                            <option value="risk" {% if filters.order_by == 'risk' %}selected{% endif %}>Maior Risco</option>
+                            <option value="SLA" {% if filters.order_by == 'SLA' %}selected{% endif %}>Maior Atraso SLA</option>
+                            <option value="updated_at" {% if filters.order_by == 'updated_at' %}selected{% endif %}>Mais Recente</option>
+                            <option value="status" {% if filters.order_by == 'status' %}selected{% endif %}>Status</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
                         <button class="btn btn-primary w-100" type="submit">Filtrar</button>
                     </div>
                 </form>
+
                 <div class="table-responsive">
                     <table class="table table-responsive-md">
                         <thead>
                             <tr>
                                 <th>Operação</th>
-                                <th>Oferta</th>
-                                <th>Cliente</th>
-                                <th>Transportadora</th>
+                                <th>Origem</th>
+                                <th>Status</th>
                                 <th>Motorista</th>
                                 <th>Veículo</th>
-                                <th>Status</th>
-                                <th>Criado em</th>
+                                <th>Próxima Parada</th>
+                                <th>SLA</th>
+                                <th>Risco</th>
+                                <th>Atualizado em</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -67,11 +123,15 @@
                             {% for operation in freight_operations %}
                                 <tr>
                                     <td><strong>{{ operation.id|stringformat:'s'|slice:':8' }}</strong></td>
-                                    <td>{{ operation.selection.offer.reference_code|default:'-' }}</td>
-                                    <td>{{ operation.selection.offer.freight_request.customer.legal_name|default:'-' }}</td>
-                                    <td>{{ operation.carrier.trade_name|default:'-' }}</td>
-                                    <td>{{ operation.driver.full_name|default:'-' }}</td>
-                                    <td>{{ operation.vehicle.plate|default:'-' }}</td>
+                                    <td>
+                                        {% if operation.source_type == 'MARKETPLACE' %}
+                                            <span class="badge badge-light">Marketplace</span>
+                                        {% elif operation.source_type == 'CONTRACTED_ROUTE' %}
+                                            <span class="badge badge-info light">Rota Contratada</span>
+                                        {% else %}
+                                            <span class="badge badge-light">{{ operation.source_type }}</span>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         {% if operation.status == 'ASSIGNED' %}
                                             <span class="badge badge-primary light">Designada</span>
@@ -95,11 +155,39 @@
                                             <span class="badge badge-light light">{{ operation.status }}</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ operation.created_at|date:'d/m/Y H:i' }}</td>
+                                    <td>{{ operation.driver.full_name|default:'-' }}</td>
+                                    <td>{{ operation.vehicle.plate|default:'-' }}</td>
+                                    <td>
+                                        {{ operation.next_stop_display }}
+                                        {% if operation.next_stop_object %}
+                                            <small class="text-muted d-block">#{{ operation.next_stop_object.sequence }} - {% if operation.next_stop_object.stop_type == 'PICKUP' %}Coleta{% else %}Entrega{% endif %}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if operation.sla_state %}
+                                            <span class="badge {{ operation.sla_badge_class }}">{{ operation.sla_display }}</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if operation.intelligence.risk_level == 'LOW' %}
+                                            <span class="badge badge-success light">LOW</span>
+                                        {% elif operation.intelligence.risk_level == 'MEDIUM' %}
+                                            <span class="badge badge-warning light">MEDIUM</span>
+                                        {% elif operation.intelligence.risk_level == 'HIGH' %}
+                                            <span class="badge badge-warning">HIGH</span>
+                                        {% elif operation.intelligence.risk_level == 'CRITICAL' %}
+                                            <span class="badge badge-danger text-white">CRITICAL</span>
+                                        {% else %}
+                                            <span class="badge badge-light light">NOT ASSESSED</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ operation.last_activity_ts|date:'d/m/Y H:i' }}</td>
                                     <td><a class="btn btn-primary btn-sm" href="{% url 'backoffice:freight_operation_detail' operation.id %}">Abrir</a></td>
                                 </tr>
                             {% empty %}
-                                <tr><td colspan="9" class="text-center text-muted">Nenhuma operação encontrada.</td></tr>
+                                <tr><td colspan="10" class="text-center text-muted">Nenhuma operação encontrada.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
