@@ -17846,7 +17846,9 @@ html[dir=rtl] [direction=rtl][data-sidebar-style=compact]:not([data-layout=horiz
 }
 .deznav .metismenu > li > a {
   font-weight: 600;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.813rem;
   color: #6F767E;
   position: relative;
