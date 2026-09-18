@@ -39,7 +39,7 @@
                <span><i class="fa-solid fa-angle-right"></i></span>
                <a href="{% url 'public:blog' %}">Blog</a>
                <span><i class="fa-solid fa-angle-right"></i></span>
-               <a class="active" href="#">{{ article.topic }}</a>
+               <span class="active">{{ article.topic }}</span>
             </div>
          </div>
       </div>
@@ -60,7 +60,7 @@
                               <img src="{% static 'public/cargon/img/blog/ca-blog-cat1.1.png' %}" alt="">
                            </div>
                            <div class="ca-servic-cat-item-content">
-                              <h3 class="ca-blog-cat-ttitle"><a href="#">Rotta 116</a></h3>
+                              <h3 class="ca-blog-cat-ttitle"><span>Rotta 116</span></h3>
                            </div>
                         </div>
                         <div class="ca-servic-cat-item mb-30">
@@ -68,15 +68,15 @@
                               <span><img src="{% static 'public/cargon/img/icon/ca-ser-cat-tag.svg' %}" alt=""></span>
                            </div>
                            <div class="ca-servic-cat-item-content">
-                              <h3 class="ca-blog-cat-ttitle"><a href="#">{{ article.topic }}</a></h3>
+                              <h3 class="ca-blog-cat-ttitle"><span>{{ article.topic }}</span></h3>
                            </div>
                         </div>
                      </div>
                      <div class="ca-servic-thumb br-7">
                         <img class="w-100" src="{% static article.image %}" alt="{{ article.title }}">
                      </div>
-                     <h2 class="ca-project-thumb-title-2 theme-black-3 fnw-600 pt-32 ca-text-cap">Conteúdo em preparação</h2>
-                     <p class="pt-20">Este artigo faz parte do Blog da Rotta 116 e está preparado para receber uma análise completa em uma próxima etapa.</p>
+                     <h2 class="ca-project-thumb-title-2 theme-black-3 fnw-600 pt-32 ca-text-cap">Visão operacional</h2>
+                     <p class="pt-20">Este artigo apresenta uma visão prática sobre transporte, tecnologia e operação dentro do contexto do Rotta 116.</p>
                      <p class="pt-20 pb-32">A proposta é aprofundar o tema com orientações práticas para empresas, embarcadores, motoristas, transportadores e parceiros logísticos.</p>
                      <div class="ca-about-item3 cream-bg-3 p-relative">
                         <p>A Rotta 116 é uma plataforma digital de transporte e logística. O conteúdo editorial do blog acompanha essa visão: conectar demanda, capacidade operacional e tecnologia em uma experiência mais simples e transparente.</p>
@@ -102,9 +102,9 @@
                            </div>
                            <div class="ca-blg-tag-list">
                               <ul>
-                                 <li><a href="#">Rotta 116</a></li>
-                                 <li><a href="#">Transporte</a></li>
-                                 <li><a href="#">Logística</a></li>
+                                 <li><span>Rotta 116</span></li>
+                                 <li><span>Transporte</span></li>
+                                 <li><span>Logística</span></li>
                               </ul>
                            </div>
                         </div>

@@ -11,7 +11,7 @@ The project is no longer only a technical foundation. The current codebase alrea
 Current verified development baseline from the latest project run:
 
 ```text
-408 passed
+506 passed
 0 failed
 python manage.py check: no issues
 python manage.py makemigrations --check: no changes detected

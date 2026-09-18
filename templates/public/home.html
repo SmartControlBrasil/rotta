@@ -260,7 +260,7 @@
                             <p>Encontre a categoria de veículo adequada, conecte-se a prestadores disponíveis<br> e acompanhe uma operação preparada para evoluir da coleta até a entrega.</p>
                         </div>
                         <div class="ca-about-3-btn">
-                            <a href="#" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conheça a plataforma<span><i
+                            <a href="{% url 'public:services' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conheça a plataforma<span><i
                                         class="fa-solid fa-angle-right"></i></span></a>
                         </div>
                     </div>
@@ -291,7 +291,7 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Entregas rápidas</a></h2>
+                    <h2 class="ca-expand-title"><a href="{% url 'public:services' %}">Entregas rápidas</a></h2>
                     <p>Pequenos volumes e operações urbanas com agilidade, conforme disponibilidade da rede.</p>
                 </div>
             </div>
@@ -303,7 +303,7 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Utilitários e vans</a></h2>
+                    <h2 class="ca-expand-title"><a href="{% url 'public:services' %}">Utilitários e vans</a></h2>
                     <p>Mercadorias, caixas, equipamentos e distribuição urbana com mais espaço e proteção.</p>
                 </div>
             </div>
@@ -315,7 +315,7 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">VUC e distribuição</a></h2>
+                    <h2 class="ca-expand-title"><a href="{% url 'public:services' %}">VUC e distribuição</a></h2>
                     <p>Operações comerciais com maior necessidade de capacidade e organização de rota.</p>
                 </div>
             </div>
@@ -327,7 +327,7 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Caminhões</a></h2>
+                    <h2 class="ca-expand-title"><a href="{% url 'public:services' %}">Caminhões</a></h2>
                     <p>Cargas médias e pesadas em operações dedicadas, regionais ou rodoviárias.</p>
                 </div>
             </div>
@@ -339,7 +339,7 @@
                     <div class="ca-expand-ic">
                         <span><img src="{% static 'public/cargon/img/icon/ca-expand-ic3.1.svg' %}" alt=""></span>
                     </div>
-                    <h2 class="ca-expand-title"><a href="#">Transporte programado</a></h2>
+                    <h2 class="ca-expand-title"><a href="{% url 'public:services' %}">Transporte programado</a></h2>
                     <p>Coletas, entregas e operações recorrentes com planejamento operacional.</p>
                 </div>
             </div>
@@ -503,7 +503,7 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Informe sua necessidade</a></h4>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:services' %}">Informe sua necessidade</a></h4>
                             <p>Origem, destino, tipo de carga e características da operação.</p>
                         </div>
                     </div>
@@ -517,7 +517,7 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Escolha a solução</a></h4>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:services' %}">Escolha a solução</a></h4>
                             <p>A plataforma ajuda a identificar a categoria de veículo adequada.</p>
                         </div>
                     </div>
@@ -531,7 +531,7 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Encontre um transportador</a></h4>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:services' %}">Encontre um transportador</a></h4>
                             <p>Motoristas e transportadores elegíveis poderão atender à solicitação.</p>
                         </div>
                     </div>
@@ -545,7 +545,7 @@
                             </span>
                         </div>
                         <div class="ca-work-ic-box-content">
-                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:service_single' %}">Acompanhe a operação</a></h4>
+                            <h4 class="ca-title fnw-600 text-white pt-24 pb-16"><a href="{% url 'public:services' %}">Acompanhe a operação</a></h4>
                             <p>Da coleta à entrega, com evolução para acompanhamento online e comprovantes digitais.</p>
                         </div>
                     </div>
@@ -590,7 +590,7 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Plataforma</a></h4>
+                                    <h4 class="test-3-title"><span>Plataforma</span></h4>
                                     <span>Marketplace Rotta 116</span>
                                 </div>
                             </div>
@@ -618,7 +618,7 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Empresas</a></h4>
+                                    <h4 class="test-3-title"><span>Empresas</span></h4>
                                     <span>Operações empresariais</span>
                                 </div>
                             </div>
@@ -646,7 +646,7 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Monitoramento</a></h4>
+                                    <h4 class="test-3-title"><span>Monitoramento</span></h4>
                                     <span>Recurso em evolução</span>
                                 </div>
                             </div>
@@ -674,7 +674,7 @@
                                             alt=""></span>
                                 </div>
                                 <div class="ca-test-3-user-name">
-                                    <h4 class="test-3-title"><a href="#">Motoristas</a></h4>
+                                    <h4 class="test-3-title"><span>Motoristas</span></h4>
                                     <span>Aplicativo futuro</span>
                                 </div>
                             </div>
@@ -804,28 +804,28 @@
                                     src="{% static 'public/cargon/img/blog/ca-blog-1.2.png' %}" alt=""></a>
                         </div>
                         <div class="ca-blog-date-3">
-                            <a href="#" class="blg-date-3">Conteúdo futuro</a>
+                            <a href="{% url 'public:blog' %}" class="blg-date-3">Rotta 116</a>
                         </div>
                         <div class="ca-blog-box-content ca-blog-box-content-3">
                             <div class="ca-b-meta">
                                 <!-- blog meta box -->
-                                <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                                <span class="ca-blog-meta ca-blog-meta-3">
                                     <div class="ca-meta-icon">
                                         <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
                                         <span>Rotta 116</span>
                                     </div>
-                                </a>
+                                </span>
                                 <!-- blog meta box -->
-                                <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                                <span class="ca-blog-meta ca-blog-meta-3">
                                     <div class="ca-meta-icon">
                                         <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
                                         <span>Transporte e logística</span>
                                     </div>
-                                </a>
+                                </span>
                             </div>
                             <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog' %}">Como escolher a categoria de veículo ideal</a></h4>
                             <p class="pt-16 pb-18">Pequenos volumes, utilitários, VUCs, caminhões e carretas<br> exigem critérios diferentes de operação.</p>
@@ -845,28 +845,28 @@
                                     src="{% static 'public/cargon/img/blog/ca-blog-1.3.png' %}" alt=""></a>
                         </div>
                         <div class="ca-blog-date-3">
-                            <a href="#" class="blg-date-3">Conteúdo futuro</a>
+                            <a href="{% url 'public:blog' %}" class="blg-date-3">Rotta 116</a>
                         </div>
                         <div class="ca-blog-box-content ca-blog-box-content-3">
                             <div class="ca-b-meta">
                                 <!-- blog meta box -->
-                                <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                                <span class="ca-blog-meta ca-blog-meta-3">
                                     <div class="ca-meta-icon">
                                         <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
                                         <span>Rotta 116</span>
                                     </div>
-                                </a>
+                                </span>
                                 <!-- blog meta box -->
-                                <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                                <span class="ca-blog-meta ca-blog-meta-3">
                                     <div class="ca-meta-icon">
                                         <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
                                         <span>Transporte e logística</span>
                                     </div>
-                                </a>
+                                </span>
                             </div>
                             <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog' %}">Oportunidades para motoristas e agregados</a></h4>
                             <p class="pt-16 pb-18">A rede Rotta 116 será preparada para conectar veículos disponíveis<br> a solicitações compatíveis.</p>
@@ -886,28 +886,28 @@
                                     src="{% static 'public/cargon/img/blog/ca-blog-1.1.png' %}" alt=""></a>
                         </div>
                         <div class="ca-blog-date-3">
-                            <a href="#" class="blg-date-3">Conteúdo futuro</a>
+                            <a href="{% url 'public:blog' %}" class="blg-date-3">Rotta 116</a>
                         </div>
                         <div class="ca-blog-box-content ca-blog-box-content-3">
                             <div class="ca-b-meta">
                                 <!-- blog meta box -->
-                                <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                                <span class="ca-blog-meta ca-blog-meta-3">
                                     <div class="ca-meta-icon">
                                         <span><img src="{% static 'public/cargon/img/icon/user-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
                                         <span>Rotta 116</span>
                                     </div>
-                                </a>
+                                </span>
                                 <!-- blog meta box -->
-                                <a href="#" class="ca-blog-meta ca-blog-meta-3">
+                                <span class="ca-blog-meta ca-blog-meta-3">
                                     <div class="ca-meta-icon">
                                         <span><img src="{% static 'public/cargon/img/icon/tag-1.1.svg' %}" alt=""></span>
                                     </div>
                                     <div class="ca-meta-title">
                                         <span>Transporte e logística</span>
                                     </div>
-                                </a>
+                                </span>
                             </div>
                             <h4 class="ca-blog-title ca-blog-title-3 fnw-600"><a href="{% url 'public:blog' %}">Visibilidade da coleta até a entrega</a></h4>
                             <p class="pt-16 pb-18">Status operacionais, localização e comprovantes digitais fazem parte<br> da evolução planejada da plataforma.</p>
