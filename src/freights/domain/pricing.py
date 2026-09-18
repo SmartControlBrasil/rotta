@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from decimal import Decimal
-from typing import TYPE_CHECKING
-
-from django.core.exceptions import ValidationError
-
-if TYPE_CHECKING:
-    from src.freights.infrastructure.django.models import FreightQuote, FreightQuoteCharge
+from .exceptions import InvalidFreightPricing
 
 ZERO = Decimal("0.00")
 TWOPLACES = Decimal("0.01")
+
+
+@dataclass(frozen=True)
+class ChargeLine:
+    total_amount: Decimal | None
+    is_discount: bool
+    charge_type: str
 
 
 def charge_line_total(*, quantity: Decimal, unit_amount: Decimal) -> Decimal:
@@ -21,18 +24,18 @@ def charge_line_total(*, quantity: Decimal, unit_amount: Decimal) -> Decimal:
 
 
 def recalculate_quote_amounts(
-    quote: FreightQuote,
-    charges: list[FreightQuoteCharge] | None = None,
+    *,
+    tax_amount: Decimal | None,
+    estimated_cost: Decimal | None,
+    charges: list[ChargeLine],
 ) -> dict[str, Decimal]:
-    charge_rows = charges if charges is not None else list(quote.charges.all())
-
     base_freight = ZERO
     additional_charges = ZERO
     discount_amount = ZERO
     insurance_amount = ZERO
-    tax_amount = quote.tax_amount or ZERO
+    tax_amount_val = tax_amount or ZERO
 
-    for charge in charge_rows:
+    for charge in charges:
         line_total = charge.total_amount or ZERO
         if charge.is_discount or charge.charge_type == "DISCOUNT":
             discount_amount += abs(line_total)
@@ -46,15 +49,15 @@ def recalculate_quote_amounts(
         additional_charges += line_total
 
     subtotal = base_freight + additional_charges + insurance_amount
-    total_amount = (subtotal - discount_amount + tax_amount).quantize(TWOPLACES)
+    total_amount = (subtotal - discount_amount + tax_amount_val).quantize(TWOPLACES)
     if total_amount < ZERO:
-        raise ValidationError({"total_amount": "Total da cotação não pode ser negativo."})
+        raise InvalidFreightPricing("Total da cotação não pode ser negativo.")
 
     customer_price = total_amount
     gross_margin_amount = None
     gross_margin_percent = None
-    if quote.estimated_cost is not None:
-        gross_margin_amount = (customer_price - quote.estimated_cost).quantize(TWOPLACES)
+    if estimated_cost is not None:
+        gross_margin_amount = (customer_price - estimated_cost).quantize(TWOPLACES)
         if customer_price > ZERO:
             gross_margin_percent = (
                 (gross_margin_amount / customer_price) * Decimal("100")

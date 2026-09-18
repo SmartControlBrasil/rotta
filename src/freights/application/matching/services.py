@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
@@ -55,8 +56,9 @@ def generate_match_candidates_for_offer(
     _ensure_offer_ready_for_matching(offer)
 
     current = offer.match_generations.filter(is_current=True).first()
+    algorithm_version = getattr(settings, "MATCHING_ALGORITHM_VERSION", MATCHING_ALGORITHM_VERSION)
     if current and not regenerate:
-        if current.algorithm_version == MATCHING_ALGORITHM_VERSION:
+        if current.algorithm_version == algorithm_version:
             return current
 
     if current:
@@ -72,7 +74,7 @@ def generate_match_candidates_for_offer(
     generation = FreightMatchGeneration.objects.create(
         offer=offer,
         organization=offer.organization,
-        algorithm_version=MATCHING_ALGORITHM_VERSION,
+        algorithm_version=algorithm_version,
         generation_number=next_number,
         is_current=True,
         generated_by=actor,
@@ -149,7 +151,7 @@ def generate_match_candidates_for_offer(
             refrigeration=refrigeration,
             distance_to_pickup_km=None,
             active_intents=driver_intents,
-            algorithm_version=MATCHING_ALGORITHM_VERSION,
+            algorithm_version=algorithm_version,
         )
         candidate = FreightMatchCandidate(
             generation=generation,
@@ -160,7 +162,7 @@ def generate_match_candidates_for_offer(
             vehicle=spec.vehicle,
             eligibility_status=eligibility.status.value,
             eligibility_reasons=eligibility.to_json(),
-            algorithm_version=MATCHING_ALGORITHM_VERSION,
+            algorithm_version=algorithm_version,
             generated_at=now,
             **scores.to_model_fields(),
         )
@@ -199,7 +201,7 @@ def generate_match_candidates_for_offer(
         organization=offer.organization,
         target=offer,
         metadata={
-            "algorithm_version": MATCHING_ALGORITHM_VERSION,
+            "algorithm_version": algorithm_version,
             "generation_number": generation.generation_number,
             "candidate_count": generation.candidate_count,
             "eligible_count": generation.eligible_count,

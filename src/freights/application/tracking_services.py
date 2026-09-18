@@ -42,6 +42,8 @@ def start_tracking_session(
 
     # 4. Prevent ACTIVE duplicate session
     with transaction.atomic():
+        # Lock the operation to serialize concurrent session creations
+        operation = FreightOperation.objects.select_for_update().get(id=operation.id)
         active_session = TrackingSession.objects.filter(
             operation=operation,
             status=TrackingSessionStatus.ACTIVE.value
@@ -153,41 +155,65 @@ def record_location_point(
     recorded_at = recorded_at or timezone.now()
 
     # 6. Idempotency using transaction block and unique database constraints
-    with transaction.atomic():
+    from django.db.utils import IntegrityError
+    try:
+        with transaction.atomic():
+            if client_event_id:
+                existing = LocationPoint.objects.filter(
+                    tracking_session=session,
+                    client_event_id=client_event_id
+                ).first()
+                if existing:
+                    return existing
+
+            if sequence is not None:
+                existing = LocationPoint.objects.filter(
+                    tracking_session=session,
+                    sequence=sequence
+                ).first()
+                if existing:
+                    return existing
+
+            point = LocationPoint.objects.create(
+                organization=session.organization,
+                tracking_session=session,
+                operation=operation,
+                driver=session.driver,
+                latitude=lat_dec,
+                longitude=lng_dec,
+                accuracy_m=acc_dec,
+                speed_kph=speed_dec,
+                heading_deg=heading_dec,
+                altitude_m=alt_dec,
+                recorded_at=recorded_at,
+                sequence=sequence,
+                client_event_id=client_event_id,
+                metadata=metadata or {},
+            )
+            from src.intelligence.application.collection_services import CollectOperationIntelligenceService
+            transaction.on_commit(lambda: CollectOperationIntelligenceService.trigger_for_operation(
+                operation_id=str(operation.id),
+                event_type="LOCATION_POINT_RECORDED",
+                actor=actor
+            ))
+            return point
+    except IntegrityError:
+        from django.db.models import Q
+        query = Q(tracking_session=session)
+        sub_queries = []
         if client_event_id:
-            existing = LocationPoint.objects.filter(
-                tracking_session=session,
-                client_event_id=client_event_id
-            ).first()
-            if existing:
-                return existing
-
+            sub_queries.append(Q(client_event_id=client_event_id))
         if sequence is not None:
-            existing = LocationPoint.objects.filter(
-                tracking_session=session,
-                sequence=sequence
-            ).first()
+            sub_queries.append(Q(sequence=sequence))
+
+        if sub_queries:
+            combined = sub_queries[0]
+            for sq in sub_queries[1:]:
+                combined |= sq
+            existing = LocationPoint.objects.filter(query & combined).first()
             if existing:
                 return existing
-
-        point = LocationPoint.objects.create(
-            organization=session.organization,
-            tracking_session=session,
-            operation=operation,
-            driver=session.driver,
-            latitude=lat_dec,
-            longitude=lng_dec,
-            accuracy_m=acc_dec,
-            speed_kph=speed_dec,
-            heading_deg=heading_dec,
-            altitude_m=alt_dec,
-            recorded_at=recorded_at,
-            sequence=sequence,
-            client_event_id=client_event_id,
-            metadata=metadata or {},
-        )
-
-        return point
+        raise
 
 
 def end_tracking_session(

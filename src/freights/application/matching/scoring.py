@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from decimal import Decimal
 
+from django.conf import settings
 from django.utils import timezone
 
 from src.carriers.infrastructure.django.models import CarrierProfile
@@ -27,6 +28,18 @@ from src.freights.infrastructure.django.models import FreightOffer
 from src.vehicles.domain.enums import VehicleCargoProfile, VehicleOperationalStatus
 from src.vehicles.infrastructure.django.models import RefrigerationProfile, Vehicle
 
+def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    import math
+    # Radius of the Earth in km
+    R = 6371.0
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * c
 
 @dataclass
 class ScoreBreakdown:
@@ -72,12 +85,230 @@ def compute_scores(
     refrigeration: RefrigerationProfile | None = None,
     distance_to_pickup_km: Decimal | None = None,
     active_intents: list = None,
-    algorithm_version: str = MATCHING_ALGORITHM_VERSION,
+    algorithm_version: str | None = None,
 ) -> ScoreBreakdown:
+    if algorithm_version is None:
+        algorithm_version = getattr(settings, "MATCHING_ALGORITHM_VERSION", MATCHING_ALGORITHM_VERSION)
     breakdown = ScoreBreakdown()
-    if eligibility.status == MatchEligibilityStatus.INELIGIBLE:
-        breakdown.explanation = {"eligible": False, "reason": "INELIGIBLE"}
+    if algorithm_version == "v3.0":
+        # 1. Eligibility status
+        eligible_str = "passed" if eligibility.status == MatchEligibilityStatus.ELIGIBLE else "failed"
+        blocking_reasons = [reason for reason in eligibility.reasons if reason.blocking]
+
+        # 2. Vehicle Fit (0 to 100)
+        # Check required type/body matches, and vehicle availability status
+        if vehicle:
+            required_type = offer.premises_snapshot.get("vehicle_type_required") or ""
+            required_body = offer.premises_snapshot.get("body_type_required") or ""
+            type_match = not required_type or vehicle.vehicle_type == required_type
+            body_match = not required_body or vehicle.body_type == required_body
+            type_score = 100.0 if type_match and body_match else 40.0
+
+            if vehicle.operational_status == VehicleOperationalStatus.AVAILABLE.value:
+                avail_score = 100.0
+            elif vehicle.operational_status == VehicleOperationalStatus.ASSIGNED.value:
+                avail_score = 75.0
+            else:
+                avail_score = 25.0
+            vehicle_fit = 0.7 * type_score + 0.3 * avail_score
+        else:
+            vehicle_fit = 50.0
+
+        # 3. Cargo Fit (0 to 100)
+        cargo_profile = offer.premises_snapshot.get("cargo_profile", "")
+        if vehicle:
+            if cargo_profile == FreightCargoProfile.REFRIGERATED_CARGO.value:
+                cargo_val = (
+                    100.0
+                    if vehicle.cargo_profile
+                    in {VehicleCargoProfile.REFRIGERATED_CARGO.value, VehicleCargoProfile.BOTH.value}
+                    or vehicle.refrigerated
+                    else 0.0
+                )
+            else:
+                cargo_val = 100.0
+
+            if cargo_profile == FreightCargoProfile.REFRIGERATED_CARGO.value:
+                temp_val = 100.0 if refrigeration else 0.0
+                cargo_fit = 0.5 * cargo_val + 0.5 * temp_val
+            else:
+                cargo_fit = cargo_val
+        else:
+            cargo_fit = 50.0
+
+        # 4. Geographic Fit (0 to 100)
+        geographic_fit = 50.0
+        explanation_codes = []
+
+        pickup_stop = offer.freight_request.pickup_stop
+        delivery_stop = offer.freight_request.delivery_stop
+
+        has_pref = hasattr(driver, "preferences") and driver.preferences is not None
+        if has_pref:
+            pref = driver.preferences
+            # Distance from base
+            if (
+                pref.base_latitude is not None
+                and pref.base_longitude is not None
+                and pickup_stop
+                and pickup_stop.latitude is not None
+                and pickup_stop.longitude is not None
+            ):
+                dist = haversine_distance(
+                    float(pref.base_latitude),
+                    float(pref.base_longitude),
+                    float(pickup_stop.latitude),
+                    float(pickup_stop.longitude),
+                )
+                radius = float(pref.preferred_radius_km or 50.0)
+                if dist <= radius:
+                    base_score = 100.0 - (dist / radius) * 20.0
+                    explanation_codes.append("WITHIN_PREFERRED_RADIUS")
+                else:
+                    base_score = 80.0 - ((dist - radius) / radius) * 40.0
+                    explanation_codes.append("OUTSIDE_PREFERRED_RADIUS")
+                geographic_fit = max(10.0, base_score)
+            elif pref.base_city:
+                # Textual fallback
+                if pickup_stop and pickup_stop.city.strip().lower() == pref.base_city.strip().lower():
+                    geographic_fit = 100.0
+                elif pickup_stop and pickup_stop.state.strip().lower() == pref.base_state.strip().lower():
+                    geographic_fit = 75.0
+                else:
+                    geographic_fit = 50.0
+
+            # Regions prefer/avoid adjustment
+            prefer_regions = set()
+            avoid_regions = set()
+            for rp in driver.region_preferences.all():
+                loc = (rp.city.strip().lower(), rp.state.strip().lower())
+                if rp.preference_type == "PREFER":
+                    prefer_regions.add(loc)
+                elif rp.preference_type == "AVOID":
+                    avoid_regions.add(loc)
+
+            prefer_match_count = 0
+            avoid_match_count = 0
+
+            for stop in [pickup_stop, delivery_stop]:
+                if stop:
+                    loc = (stop.city.strip().lower(), stop.state.strip().lower())
+                    if loc in prefer_regions:
+                        prefer_match_count += 1
+                    if loc in avoid_regions:
+                        avoid_match_count += 1
+
+            if prefer_match_count > 0:
+                explanation_codes.append("PREFERRED_REGION_MATCH")
+                if prefer_match_count == 2:
+                    geographic_fit += 25.0
+                else:
+                    geographic_fit += 10.0
+
+            if avoid_match_count > 0:
+                explanation_codes.append("AVOID_REGION")
+                if avoid_match_count == 2:
+                    geographic_fit -= 30.0
+                else:
+                    geographic_fit -= 20.0
+
+            geographic_fit = max(0.0, min(100.0, geographic_fit))
+
+        # 5. Route Fit (0 to 100)
+        route_fit = 50.0
+        if driver:
+            if active_intents is None:
+                active_intents = get_active_route_intents_for_driver(driver)
+
+            applicable_intents = []
+            for intent in active_intents:
+                if intent.organization_id != offer.organization_id:
+                    continue
+                if intent.vehicle_id and (not vehicle or intent.vehicle_id != vehicle.id):
+                    continue
+                applicable_intents.append(intent)
+
+            if applicable_intents:
+                best_intent_score = 0.0
+                for intent in applicable_intents:
+                    intent_score = 40.0
+                    # Check matching destination
+                    if delivery_stop:
+                        dest_city_match = delivery_stop.city.strip().lower() == intent.destination_city.strip().lower()
+                        dest_state_match = delivery_stop.state.strip().lower() == intent.destination_state.strip().lower()
+                        if dest_city_match and dest_state_match:
+                            intent_score = 100.0
+                            if intent.intent_type == "RETURN_LOAD":
+                                explanation_codes.append("RETURN_LOAD_MATCH")
+                            else:
+                                explanation_codes.append("DESTINATION_MATCH")
+                        elif dest_state_match:
+                            intent_score = 75.0
+
+                    if intent_score > best_intent_score:
+                        best_intent_score = intent_score
+                route_fit = best_intent_score
+
+        # 6. Preference Fit (0 to 100)
+        compliance_val = 100.0 if not blocking_reasons else 0.0
+        avail_parts = []
+        if driver:
+            if driver.availability_status == DriverAvailabilityStatus.AVAILABLE.value:
+                avail_parts.append(100.0)
+            elif driver.availability_status == DriverAvailabilityStatus.PAUSED.value:
+                avail_parts.append(70.0)
+            else:
+                avail_parts.append(20.0)
+        if vehicle:
+            if vehicle.operational_status == VehicleOperationalStatus.AVAILABLE.value:
+                avail_parts.append(100.0)
+            elif vehicle.operational_status == VehicleOperationalStatus.ASSIGNED.value:
+                avail_parts.append(75.0)
+            else:
+                avail_parts.append(25.0)
+
+        availability_val = sum(avail_parts) / len(avail_parts) if avail_parts else 50.0
+        preference_fit = 0.4 * compliance_val + 0.6 * availability_val
+
+        # Calculate Weighted Total
+        weights = {
+            "vehicle_fit": 0.20,
+            "cargo_fit": 0.20,
+            "geographic_fit": 0.25,
+            "route_fit": 0.20,
+            "preference_fit": 0.15,
+        }
+        total_score = (
+            vehicle_fit * weights["vehicle_fit"] +
+            cargo_fit * weights["cargo_fit"] +
+            geographic_fit * weights["geographic_fit"] +
+            route_fit * weights["route_fit"] +
+            preference_fit * weights["preference_fit"]
+        )
+
+        # Map breakdown
+        breakdown.vehicle_score = _score(vehicle_fit)
+        breakdown.cargo_score = _score(cargo_fit)
+        breakdown.distance_score = _score(geographic_fit)
+        breakdown.compliance_score = _score(preference_fit)
+        breakdown.availability_score = _score(route_fit)
+        breakdown.total_score = _score(total_score)
+
+        # Unique list of explanation codes
+        unique_codes = sorted(list(set(explanation_codes)))
+
+        breakdown.explanation = {
+            "eligibility": eligible_str,
+            "vehicle_fit": float(breakdown.vehicle_score),
+            "cargo_fit": float(breakdown.cargo_score),
+            "geographic_fit": float(breakdown.distance_score),
+            "route_fit": float(route_fit),
+            "preference_fit": float(breakdown.compliance_score),
+            "total_score": float(breakdown.total_score),
+            "explanation_codes": unique_codes,
+        }
         return breakdown
+
 
     blocking_reasons = [reason for reason in eligibility.reasons if reason.blocking]
     compliance_value = 100.0 if not blocking_reasons else 0.0

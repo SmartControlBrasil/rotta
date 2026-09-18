@@ -97,3 +97,34 @@ class ThermalExcursionStatus(StrEnum):
 class ThermalExcursionDirection(StrEnum):
     BELOW_MIN = "BELOW_MIN"
     ABOVE_MAX = "ABOVE_MAX"
+
+
+class OperationSource(StrEnum):
+    MARKETPLACE = "MARKETPLACE"
+    CONTRACTED_ROUTE = "CONTRACTED_ROUTE"
+    MANUAL = "MANUAL"
+    API = "API"
+
+
+class ContractedRouteStatus(StrEnum):
+    DRAFT = "DRAFT"
+    ACTIVE = "ACTIVE"
+    PAUSED = "PAUSED"
+    EXPIRED = "EXPIRED"
+    CANCELLED = "CANCELLED"
+
+
+class ContractedRouteOccurrenceStatus(StrEnum):
+    PLANNED = "PLANNED"
+    MATERIALIZED = "MATERIALIZED"
+    CANCELLED = "CANCELLED"
+
+
+class RouteWeekday(StrEnum):
+    MON = "MON"
+    TUE = "TUE"
+    WED = "WED"
+    THU = "THU"
+    FRI = "FRI"
+    SAT = "SAT"
+    SUN = "SUN"

@@ -122,6 +122,8 @@ PERMISSIONS: tuple[PermissionDefinition, ...] = (
     PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_REPORT_INCIDENT, "Report incident on freight operation"),
     PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_CANCEL, "Cancel freight operation"),
     PermissionDefinition(PermissionCode.FREIGHT_OPERATIONS_RECORD_POD, "Record proof of delivery for freight operation"),
+    PermissionDefinition(PermissionCode.CONTRACTED_ROUTES_VIEW, "View contracted routes"),
+    PermissionDefinition(PermissionCode.CONTRACTED_ROUTES_MANAGE, "Manage contracted routes"),
     PermissionDefinition(PermissionCode.LOADS_VIEW, "View loads"),
     PermissionDefinition(PermissionCode.TRACKING_VIEW, "View tracking"),
     PermissionDefinition(PermissionCode.TRACKING_START, "Start tracking session"),
@@ -236,6 +238,8 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.TRACKING_START,
         PermissionCode.TRACKING_RECORD,
         PermissionCode.TRACKING_END,
+        PermissionCode.CONTRACTED_ROUTES_VIEW,
+        PermissionCode.CONTRACTED_ROUTES_MANAGE,
     ),
     RoleCode.COMMERCIAL_MANAGER: (
         PermissionCode.ORGANIZATIONS_VIEW,
@@ -364,6 +368,8 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.TRACKING_START,
         PermissionCode.TRACKING_RECORD,
         PermissionCode.TRACKING_END,
+        PermissionCode.CONTRACTED_ROUTES_VIEW,
+        PermissionCode.CONTRACTED_ROUTES_MANAGE,
     ),
     RoleCode.DISPATCHER: (
         PermissionCode.ORGANIZATIONS_VIEW,
@@ -397,6 +403,8 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.FREIGHT_MARKETPLACE_CANCEL_SELECTION,
         PermissionCode.LOADS_VIEW,
         PermissionCode.TRACKING_VIEW,
+        PermissionCode.CONTRACTED_ROUTES_VIEW,
+        PermissionCode.CONTRACTED_ROUTES_MANAGE,
     ),
     RoleCode.FINANCIAL_MANAGER: (
         PermissionCode.ORGANIZATIONS_VIEW,
@@ -431,6 +439,16 @@ ROLE_PERMISSIONS: dict[RoleCode, tuple[PermissionCode, ...]] = {
         PermissionCode.DRIVER_ROUTE_INTENTS_VIEW,
         PermissionCode.FREIGHT_MARKETPLACE_INTEREST_VIEW,
         PermissionCode.FREIGHT_MARKETPLACE_SELECTION_VIEW,
+    ),
+    RoleCode.DRIVER: (
+        PermissionCode.FREIGHT_OPERATIONS_VIEW,
+        PermissionCode.FREIGHT_OPERATIONS_CHANGE_STATUS,
+        PermissionCode.FREIGHT_OPERATIONS_REPORT_INCIDENT,
+        PermissionCode.FREIGHT_OPERATIONS_RECORD_POD,
+        PermissionCode.TRACKING_VIEW,
+        PermissionCode.TRACKING_START,
+        PermissionCode.TRACKING_RECORD,
+        PermissionCode.TRACKING_END,
     ),
     RoleCode.VIEWER: (
         PermissionCode.ORGANIZATIONS_VIEW,

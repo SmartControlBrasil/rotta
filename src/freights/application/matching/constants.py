@@ -1,4 +1,4 @@
-MATCHING_ALGORITHM_VERSION = "v2.1"
+MATCHING_ALGORITHM_VERSION = "v3.0"
 
 MATCHING_WEIGHTS: dict[str, float] = {
     "distance": 0.15,

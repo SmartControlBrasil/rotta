@@ -5,7 +5,8 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-from src.freights.domain.pricing import charge_line_total, recalculate_quote_amounts
+from src.freights.domain.pricing import charge_line_total, recalculate_quote_amounts, ChargeLine
+from src.freights.domain.exceptions import InvalidFreightPricing
 from src.freights.domain.quote_enums import FreightQuoteChargeType
 from src.freights.infrastructure.django.models import FreightQuote, FreightQuoteCharge
 
@@ -40,7 +41,23 @@ def sync_quote_charges(
 
 @transaction.atomic
 def recalculate_and_persist_quote_totals(quote: FreightQuote) -> FreightQuote:
-    amounts = recalculate_quote_amounts(quote)
+    charge_lines = [
+        ChargeLine(
+            total_amount=c.total_amount,
+            is_discount=c.is_discount,
+            charge_type=c.charge_type,
+        )
+        for c in quote.charges.all()
+    ]
+    try:
+        amounts = recalculate_quote_amounts(
+            tax_amount=quote.tax_amount,
+            estimated_cost=quote.estimated_cost,
+            charges=charge_lines,
+        )
+    except InvalidFreightPricing as e:
+        raise ValidationError({"total_amount": str(e)})
+
     quote.base_freight_amount = amounts["base_freight_amount"]
     quote.additional_charges = amounts["additional_charges"]
     quote.discount_amount = amounts["discount_amount"]
@@ -63,7 +80,23 @@ def recalculate_and_persist_quote_totals(quote: FreightQuote) -> FreightQuote:
 
 
 def validate_quote_totals_match_charges(quote: FreightQuote) -> None:
-    amounts = recalculate_quote_amounts(quote)
+    charge_lines = [
+        ChargeLine(
+            total_amount=c.total_amount,
+            is_discount=c.is_discount,
+            charge_type=c.charge_type,
+        )
+        for c in quote.charges.all()
+    ]
+    try:
+        amounts = recalculate_quote_amounts(
+            tax_amount=quote.tax_amount,
+            estimated_cost=quote.estimated_cost,
+            charges=charge_lines,
+        )
+    except InvalidFreightPricing as e:
+        raise ValidationError({"total_amount": str(e)})
+
     if quote.total_amount != amounts["total_amount"]:
         raise ValidationError(
             {

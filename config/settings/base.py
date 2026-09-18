@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "src.customers.infrastructure.django.apps.CustomersConfig",
     "src.carriers.infrastructure.django.apps.CarriersConfig",
     "src.freights.infrastructure.django.apps.FreightsConfig",
+    "src.intelligence.infrastructure.django.apps.IntelligenceConfig",
 ]
 
 MIDDLEWARE = [

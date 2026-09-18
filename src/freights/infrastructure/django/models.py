@@ -17,6 +17,10 @@ from src.freights.domain.enums import (
     ThermalReadingValidity,
     ThermalExcursionStatus,
     ThermalExcursionDirection,
+    OperationSource,
+    ContractedRouteStatus,
+    ContractedRouteOccurrenceStatus,
+    RouteWeekday,
 )
 from src.freights.domain.matching_enums import (
     FreightOfferInterestStatus,
@@ -288,8 +292,58 @@ class FreightRequestCargo(UUIDTimestampedModel):
         if self.volume_m3 is not None and self.volume_m3 < 0:
             raise ValidationError({"volume_m3": "Volume não pode ser negativo."})
 
+class FreightCargoLot(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="freight_cargo_lots",
+    )
+    freight_request = models.ForeignKey(
+        FreightRequest,
+        on_delete=models.CASCADE,
+        related_name="cargo_lots",
+    )
+    description = models.CharField(max_length=255)
+    weight_kg = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
+    volume_m3 = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
+    package_count = models.PositiveIntegerField(blank=True, null=True)
+
+    pickup_stop = models.ForeignKey(
+        FreightRequestStop,
+        on_delete=models.PROTECT,
+        related_name="pickup_cargo_lots",
+    )
+    delivery_stop = models.ForeignKey(
+        FreightRequestStop,
+        on_delete=models.PROTECT,
+        related_name="delivery_cargo_lots",
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["freight_request"]),
+            models.Index(fields=["pickup_stop"]),
+            models.Index(fields=["delivery_stop"]),
+        ]
+
+    def clean(self):
+        if self.weight_kg is not None and self.weight_kg < 0:
+            raise ValidationError({"weight_kg": "Peso não pode ser negativo."})
+        if self.volume_m3 is not None and self.volume_m3 < 0:
+            raise ValidationError({"volume_m3": "Volume não pode ser negativo."})
+        if self.pickup_stop.freight_request_id != self.freight_request_id:
+            raise ValidationError({"pickup_stop": "A parada de coleta deve pertencer à mesma solicitação de frete."})
+        if self.delivery_stop.freight_request_id != self.freight_request_id:
+            raise ValidationError({"delivery_stop": "A parada de entrega deve pertencer à mesma solicitação de frete."})
+        if self.delivery_stop.sequence <= self.pickup_stop.sequence:
+            raise ValidationError({"delivery_stop": "A parada de entrega deve vir após a parada de coleta na sequência operacional."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
-        return f"Carga {self.freight_request_id}"
+        return f"Lote {self.description} ({self.freight_request_id})"
 
 
 class FreightQuoteReferenceSequence(models.Model):
@@ -1070,6 +1124,13 @@ class FreightOperation(UUIDTimestampedModel):
         "FreightOfferSelection",
         on_delete=models.PROTECT,
         related_name="operation",
+        blank=True,
+        null=True,
+    )
+    source_type = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in OperationSource],
+        default=OperationSource.MARKETPLACE,
     )
     carrier = models.ForeignKey(
         "carriers.CarrierProfile",
@@ -1115,12 +1176,145 @@ class FreightOperation(UUIDTimestampedModel):
     # Delay in minutes relative to the planned window of the delivery stop.
     # Nullable; never computed automatically; set by backoffice when known.
     delay_minutes = models.IntegerField(blank=True, null=True)
+    temperature_min_c = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Snapshot da temperatura mínima permitida da carga.",
+    )
+    temperature_max_c = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Snapshot da temperatura máxima permitida da carga.",
+    )
 
     class Meta:
         indexes = [
             models.Index(fields=["organization", "status"]),
             models.Index(fields=["organization", "load_type"]),
         ]
+        constraints = [
+            models.CheckConstraint(
+                condition=(models.Q(source_type="MARKETPLACE", selection__isnull=False) | models.Q(~models.Q(source_type="MARKETPLACE"), selection__isnull=True)),
+                name="chk_operation_source_selection_match"
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.source_type == OperationSource.MARKETPLACE and not self.selection_id:
+            raise ValidationError({"selection": "Selection é obrigatória para operações com origem MARKETPLACE."})
+        if self.source_type != OperationSource.MARKETPLACE and self.selection_id:
+            raise ValidationError({"selection": "Selection deve ser nula para operações que não são do MARKETPLACE."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    @property
+    def pod(self):
+        return self.pods.first()
+
+
+class FreightOperationStop(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="freight_operation_stops",
+    )
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.CASCADE,
+        related_name="stops",
+    )
+    request_stop = models.ForeignKey(
+        FreightRequestStop,
+        on_delete=models.PROTECT,
+        related_name="operation_stops",
+        blank=True,
+        null=True,
+    )
+    sequence = models.PositiveSmallIntegerField(default=1)
+    stop_type = models.CharField(
+        max_length=20,
+        choices=[(kind.value, kind.value) for kind in FreightStopType],
+    )
+    status = models.CharField(
+        max_length=30,
+        choices=[
+            ("PENDING", "PENDING"),
+            ("ARRIVED", "ARRIVED"),
+            ("COMPLETED", "COMPLETED"),
+            ("CANCELLED", "CANCELLED"),
+        ],
+        default="PENDING",
+    )
+    postal_code = models.CharField(max_length=20, blank=True)
+    street = models.CharField(max_length=180, blank=True)
+    number = models.CharField(max_length=20, blank=True)
+    complement = models.CharField(max_length=180, blank=True)
+    district = models.CharField(max_length=80, blank=True)
+    city = models.CharField(max_length=80, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+    country = models.CharField(max_length=2, default="BR", blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    instructions = models.TextField(blank=True)
+    scheduled_date = models.DateField(blank=True, null=True)
+    window_start = models.TimeField(blank=True, null=True)
+    window_end = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["sequence", "stop_type"]
+        indexes = [
+            models.Index(fields=["operation", "status"]),
+            models.Index(fields=["operation", "sequence"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["operation", "sequence"],
+                name="unique_freight_operation_stop_sequence",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"OpStop {self.stop_type} #{self.sequence} - {self.city}/{self.state} ({self.status})"
+
+
+class FreightOperationCargoLot(UUIDTimestampedModel):
+    operation = models.ForeignKey(
+        FreightOperation,
+        on_delete=models.CASCADE,
+        related_name="cargo_lots",
+    )
+    description = models.CharField(max_length=255)
+    weight_kg = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
+    volume_m3 = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
+    package_count = models.PositiveIntegerField(blank=True, null=True)
+
+    pickup_stop = models.ForeignKey(
+        FreightOperationStop,
+        on_delete=models.PROTECT,
+        related_name="pickup_cargo_lots",
+    )
+    delivery_stop = models.ForeignKey(
+        FreightOperationStop,
+        on_delete=models.PROTECT,
+        related_name="delivery_cargo_lots",
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["operation"]),
+            models.Index(fields=["pickup_stop"]),
+            models.Index(fields=["delivery_stop"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"OpLot {self.description} ({self.operation_id})"
 
 class FreightOperationEvent(UUIDTimestampedModel):
     operation = models.ForeignKey(
@@ -1177,10 +1371,17 @@ class FreightOperationEvent(UUIDTimestampedModel):
         ]
 
 class ProofOfDelivery(UUIDTimestampedModel):
-    operation = models.OneToOneField(
+    operation = models.ForeignKey(
         FreightOperation,
         on_delete=models.PROTECT,
-        related_name="pod",
+        related_name="pods",
+    )
+    stop = models.OneToOneField(
+        "FreightOperationStop",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="stop_pod",
     )
     receiver_name = models.CharField(max_length=120, blank=True)
     delivered_at = models.DateTimeField(blank=True, null=True)
@@ -1328,7 +1529,7 @@ class ThermalReading(UUIDTimestampedModel):
     temperature_c = models.DecimalField(max_digits=6, decimal_places=2)
     # Sensor-reported validity flag; True = reading passed onboard quality check.
     is_valid = models.BooleanField(default=True)
-    
+
     # State rich fields
     quality = models.CharField(
         max_length=20,
@@ -1406,3 +1607,221 @@ class ThermalExcursion(UUIDTimestampedModel):
             f"ThermalExcursion op={self.operation_id} sensor={self.sensor_id} "
             f"status={self.status} dir={self.direction} bounds=[{self.min_observed}, {self.max_observed}]"
         )
+
+
+class ContractedRoute(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="contracted_routes",
+    )
+    customer = models.ForeignKey(
+        "customers.Customer",
+        on_delete=models.PROTECT,
+        related_name="contracted_routes",
+    )
+    carrier = models.ForeignKey(
+        "carriers.CarrierProfile",
+        on_delete=models.PROTECT,
+        related_name="contracted_routes",
+    )
+    name = models.CharField(max_length=150)
+    status = models.CharField(
+        max_length=30,
+        choices=[(item.value, item.value) for item in ContractedRouteStatus],
+        default=ContractedRouteStatus.DRAFT,
+    )
+    valid_from = models.DateField()
+    valid_until = models.DateField()
+    load_type = models.CharField(
+        max_length=3,
+        choices=[(item.value, item.value) for item in LoadType],
+    )
+    sla = models.CharField(max_length=100, blank=True)
+    preferred_driver = models.ForeignKey(
+        "drivers.Driver",
+        on_delete=models.PROTECT,
+        related_name="contracted_routes",
+        blank=True,
+        null=True,
+    )
+    preferred_vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.PROTECT,
+        related_name="contracted_routes",
+        blank=True,
+        null=True,
+    )
+    notes = models.TextField(blank=True)
+    temperature_min_c = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Temperatura mínima exigida da carga na rota.",
+    )
+    temperature_max_c = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Temperatura máxima exigida da carga na rota.",
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(valid_until__gte=models.F("valid_from")),
+                name="chk_contracted_route_valid_dates"
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.valid_from and self.valid_until and self.valid_until < self.valid_from:
+            raise ValidationError({"valid_until": "A data final deve ser posterior ou igual à data de início."})
+
+        # Validations for customer and organization
+        from src.organizations.domain.enums import OrganizationType
+        if self.customer and self.customer.organization_id != self.organization_id:
+            if self.customer.organization.type == OrganizationType.TRANSPORT_COMPANY.value:
+                raise ValidationError({"customer": "Cliente pertence a um tenant de transportadora diferente da rota."})
+
+        # Validations for carrier and organization
+        if self.carrier:
+            if self.organization.type == OrganizationType.CUSTOMER.value:
+                if self.carrier.tenant_id != self.organization_id:
+                    raise ValidationError({"carrier": "Transportadora não está registrada para esta organização."})
+            elif self.organization.type == OrganizationType.TRANSPORT_COMPANY.value:
+                if self.carrier.organization_id != self.organization_id:
+                    raise ValidationError({"carrier": "Transportadora pertence a um tenant diferente da rota."})
+
+        if self.preferred_driver and self.preferred_driver.organization_id != self.carrier.organization_id:
+            raise ValidationError({"preferred_driver": "Motorista preferencial pertence a um tenant diferente da transportadora."})
+        if self.preferred_vehicle and self.preferred_vehicle.organization_id != self.carrier.organization_id:
+            raise ValidationError({"preferred_vehicle": "Veículo preferencial pertence a um tenant diferente da transportadora."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.status})"
+
+
+class ContractedRouteWeekday(models.Model):
+    route = models.ForeignKey(
+        ContractedRoute,
+        on_delete=models.CASCADE,
+        related_name="weekdays",
+    )
+    day = models.CharField(
+        max_length=3,
+        choices=[(item.value, item.value) for item in RouteWeekday],
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["route", "day"], name="unique_contracted_route_weekday")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.route.name} - {self.day}"
+
+
+class ContractedRouteStop(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="contracted_route_stops",
+    )
+    contracted_route = models.ForeignKey(
+        ContractedRoute,
+        on_delete=models.CASCADE,
+        related_name="stops",
+    )
+    sequence = models.PositiveSmallIntegerField()
+    stop_type = models.CharField(
+        max_length=20,
+        choices=[(kind.value, kind.value) for kind in FreightStopType],
+    )
+    postal_code = models.CharField(max_length=20, blank=True)
+    street = models.CharField(max_length=180, blank=True)
+    number = models.CharField(max_length=20, blank=True)
+    complement = models.CharField(max_length=180, blank=True)
+    district = models.CharField(max_length=80, blank=True)
+    city = models.CharField(max_length=80, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+    country = models.CharField(max_length=2, default="BR", blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    instructions = models.TextField(blank=True)
+    window_start = models.TimeField(blank=True, null=True)
+    window_end = models.TimeField(blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["contracted_route", "sequence"], name="unique_contracted_route_stop_sequence")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.contracted_route.name} - Parada {self.sequence} ({self.stop_type})"
+
+
+class ContractedRouteOccurrence(UUIDTimestampedModel):
+    organization = models.ForeignKey(
+        "organizations.Organization",
+        on_delete=models.PROTECT,
+        related_name="contracted_route_occurrences",
+    )
+    contracted_route = models.ForeignKey(
+        ContractedRoute,
+        on_delete=models.PROTECT,
+        related_name="occurrences",
+    )
+    occurrence_date = models.DateField()
+    status = models.CharField(
+        max_length=20,
+        choices=[(item.value, item.value) for item in ContractedRouteOccurrenceStatus],
+        default=ContractedRouteOccurrenceStatus.PLANNED,
+    )
+    driver = models.ForeignKey(
+        "drivers.Driver",
+        on_delete=models.PROTECT,
+        related_name="occurrences",
+        blank=True,
+        null=True,
+    )
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.PROTECT,
+        related_name="occurrences",
+        blank=True,
+        null=True,
+    )
+    operation = models.OneToOneField(
+        FreightOperation,
+        on_delete=models.SET_NULL,
+        related_name="occurrence",
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["contracted_route", "occurrence_date"], name="unique_contracted_route_occurrence_date")
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.driver and self.driver.organization_id != self.contracted_route.carrier.organization_id:
+            raise ValidationError({"driver": "Motorista pertence a um tenant diferente da transportadora da rota."})
+        if self.vehicle and self.vehicle.organization_id != self.contracted_route.carrier.organization_id:
+            raise ValidationError({"vehicle": "Veículo pertence a um tenant diferente da transportadora da rota."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f"{self.contracted_route.name} - {self.occurrence_date} ({self.status})"

@@ -141,22 +141,16 @@ class SLAService:
     def _planned_deadline(operation: FreightOperation) -> datetime.datetime | None:
         """Return the planned deadline datetime for the operation's delivery stop.
 
-        Derived from FreightStop.scheduled_date + FreightStop.window_end of the
-        last DELIVERY stop in the operation's freight request.
+        Derived from FreightOperationStop.scheduled_date + FreightOperationStop.window_end
+        of the last DELIVERY stop in the operation's stops.
         Returns None when this information is not available.
         """
         from src.freights.domain.enums import FreightStopType
 
-        try:
-            selection = operation.selection
-            offer = selection.offer
-            freight_request = offer.freight_request
-        except Exception:
-            return None
-
-        # Check if stops is prefetched
-        if hasattr(freight_request, "_prefetched_objects_cache") and "stops" in freight_request._prefetched_objects_cache:
-            stops = list(freight_request.stops.all())
+        # Check if stops is prefetched on operation
+        prefetched_cache = getattr(operation, "_prefetched_objects_cache", None)
+        if isinstance(prefetched_cache, dict) and "stops" in prefetched_cache:
+            stops = list(operation.stops.all())
             delivery_stops = [s for s in stops if s.stop_type == FreightStopType.DELIVERY]
             if not delivery_stops:
                 return None
@@ -164,7 +158,7 @@ class SLAService:
             delivery_stop = delivery_stops[0]
         else:
             delivery_stop = (
-                freight_request.stops
+                operation.stops
                 .filter(stop_type=FreightStopType.DELIVERY)
                 .order_by("-sequence")
                 .first()
