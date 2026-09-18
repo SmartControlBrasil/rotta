@@ -8,6 +8,7 @@ from django.urls import reverse
 from src.audit.infrastructure.django.models import AuditLog
 from src.audit.infrastructure.django.services import record_audit_event
 from src.identity.domain.enums import PermissionCode, RoleCode
+from src.identity.domain.rbac import ROLE_PERMISSIONS
 from src.identity.infrastructure.django.models import MembershipRole, Role
 from src.organizations.domain.enums import OrganizationType
 from src.organizations.infrastructure.django.models import Membership, Organization
@@ -39,6 +40,34 @@ def grant(user, organization, role_code, scope=AccessScope.COMPANY):
     return membership
 
 
+@pytest.mark.django_db
+def test_system_admin_rbac_includes_all_official_permissions(rbac_ready):
+    system_admin = Role.objects.get(code=RoleCode.SYSTEM_ADMIN.value)
+    granted = set(system_admin.permissions.values_list("code", flat=True))
+    official = {permission.value for permission in PermissionCode}
+
+    assert set(ROLE_PERMISSIONS[RoleCode.SYSTEM_ADMIN]) == set(PermissionCode)
+    assert granted == official
+    assert PermissionCode.REPORTS_VIEW.value in granted
+    assert PermissionCode.SETTINGS_VIEW.value in granted
+    assert PermissionCode.SETTINGS_UPDATE.value in granted
+
+
+@pytest.mark.django_db
+def test_system_admin_all_scope_sees_all_organizations(
+    client, django_user_model, rbac_ready, organization, other_organization
+):
+    user = django_user_model.objects.create_user(username="owner", password="safe-pass-123")
+    grant(user, organization, RoleCode.SYSTEM_ADMIN, AccessScope.ALL)
+    client.force_login(user)
+
+    response = client.get(reverse("backoffice:organizations"))
+
+    assert response.status_code == 200
+    assert organization.name.encode() in response.content
+    assert other_organization.name.encode() in response.content
+
+
 def test_public_home_still_renders(client):
     response = client.get(reverse("public:home"))
 
@@ -61,12 +90,48 @@ def test_backoffice_users_requires_authentication(client):
 
 
 @pytest.mark.django_db
-def test_backoffice_login_valid_user_redirects_to_dashboard(client, django_user_model):
-    django_user_model.objects.create_user(username="operator", password="safe-pass-123")
+def test_backoffice_login_valid_internal_user_redirects_to_dashboard(
+    client, django_user_model, rbac_ready, organization
+):
+    user = django_user_model.objects.create_user(username="operator", password="safe-pass-123")
+    grant(user, organization, RoleCode.SYSTEM_ADMIN, AccessScope.ALL)
 
     response = client.post(
         reverse("backoffice:login"),
         {"username": "operator", "password": "safe-pass-123"},
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("backoffice:dashboard")
+
+
+@pytest.mark.django_db
+def test_accounts_login_redirects_customer_to_customer_portal(
+    client, django_user_model, rbac_ready
+):
+    customer_org = Organization.objects.create(name="Cliente", type=OrganizationType.CUSTOMER)
+    user = django_user_model.objects.create_user(username="customer", password="safe-pass-123")
+    grant(user, customer_org, RoleCode.CUSTOMER)
+
+    response = client.post(
+        "/accounts/login/",
+        {"username": "customer", "password": "safe-pass-123"},
+    )
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("customer:dashboard")
+
+
+@pytest.mark.django_db
+def test_accounts_login_redirects_system_admin_to_backoffice(
+    client, django_user_model, rbac_ready, organization
+):
+    user = django_user_model.objects.create_user(username="owner-login", password="safe-pass-123")
+    grant(user, organization, RoleCode.SYSTEM_ADMIN, AccessScope.ALL)
+
+    response = client.post(
+        "/accounts/login/",
+        {"username": "owner-login", "password": "safe-pass-123"},
     )
 
     assert response.status_code == 302
@@ -249,6 +314,49 @@ def test_list_pagination(client, django_user_model, rbac_ready, organization):
 
     assert response.status_code == 200
     assert b"1 / 2" in response.content
+
+
+@pytest.mark.django_db
+def test_customer_role_does_not_see_admin_sidebar_or_access_admin_routes(
+    client, django_user_model, rbac_ready
+):
+    customer_org = Organization.objects.create(name="Cliente Portal", type=OrganizationType.CUSTOMER)
+    user = django_user_model.objects.create_user(username="customer-menu", password="safe-pass-123")
+    grant(user, customer_org, RoleCode.CUSTOMER)
+    client.force_login(user)
+
+    response = client.get(reverse("backoffice:dashboard"))
+
+    assert response.status_code == 200
+    assert b"Organizations" not in response.content
+    assert b"Business Units" not in response.content
+    assert "Segurança".encode() not in response.content
+    assert "Relatórios".encode() not in response.content
+    assert "Configurações".encode() not in response.content
+    assert client.get(reverse("backoffice:organizations")).status_code == 403
+    assert client.get(reverse("backoffice:users")).status_code == 403
+
+
+@pytest.mark.django_db
+def test_system_admin_sees_full_admin_sidebar(client, django_user_model, rbac_ready, organization):
+    user = django_user_model.objects.create_user(username="owner-menu", password="safe-pass-123")
+    grant(user, organization, RoleCode.SYSTEM_ADMIN, AccessScope.ALL)
+    client.force_login(user)
+
+    response = client.get(reverse("backoffice:dashboard"))
+
+    assert response.status_code == 200
+    for label in [
+        b"Organizations",
+        b"Business Units",
+        b"Memberships",
+        b"Users",
+        b"Roles",
+        b"Clientes",
+        "Relatórios".encode(),
+        "Configurações".encode(),
+    ]:
+        assert label in response.content
 
 
 def test_backoffice_sidebar_real_links_are_resolvable(client):

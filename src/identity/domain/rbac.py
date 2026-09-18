@@ -129,6 +129,9 @@ PERMISSIONS: tuple[PermissionDefinition, ...] = (
     PermissionDefinition(PermissionCode.TRACKING_START, "Start tracking session"),
     PermissionDefinition(PermissionCode.TRACKING_RECORD, "Record location points"),
     PermissionDefinition(PermissionCode.TRACKING_END, "End tracking session"),
+    PermissionDefinition(PermissionCode.REPORTS_VIEW, "View reports"),
+    PermissionDefinition(PermissionCode.SETTINGS_VIEW, "View settings"),
+    PermissionDefinition(PermissionCode.SETTINGS_UPDATE, "Update settings"),
 )
 
 ROLES: tuple[RoleDefinition, ...] = (

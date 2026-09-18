@@ -433,7 +433,7 @@ def test_control_tower_list_shows_origin_and_next_stop_and_sla_and_last_activity
     response = client.get(reverse("backoffice:freight_operations"), HTTP_HOST="localhost")
     assert response.status_code == 200
     content = response.content.decode()
-    assert event_time.strftime("%d/%m/%Y") in content
+    assert timezone.localtime(event_time).strftime("%d/%m/%Y") in content
 
 
 @pytest.mark.django_db

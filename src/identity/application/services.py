@@ -37,6 +37,27 @@ def membership_scope_for_permission(membership, permission_code: str) -> AccessS
     return AccessScope(assignment.scope)
 
 
+def user_has_role(user, role_code: str) -> bool:
+    if not getattr(user, "is_authenticated", False):
+        return False
+    return Membership.objects.filter(
+        user=user,
+        status=MembershipStatus.ACTIVE,
+        membership_roles__role__code=role_code,
+    ).exists()
+
+
+def user_has_customer_portal_access(user) -> bool:
+    if not getattr(user, "is_authenticated", False):
+        return False
+    return Membership.objects.filter(
+        user=user,
+        status=MembershipStatus.ACTIVE,
+        organization__type="CUSTOMER",
+        membership_roles__role__code="CUSTOMER",
+    ).exists()
+
+
 @transaction.atomic
 def create_user_with_membership(
     *,

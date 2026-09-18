@@ -9,6 +9,7 @@ from datetime import timedelta
 from typing import Any
 
 from src.customers.infrastructure.django.models import Customer
+from src.identity.domain.enums import RoleCode
 from src.organizations.infrastructure.django.models import Membership
 from src.freights.infrastructure.django.models import FreightRequest
 from src.freights.domain.enums import FreightRequestStatus, FreightCargoProfile
@@ -20,19 +21,29 @@ class CustomerRequiredMixin(LoginRequiredMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         
-        customer = Customer.objects.filter(owner=request.user).first()
-        if not customer:
-            active_membership = Membership.objects.filter(
+        customer_membership = (
+            Membership.objects.filter(
                 user=request.user,
                 status="ACTIVE",
-                organization__type="CUSTOMER"
-            ).first()
-            if active_membership:
-                customer = Customer.objects.filter(organization=active_membership.organization).first()
-                
+                organization__type="CUSTOMER",
+                membership_roles__role__code=RoleCode.CUSTOMER.value,
+            )
+            .select_related("organization")
+            .first()
+        )
+        if not customer_membership:
+            raise PermissionDenied("Acesso negado: Usuário não possui perfil de cliente ativo.")
+
+        customer = Customer.objects.filter(
+            organization=customer_membership.organization,
+            owner=request.user,
+        ).first()
         if not customer:
-            raise PermissionDenied("Acesso negado: Usuário não possui perfil ou vínculo de cliente ativo.")
-            
+            customer = Customer.objects.filter(organization=customer_membership.organization).first()
+
+        if not customer:
+            raise PermissionDenied("Acesso negado: Usuário não possui vínculo de cliente ativo.")
+
         request.customer = customer
         request.organization = customer.organization
         return super().dispatch(request, *args, **kwargs)

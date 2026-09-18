@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.dateparse import parse_date
-from django.views import defaults as default_views
+from django.views import View, defaults as default_views
 from django.views.generic import DetailView, ListView, TemplateView
 
 from src.audit.infrastructure.django.models import AuditLog
@@ -57,6 +57,7 @@ from src.freights.domain.offer_enums import FreightOfferStatus
 from src.freights.domain.quote_enums import FreightQuoteStatus
 from src.freights.infrastructure.django.models import FreightOffer, FreightQuote, FreightRequest
 from src.identity.application.services import (
+    user_has_customer_portal_access,
     create_user_with_membership,
     update_user_details,
     update_user_membership,
@@ -179,6 +180,42 @@ class BackofficeContextMixin:
                 user
                 and user.is_authenticated
                 and _has_permission(user, PermissionCode.VEHICLES_VIEW)
+            ),
+            "organizations": bool(
+                user
+                and user.is_authenticated
+                and _has_permission(user, PermissionCode.ORGANIZATIONS_VIEW)
+            ),
+            "memberships": bool(
+                user
+                and user.is_authenticated
+                and _has_permission(user, PermissionCode.MEMBERSHIPS_VIEW)
+            ),
+            "users": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.USERS_VIEW)
+            ),
+            "roles": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.ROLES_MANAGE)
+            ),
+            "audit": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.AUDIT_VIEW)
+            ),
+            "drivers": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.DRIVERS_VIEW)
+            ),
+            "vehicles": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.VEHICLES_VIEW)
+            ),
+            "carriers": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.CARRIERS_VIEW)
+            ),
+            "customers": bool(
+                user and user.is_authenticated and _has_permission(user, PermissionCode.CUSTOMERS_VIEW)
+            ),
+            "driver_route_intents": bool(
+                user
+                and user.is_authenticated
+                and _has_permission(user, PermissionCode.DRIVER_ROUTE_INTENTS_VIEW)
             ),
             "freight_requests": bool(
                 user
@@ -3371,6 +3408,18 @@ class VehicleStatusChangeView(BackofficePermissionMixin, TemplateView):
         return redirect("backoffice:vehicle_detail", pk=vehicle.pk)
 
 
+def role_based_login_redirect_url(user):
+    if user_has_backoffice_permission(user, PermissionCode.USERS_VIEW) or user_has_backoffice_permission(
+        user, PermissionCode.ORGANIZATIONS_VIEW
+    ) or user_has_backoffice_permission(user, PermissionCode.FREIGHT_OPERATIONS_VIEW):
+        return reverse_lazy("backoffice:dashboard")
+    if user_has_customer_portal_access(user):
+        return reverse_lazy("customer:dashboard")
+    if user_has_backoffice_permission(user, PermissionCode.TRACKING_VIEW):
+        return reverse_lazy("backoffice:dashboard")
+    return reverse_lazy("backoffice:dashboard")
+
+
 class BackofficeAuthenticationForm(AuthenticationForm):
     error_messages = {
         "invalid_login": "Usuário ou senha inválidos.",
@@ -3386,7 +3435,23 @@ class BackofficeLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return self.get_redirect_url() or reverse_lazy("backoffice:dashboard")
+        return self.get_redirect_url() or role_based_login_redirect_url(self.request.user)
+
+
+class RoleBasedAccountsLoginView(LoginView):
+    template_name = "registration/login.html"
+    authentication_form = BackofficeAuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return self.get_redirect_url() or role_based_login_redirect_url(self.request.user)
+
+
+class RoleBasedLoginRedirectView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("backoffice:login")
+
+    def get(self, request, *args, **kwargs):
+        return redirect(role_based_login_redirect_url(request.user))
 
 
 class BackofficeLogoutView(LogoutView):

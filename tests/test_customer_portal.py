@@ -114,6 +114,34 @@ def test_authenticated_user_without_customer_denied(client, user_no_membership, 
 
 
 @pytest.mark.django_db
+def test_customer_portal_requires_customer_role(
+    client, org_customer_a, user_customer_a, customer_profile_a, rbac_ready
+):
+    Membership.objects.create(user=user_customer_a, organization=org_customer_a, status="ACTIVE")
+    client.force_login(user_customer_a)
+
+    response = client.get(reverse("customer:dashboard"), HTTP_HOST="localhost")
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_system_admin_is_not_customer_via_historical_owner_link(
+    client, django_user_model, org_customer_a, customer_profile_a, rbac_ready
+):
+    internal_org = Organization.objects.create(name="Rotta 116", type=OrganizationType.OTHER)
+    owner = django_user_model.objects.create_user(username="marcelo", password="password")
+    customer_profile_a.owner = owner
+    customer_profile_a.save(update_fields=["owner", "updated_at"])
+    grant(owner, internal_org, RoleCode.SYSTEM_ADMIN.value, AccessScope.ALL)
+    client.force_login(owner)
+
+    response = client.get(reverse("customer:dashboard"), HTTP_HOST="localhost")
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
 def test_customer_list_isolation(
     client,
     org_customer_a,
