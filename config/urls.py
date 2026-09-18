@@ -1,9 +1,18 @@
 from django.contrib import admin
+from django.views.generic import RedirectView
 from django.urls import include, path
 
 from src.shared.infrastructure.django.views import health
 
 urlpatterns = [
+    path(
+        "favicon.ico",
+        RedirectView.as_view(
+            url="/static/backoffice/nexadash/images/favicon.ico",
+            permanent=True,
+        ),
+        name="favicon",
+    ),
     path("health/", health, name="health"),
     path("admin/", admin.site.urls),
     path("app/", include("src.shared.interfaces.backoffice.urls")),
