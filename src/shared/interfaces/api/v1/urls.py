@@ -19,6 +19,7 @@ urlpatterns = [
     path("driver/operations/", views.driver_operations_view, name="driver_operations"),
     path("driver/operations/<uuid:uuid>/", views.driver_operation_detail_view, name="driver_operation_detail"),
     path("driver/operations/<uuid:uuid>/advance-status/", views.advance_operation_status_view, name="advance_operation_status"),
+    path("driver/operations/<uuid:uuid>/stops/<uuid:stop_uuid>/advance-status/", views.advance_stop_status_view, name="advance_stop_status"),
     path("driver/operations/<uuid:uuid>/incidents/", views.report_incident_view, name="report_incident"),
     path("driver/operations/<uuid:uuid>/pod/", views.record_pod_view, name="record_pod"),
     path("driver/operations/<uuid:uuid>/thermal-readings/", views.record_thermal_reading_view, name="record_thermal_reading"),

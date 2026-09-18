@@ -169,28 +169,29 @@ class FreightOperationListView(FilteredListView):
             queryset = queryset.filter(q_objects)
 
         # Ordering
+        # Ensure risk and SLA annotations are always available for default ordering
+        latest_risk_score = Subquery(
+            IntelligenceAssessmentRecord.objects.filter(
+                operation_id=OuterRef("pk")
+            ).order_by("-assessed_at").values("risk_score")[:1]
+        )
+        from django.db.models.functions import Coalesce
+        queryset = queryset.annotate(
+            latest_risk_score=Coalesce(latest_risk_score, -1.0),
+            order_delay=Coalesce("delay_minutes", -999999)
+        )
         order_by = self.request.GET.get("order_by")
         if order_by == "risk":
-            latest_risk_score = Subquery(
-                IntelligenceAssessmentRecord.objects.filter(
-                    operation_id=OuterRef("pk")
-                ).order_by("-assessed_at").values("risk_score")[:1]
-            )
-            from django.db.models.functions import Coalesce
-            queryset = queryset.annotate(
-                latest_risk_score=Coalesce(latest_risk_score, -1.0)
-            ).order_by("-latest_risk_score")
+            queryset = queryset.order_by("-latest_risk_score")
         elif order_by == "SLA":
-            from django.db.models.functions import Coalesce
-            queryset = queryset.annotate(
-                order_delay=Coalesce("delay_minutes", -999999)
-            ).order_by("-order_delay")
+            queryset = queryset.order_by("-order_delay")
         elif order_by == "updated_at":
             queryset = queryset.order_by("-last_activity_ts")
         elif order_by == "status":
             queryset = queryset.order_by("status")
         else:
-            queryset = queryset.order_by("-created_at")
+            # Default ordering: risk -> SLA -> updated_at (most recent activity)
+            queryset = queryset.order_by("-latest_risk_score", "-order_delay", "-last_activity_ts")
 
         return queryset
 

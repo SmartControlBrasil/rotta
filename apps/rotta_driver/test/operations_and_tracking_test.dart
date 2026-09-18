@@ -215,7 +215,7 @@ void main() {
       );
     });
 
-    test('recordPOD posts POD information', () async {
+    test('recordPOD posts POD information with stopId', () async {
       final now = DateTime.now();
       final client = ApiClient(
         client: MockClient((req) async {
@@ -225,6 +225,7 @@ void main() {
           expect(body['latitude'], -23.5505);
           expect(body['longitude'], -46.6333);
           expect(body['notes'], 'Entregue com sucesso');
+          expect(body['stop_id'], 'stop-uuid');
           return http.Response(jsonEncode({'id': 'pod-uuid', 'status': 'SUBMITTED'}), 201);
         }),
       );
@@ -238,18 +239,55 @@ void main() {
           latitude: -23.5505,
           longitude: -46.6333,
           notes: 'Entregue com sucesso',
+          stopId: 'stop-uuid',
         ),
+        completes,
+      );
+    });
+
+    test('advanceStopStatus posts correct nextStatus', () async {
+      final client = ApiClient(
+        client: MockClient((req) async {
+          expect(req.url.path, '/api/v1/driver/operations/op-uuid/stops/stop-uuid/advance-status/');
+          final body = jsonDecode((req as http.Request).body);
+          expect(body['next_status'], 'ARRIVED');
+          return http.Response(jsonEncode({'id': 'stop-uuid', 'status': 'ARRIVED'}), 200);
+        }),
+      );
+
+      final repo = OperationsRepository(client: client);
+      await expectLater(
+        repo.advanceStopStatus('op-uuid', 'stop-uuid', 'ARRIVED'),
         completes,
       );
     });
   });
 
   group('Provider Tests', () {
-    test('OperationDetailProvider processes load and status transitions', () async {
+    test('OperationDetailProvider processes load, macro and stop status transitions', () async {
       final detailPayload = {
         'id': 'op-uuid',
         'status': 'ASSIGNED',
-        'stops': [],
+        'stops': [
+          {
+            'id': 'stop-uuid',
+            'sequence': 1,
+            'stop_type': 'PICKUP',
+            'status': 'PENDING',
+            'has_pod': false,
+          }
+        ],
+        'next_stop': {
+          'id': 'stop-uuid',
+          'sequence': 1,
+          'stop_type': 'PICKUP',
+          'status': 'PENDING',
+          'has_pod': false,
+        },
+        'available_actions': [
+          {'action': 'START_OPERATION', 'label': 'Iniciar Operação', 'enabled': true},
+          {'action': 'REPORT_INCIDENT', 'label': 'Reportar Incidente', 'enabled': true},
+        ],
         'tracking': {'has_active_session': false},
         'pod': {'status': 'PENDING'},
       };
@@ -258,9 +296,20 @@ void main() {
         client: MockClient((req) async {
           if (req.method == 'GET') {
             return http.Response(jsonEncode(detailPayload), 200);
-          } else if (req.method == 'POST' && req.url.path.contains('advance-status')) {
+          } else if (req.method == 'POST' && req.url.path.contains('advance-status') && !req.url.path.contains('stops')) {
             detailPayload['status'] = 'DRIVER_EN_ROUTE_TO_PICKUP';
+            detailPayload['available_actions'] = [
+              {'action': 'ARRIVE_STOP', 'label': 'Cheguei à Parada', 'enabled': true},
+            ];
             return http.Response(jsonEncode({'id': 'op-uuid', 'status': 'DRIVER_EN_ROUTE_TO_PICKUP'}), 200);
+          } else if (req.method == 'POST' && req.url.path.contains('stops/stop-uuid/advance-status')) {
+            final stops = detailPayload['stops'] as List<dynamic>;
+            stops[0]['status'] = 'ARRIVED';
+            (detailPayload['next_stop'] as Map<String, dynamic>)['status'] = 'ARRIVED';
+            detailPayload['available_actions'] = [
+              {'action': 'COMPLETE_STOP', 'label': 'Concluir Parada', 'enabled': true},
+            ];
+            return http.Response(jsonEncode({'id': 'stop-uuid', 'status': 'ARRIVED'}), 200);
           }
           return http.Response('Not Found', 404);
         }),
@@ -276,9 +325,17 @@ void main() {
       expect(provider.isLoading, false);
       expect(provider.operation, isNotNull);
       expect(provider.operation!.status, 'ASSIGNED');
+      expect(provider.operation!.nextStop, isNotNull);
+      expect(provider.operation!.nextStop!.id, 'stop-uuid');
+      expect(provider.operation!.availableActions.map((a) => a.action), contains('START_OPERATION'));
 
       await provider.advanceStatus('op-uuid', 'DRIVER_EN_ROUTE_TO_PICKUP');
       expect(provider.operation!.status, 'DRIVER_EN_ROUTE_TO_PICKUP');
+      expect(provider.operation!.availableActions.map((a) => a.action), contains('ARRIVE_STOP'));
+
+      await provider.advanceStopStatus('op-uuid', 'stop-uuid', 'ARRIVED');
+      expect(provider.operation!.nextStop!.status, 'ARRIVED');
+      expect(provider.operation!.availableActions.map((a) => a.action), contains('COMPLETE_STOP'));
     });
   });
 }

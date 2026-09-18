@@ -58,6 +58,7 @@ class OperationsRepository {
     double? latitude,
     double? longitude,
     String? notes,
+    String? stopId,
   }) async {
     final Map<String, dynamic> body = {
       'receiver_name': receiverName,
@@ -66,6 +67,7 @@ class OperationsRepository {
     if (latitude != null) body['latitude'] = latitude;
     if (longitude != null) body['longitude'] = longitude;
     if (notes != null) body['notes'] = notes;
+    if (stopId != null) body['stop_id'] = stopId;
 
     final response = await _client.post(
       '/api/v1/driver/operations/$id/pod/',
@@ -74,6 +76,17 @@ class OperationsRepository {
     if (response.statusCode != 201) {
       final resBody = jsonDecode(response.body);
       throw Exception(resBody['message'] ?? 'Failed to record POD');
+    }
+  }
+
+  Future<void> advanceStopStatus(String id, String stopId, String nextStatus) async {
+    final response = await _client.post(
+      '/api/v1/driver/operations/$id/stops/$stopId/advance-status/',
+      body: {'next_status': nextStatus},
+    );
+    if (response.statusCode != 200) {
+      final body = jsonDecode(response.body);
+      throw Exception(body['message'] ?? 'Failed to advance stop status');
     }
   }
 

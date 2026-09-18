@@ -76,6 +76,7 @@ class OperationDetailProvider extends ChangeNotifier {
     double? latitude,
     double? longitude,
     String? notes,
+    String? stopId,
   }) async {
     _isSubmitting = true;
     _error = null;
@@ -89,7 +90,26 @@ class OperationDetailProvider extends ChangeNotifier {
         latitude: latitude,
         longitude: longitude,
         notes: notes,
+        stopId: stopId,
       );
+      // Reload details
+      _operation = await _repository.getOperation(id);
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isSubmitting = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> advanceStopStatus(String id, String stopId, String nextStatus) async {
+    _isSubmitting = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _repository.advanceStopStatus(id, stopId, nextStatus);
       // Reload details
       _operation = await _repository.getOperation(id);
     } catch (e) {

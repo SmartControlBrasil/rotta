@@ -23,6 +23,7 @@ from src.freights.application.operation_services import (
     report_operation_incident,
     record_proof_of_delivery,
     record_thermal_reading,
+    change_stop_status,
 )
 from src.freights.application.tracking_services import (
     start_tracking_session,
@@ -52,31 +53,31 @@ def parse_json_body(request):
 def login_view(request):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-    
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     username = body.get("username")
     password = body.get("password")
-    
+
     if not username or not password:
         return error_response("bad_request", "Parâmetros 'username' e 'password' são obrigatórios.", 400)
-        
+
     if "@" in username:
         try:
             user = User.objects.get(email=username)
             username = user.username
         except User.DoesNotExist:
             pass
-            
+
     user = authenticate(request, username=username, password=password)
     if not user or not user.is_active:
         return error_response("unauthorized", "Credenciais inválidas.", 401)
-        
+
     access = generate_access_token(user)
     refresh = generate_refresh_token(user)
-    
+
     return JsonResponse({
         "access_token": access,
         "refresh_token": refresh,
@@ -88,19 +89,19 @@ def login_view(request):
 def token_refresh_view(request):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     refresh_token = body.get("refresh_token")
     if not refresh_token:
         return error_response("bad_request", "O campo 'refresh_token' é obrigatório.", 400)
-        
+
     user = validate_refresh_token(refresh_token)
     if not user:
         return error_response("unauthorized", "Refresh token inválido ou expirado.", 401)
-        
+
     access = generate_access_token(user)
     return JsonResponse({
         "access_token": access,
@@ -113,17 +114,17 @@ def token_refresh_view(request):
 def token_revoke_view(request):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     # Revoke current access token
     revoke_token(request.auth_token, duration=900)
-    
+
     # Optionally revoke refresh token from body
     body = parse_json_body(request)
     if body:
         refresh_token = body.get("refresh_token")
         if refresh_token:
             revoke_token(refresh_token, duration=86400 * 30)
-            
+
     return JsonResponse({"success": True}, status=200)
 
 
@@ -132,13 +133,13 @@ def token_revoke_view(request):
 def me_view(request):
     if request.method != "GET":
         return error_response("method_not_allowed", "Apenas método GET é suportado.", 405)
-        
+
     user = request.user
     driver = request.driver
-    
+
     from src.shared.interfaces.backoffice.authorization import user_has_backoffice_permission
     from src.identity.domain.enums import PermissionCode
-    
+
     capabilities = []
     mobile_perms = [
         PermissionCode.TRACKING_VIEW,
@@ -154,7 +155,7 @@ def me_view(request):
     for perm in mobile_perms:
         if user_has_backoffice_permission(user, perm.value):
             capabilities.append(perm.value)
-            
+
     return JsonResponse({
         "id": str(user.id),
         "username": user.username,
@@ -177,13 +178,13 @@ def me_view(request):
 def driver_operations_view(request):
     if request.method != "GET":
         return error_response("method_not_allowed", "Apenas método GET é suportado.", 405)
-        
+
     driver = request.driver
     operations = FreightOperation.objects.filter(driver=driver)\
         .select_related("selection__offer__freight_request")\
         .prefetch_related("selection__offer__freight_request__stops")\
         .order_by("-assigned_at")
-    
+
     # Pagination
     try:
         page = int(request.GET.get("page", 1))
@@ -208,17 +209,17 @@ def driver_operations_view(request):
     previous_url = None
     if page > 1:
         previous_url = f"{base_url}?page={page - 1}&page_size={page_size}"
-    
+
     results = []
     for op in paginated_ops:
         offer = op.selection.offer if op.selection else None
         freight_request = offer.freight_request if offer else None
         stops = list(freight_request.stops.all()) if freight_request else []
         stops.sort(key=lambda s: (s.sequence, s.stop_type))
-        
+
         origin_city = stops[0].city if stops else None
         destination_city = stops[-1].city if len(stops) > 1 else None
-        
+
         sla_res = SLAService.compute(op)
         service_level_state = sla_res.state.value if sla_res.state != SLAState.UNKNOWN else None
 
@@ -232,7 +233,7 @@ def driver_operations_view(request):
             "load_type": op.load_type,
             "service_level_state": service_level_state,
         })
-        
+
     return JsonResponse({
         "count": total_count,
         "next": next_url,
@@ -246,7 +247,7 @@ def driver_operations_view(request):
 def driver_operation_detail_view(request, uuid):
     if request.method != "GET":
         return error_response("method_not_allowed", "Apenas método GET é suportado.", 405)
-        
+
     driver = request.driver
     try:
         op = FreightOperation.objects.select_related(
@@ -263,9 +264,26 @@ def driver_operation_detail_view(request, uuid):
         ).get(id=uuid, driver=driver)
     except (FreightOperation.DoesNotExist, ValidationError):
         return error_response("not_found", "Operação não encontrada.", 404)
-        
+
     stops = []
-    if op.selection.offer and op.selection.offer.freight_request:
+    if op.stops.exists():
+        for stop in op.stops.all().order_by("sequence"):
+            stop_has_pod = ProofOfDelivery.objects.filter(stop=stop).exists()
+            stops.append({
+                "id": str(stop.id),
+                "sequence": stop.sequence,
+                "stop_type": stop.stop_type,
+                "status": stop.status,
+                "city": stop.city,
+                "state": stop.state,
+                "street": stop.street,
+                "number": stop.number,
+                "scheduled_date": stop.scheduled_date.isoformat() if stop.scheduled_date else None,
+                "window_start": stop.window_start.strftime("%H:%M") if stop.window_start else None,
+                "window_end": stop.window_end.strftime("%H:%M") if stop.window_end else None,
+                "has_pod": stop_has_pod,
+            })
+    elif op.selection and op.selection.offer and op.selection.offer.freight_request:
         for stop in op.selection.offer.freight_request.stops.all().order_by("sequence"):
             stops.append({
                 "sequence": stop.sequence,
@@ -278,12 +296,12 @@ def driver_operation_detail_view(request, uuid):
                 "window_start": stop.window_start.strftime("%H:%M") if stop.window_start else None,
                 "window_end": stop.window_end.strftime("%H:%M") if stop.window_end else None,
             })
-            
+
     origin = stops[0] if stops else None
     destination = stops[-1] if len(stops) > 1 else None
-    
+
     cargo_data = None
-    if op.selection.offer and op.selection.offer.freight_request and hasattr(op.selection.offer.freight_request, 'cargo'):
+    if op.selection and op.selection.offer and op.selection.offer.freight_request and hasattr(op.selection.offer.freight_request, 'cargo'):
         cargo = op.selection.offer.freight_request.cargo
         cargo_data = {
             "description": cargo.description,
@@ -297,13 +315,13 @@ def driver_operation_detail_view(request, uuid):
                 "target_c": float(cargo.target_temperature_c) if cargo.target_temperature_c else None,
             }
         }
-        
+
     active_session = op.tracking_sessions.filter(status=TrackingSessionStatus.ACTIVE.value).first()
     tracking_data = {
         "has_active_session": active_session is not None,
         "active_session_id": str(active_session.id) if active_session else None,
     }
-    
+
     has_pod = ProofOfDelivery.objects.filter(operation=op).exists()
     pod_data = {
         "status": "SUBMITTED" if has_pod else "PENDING"
@@ -368,36 +386,77 @@ def driver_operation_detail_view(request, uuid):
         }
     else:
         thermal_summary = None
-    
+
+    from src.freights.application.available_actions import CalculateDriverAvailableActionsService
+    # Compute raw actions and transform into rich objects
+    raw_actions = CalculateDriverAvailableActionsService.get_available_actions(op)
+    ACTION_LABELS = {
+        "REPORT_INCIDENT": "Reportar Incidente",
+        "START_TRACKING": "Iniciar Rastreamento",
+        "END_TRACKING": "Encerrar Rastreamento",
+        "START_OPERATION": "Iniciar Operação",
+        "ARRIVE_PICKUP": "Chegar ao Pickup",
+        "START_LOADING": "Iniciar Carregamento",
+        "START_TRANSIT": "Iniciar Trânsito",
+        "ARRIVE_DELIVERY": "Chegar à Entrega",
+        "START_UNLOADING": "Iniciar Descarregamento",
+        "COMPLETE_OPERATION": "Concluir Operação",
+        "ARRIVE_STOP": "Chegar à Parada",
+        "COMPLETE_STOP": "Concluir Parada",
+        "SUBMIT_POD": "Enviar POD",
+    }
+    actions = [
+        {
+            "action": act,
+            "label": ACTION_LABELS.get(act, act.replace('_', ' ').title()),
+            "enabled": True,
+        }
+        for act in raw_actions
+    ]
+    # Determine next stop
+    next_stop_obj = CalculateDriverAvailableActionsService.get_next_stop(op)
+    next_stop_data = None
+    if next_stop_obj:
+        next_stop_data = {
+            "id": str(next_stop_obj.id),
+            "sequence": next_stop_obj.sequence,
+            "stop_type": getattr(next_stop_obj, "stop_type", getattr(next_stop_obj, "type", None)),
+            "city": next_stop_obj.city,
+            "state": next_stop_obj.state,
+            "street": getattr(next_stop_obj, "street", None),
+            "number": getattr(next_stop_obj, "number", None),
+            "status": next_stop_obj.status,
+        }
+        if hasattr(next_stop_obj, "window_start") and next_stop_obj.window_start:
+            next_stop_data["window_start"] = next_stop_obj.window_start.strftime("%H:%M")
+        if hasattr(next_stop_obj, "window_end") and next_stop_obj.window_end:
+            next_stop_data["window_end"] = next_stop_obj.window_end.strftime("%H:%M")
+    offer = op.selection.offer if op.selection else None
     return JsonResponse({
         "id": str(op.id),
         "status": op.status,
-        "reference_code": op.selection.offer.reference_code if op.selection.offer else None,
-        "carrier": {
-            "id": str(op.carrier.id),
-            "trade_name": op.carrier.trade_name,
-        },
-        "driver": {
-            "id": str(op.driver.id),
-            "full_name": op.driver.full_name,
-        },
-        "vehicle": {
-            "id": str(op.vehicle.id) if op.vehicle else None,
-            "plate": op.vehicle.plate if op.vehicle else None,
-        },
+        "reference_code": offer.reference_code if offer else None,
+        "carrier": {"id": str(op.carrier.id), "trade_name": op.carrier.trade_name} if op.carrier else None,
+        "driver": {"id": str(op.driver.id), "full_name": op.driver.full_name} if op.driver else None,
+        "vehicle": {"id": str(op.vehicle.id), "plate": op.vehicle.plate} if op.vehicle else None,
+        "assigned_at": op.assigned_at.isoformat() if op.assigned_at else None,
         "origin": origin,
         "destination": destination,
+        "load_type": op.load_type,
+        "service_level": service_level,
+        "timeline": timeline,
+        "thermal_summary": thermal_summary,
         "stops": stops,
         "cargo": cargo_data,
         "tracking": tracking_data,
         "pod": pod_data,
-        "load_type": op.load_type,
+        "next_stop": next_stop_data,
+        "delay_minutes": op.delay_minutes if hasattr(op, "delay_minutes") else None,
         "eta": op.eta.isoformat() if op.eta else None,
-        "delay_minutes": op.delay_minutes,
-        "service_level": service_level,
-        "timeline": timeline,
-        "thermal_summary": thermal_summary,
+        "available_actions": actions,
     }, status=200)
+
+
 
 
 @csrf_exempt
@@ -405,28 +464,28 @@ def driver_operation_detail_view(request, uuid):
 def advance_operation_status_view(request, uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     next_status_str = body.get("next_status")
     client_event_id = body.get("client_event_id")
-    
+
     if not next_status_str:
         return error_response("bad_request", "O campo 'next_status' é obrigatório.", 400)
-        
+
     driver = request.driver
     try:
         op = FreightOperation.objects.get(id=uuid, driver=driver)
     except (FreightOperation.DoesNotExist, ValidationError):
         return error_response("not_found", "Operação não encontrada.", 404)
-        
+
     try:
         next_status = OperationStatus(next_status_str)
     except ValueError:
         return error_response("bad_request", f"Status '{next_status_str}' inválido.", 400)
-        
+
     try:
         updated_op = change_operation_status(
             operation_id=op.id,
@@ -438,7 +497,7 @@ def advance_operation_status_view(request, uuid):
     except ValidationError as e:
         message = str(e.message_dict) if hasattr(e, "message_dict") else str(e)
         return error_response("conflict", f"Conflito de transição: {message}", 409)
-        
+
     return JsonResponse({
         "id": str(updated_op.id),
         "status": updated_op.status,
@@ -450,23 +509,23 @@ def advance_operation_status_view(request, uuid):
 def report_incident_view(request, uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     description = body.get("description")
     client_event_id = body.get("client_event_id")
-    
+
     if not description:
         return error_response("bad_request", "O campo 'description' é obrigatório.", 400)
-        
+
     driver = request.driver
     try:
         op = FreightOperation.objects.get(id=uuid, driver=driver)
     except (FreightOperation.DoesNotExist, ValidationError):
         return error_response("not_found", "Operação não encontrada.", 404)
-        
+
     try:
         event = report_operation_incident(
             operation_id=op.id,
@@ -477,7 +536,7 @@ def report_incident_view(request, uuid):
         )
     except ValidationError as e:
         return error_response("conflict", f"Conflito ao registrar incidente: {e}", 409)
-        
+
     return JsonResponse({
         "id": str(event.id),
         "event_type": event.event_type,
@@ -490,31 +549,32 @@ def report_incident_view(request, uuid):
 def record_pod_view(request, uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     receiver_name = body.get("receiver_name")
     delivered_at_str = body.get("delivered_at")
     latitude = body.get("latitude")
     longitude = body.get("longitude")
     notes = body.get("notes", "")
-    
+    stop_id = body.get("stop_id")
+
     if not receiver_name or not delivered_at_str:
         return error_response("bad_request", "Parâmetros 'receiver_name' e 'delivered_at' são obrigatórios.", 400)
-        
+
     try:
         delivered_at = timezone.datetime.fromisoformat(delivered_at_str)
     except ValueError:
         return error_response("bad_request", "Formato de 'delivered_at' inválido (deve ser ISO 8601).", 400)
-        
+
     driver = request.driver
     try:
         op = FreightOperation.objects.get(id=uuid, driver=driver)
     except (FreightOperation.DoesNotExist, ValidationError):
         return error_response("not_found", "Operação não encontrada.", 404)
-        
+
     try:
         pod = record_proof_of_delivery(
             operation_id=op.id,
@@ -524,12 +584,13 @@ def record_pod_view(request, uuid):
             longitude=float(longitude) if longitude is not None else None,
             notes=notes,
             actor=request.user,
-            driver_only=True
+            driver_only=True,
+            stop_id=stop_id,
         )
     except ValidationError as e:
         message = str(e.message_dict) if hasattr(e, "message_dict") else str(e)
         return error_response("conflict", f"Conflito ao registrar POD: {message}", 409)
-        
+
     return JsonResponse({
         "id": str(pod.id),
         "status": "SUBMITTED",
@@ -543,18 +604,18 @@ def record_pod_view(request, uuid):
 def start_tracking_view(request, uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request) or {}
     source = body.get("source", "mobile")
     device_metadata = body.get("device_metadata", {})
     client_event_id = body.get("client_event_id")
-    
+
     driver = request.driver
     try:
         op = FreightOperation.objects.get(id=uuid, driver=driver)
     except (FreightOperation.DoesNotExist, ValidationError):
         return error_response("not_found", "Operação não encontrada.", 404)
-        
+
     try:
         session = start_tracking_session(
             actor=request.user,
@@ -568,7 +629,7 @@ def start_tracking_view(request, uuid):
         return error_response("conflict", f"Conflito ao iniciar tracking: {message}", 409)
     except PermissionDenied as e:
         return error_response("forbidden", str(e), 403)
-        
+
     return JsonResponse({
         "tracking_session_id": str(session.id),
         "status": session.status,
@@ -581,11 +642,11 @@ def start_tracking_view(request, uuid):
 def record_location_view(request, session_uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     latitude = body.get("latitude")
     longitude = body.get("longitude")
     accuracy_m = body.get("accuracy_m")
@@ -596,10 +657,10 @@ def record_location_view(request, session_uuid):
     sequence = body.get("sequence")
     client_event_id = body.get("client_event_id")
     metadata = body.get("metadata", {})
-    
+
     if latitude is None or longitude is None or accuracy_m is None:
         return error_response("bad_request", "Parâmetros 'latitude', 'longitude' e 'accuracy_m' são obrigatórios.", 400)
-        
+
     recorded_at = None
     if recorded_at_str:
         try:
@@ -608,13 +669,13 @@ def record_location_view(request, session_uuid):
                 return error_response("bad_request", "recorded_at não pode ser no futuro.", 400)
         except ValueError:
             return error_response("bad_request", "Formato de 'recorded_at' inválido (deve ser ISO 8601).", 400)
-            
+
     driver = request.driver
     try:
         session = TrackingSession.objects.get(id=session_uuid, driver=driver)
     except (TrackingSession.DoesNotExist, ValidationError):
         return error_response("not_found", "Sessão de rastreamento não encontrada.", 404)
-        
+
     try:
         point = record_location_point(
             actor=request.user,
@@ -635,7 +696,7 @@ def record_location_view(request, session_uuid):
         return error_response("conflict", f"Erro de validação ou conflito: {message}", 409)
     except PermissionDenied as e:
         return error_response("forbidden", str(e), 403)
-        
+
     return JsonResponse({
         "id": str(point.id),
         "sequence": point.sequence,
@@ -649,20 +710,20 @@ def record_location_view(request, session_uuid):
 def record_location_batch_view(request, session_uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None or not isinstance(body, list):
         return error_response("bad_request", "Corpo da requisição deve ser uma lista JSON válida.", 400)
-        
+
     if len(body) > 100:
         return error_response("bad_request", "Tamanho do lote excede o limite máximo de 100 pontos.", 400)
-        
+
     driver = request.driver
     try:
         session = TrackingSession.objects.get(id=session_uuid, driver=driver)
     except (TrackingSession.DoesNotExist, ValidationError):
         return error_response("not_found", "Sessão de rastreamento não encontrada.", 404)
-        
+
     results = []
     try:
         with transaction.atomic():
@@ -677,10 +738,10 @@ def record_location_batch_view(request, session_uuid):
                 sequence = pt.get("sequence")
                 client_event_id = pt.get("client_event_id")
                 metadata = pt.get("metadata", {})
-                
+
                 if latitude is None or longitude is None or accuracy_m is None:
                     raise ValidationError(f"Ponto no índice {idx} com parâmetros obrigatórios ausentes.")
-                    
+
                 recorded_at = None
                 if recorded_at_str:
                     try:
@@ -689,7 +750,7 @@ def record_location_batch_view(request, session_uuid):
                             raise ValidationError(f"Ponto no índice {idx} com recorded_at no futuro.")
                     except ValueError:
                         raise ValidationError(f"Ponto no índice {idx} com recorded_at inválido.")
-                        
+
                 point = record_location_point(
                     actor=request.user,
                     tracking_session_id=session.id,
@@ -714,7 +775,7 @@ def record_location_batch_view(request, session_uuid):
         return error_response("conflict", f"Erro no processamento do lote: {message}", 409)
     except PermissionDenied as e:
         return error_response("forbidden", str(e), 403)
-        
+
     return JsonResponse({
         "success": True,
         "processed_count": len(results),
@@ -727,13 +788,13 @@ def record_location_batch_view(request, session_uuid):
 def end_tracking_view(request, session_uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     driver = request.driver
     try:
         session = TrackingSession.objects.get(id=session_uuid, driver=driver)
     except (TrackingSession.DoesNotExist, ValidationError):
         return error_response("not_found", "Sessão de rastreamento não encontrada.", 404)
-        
+
     try:
         session = end_tracking_session(
             actor=request.user,
@@ -744,7 +805,7 @@ def end_tracking_view(request, session_uuid):
         return error_response("conflict", f"Conflito ao encerrar tracking: {message}", 409)
     except PermissionDenied as e:
         return error_response("forbidden", str(e), 403)
-        
+
     return JsonResponse({
         "session_id": str(session.id),
         "ended_at": session.ended_at.isoformat() if session.ended_at else None,
@@ -757,11 +818,11 @@ def end_tracking_view(request, session_uuid):
 def record_thermal_reading_view(request, uuid):
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     body = parse_json_body(request)
     if body is None:
         return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-        
+
     sensor_id = body.get("sensor_id")
     sensor_timestamp_str = body.get("sensor_timestamp")
     temperature_c_val = body.get("temperature_c")
@@ -769,28 +830,28 @@ def record_thermal_reading_view(request, uuid):
     validity = body.get("validity", "VALID")
     client_event_id = body.get("client_event_id")
     metadata = body.get("metadata", {})
-    
+
     if not sensor_id or not sensor_timestamp_str or temperature_c_val is None:
         return error_response("bad_request", "Parâmetros 'sensor_id', 'sensor_timestamp' e 'temperature_c' são obrigatórios.", 400)
-        
+
     try:
         sensor_timestamp = timezone.datetime.fromisoformat(sensor_timestamp_str)
     except ValueError:
         return error_response("bad_request", "Formato de 'sensor_timestamp' inválido (deve ser ISO 8601).", 400)
-        
+
     try:
         from decimal import Decimal
         temperature_c = Decimal(str(temperature_c_val))
     except (ValueError, TypeError):
         return error_response("bad_request", "Formato de 'temperature_c' inválido.", 400)
-        
+
     driver = request.driver
     try:
         # Check permission (operation exists and belongs to the driver)
         op = FreightOperation.objects.get(id=uuid, driver=driver)
     except (FreightOperation.DoesNotExist, ValidationError):
         return error_response("not_found", "Operação não encontrada.", 404)
-        
+
     try:
         reading, duplicate = record_thermal_reading(
             operation_id=op.id,
@@ -807,11 +868,11 @@ def record_thermal_reading_view(request, uuid):
     except ValidationError as e:
         message = str(e.message_dict) if hasattr(e, "message_dict") else str(e)
         return error_response("conflict", f"Erro de validação: {message}", 409)
-        
+
     # Check if within range
     within_range = None
     cargo_data = None
-    if op.selection.offer and op.selection.offer.freight_request and hasattr(op.selection.offer.freight_request, 'cargo'):
+    if op.selection and op.selection.offer and op.selection.offer.freight_request and hasattr(op.selection.offer.freight_request, 'cargo'):
         cargo = op.selection.offer.freight_request.cargo
         min_c = cargo.temperature_min_c
         max_c = cargo.temperature_max_c
@@ -822,14 +883,14 @@ def record_thermal_reading_view(request, uuid):
             within_range = (temp_val >= min_c)
         elif max_c is not None:
             within_range = (temp_val <= max_c)
-            
+
     # Check active excursion
     active_ex = ThermalExcursion.objects.filter(
         operation=op,
         sensor_id=sensor_id,
         status=ThermalExcursionStatus.ACTIVE.value
     ).first()
-    
+
     active_excursion_data = None
     if active_ex:
         active_excursion_data = {
@@ -866,16 +927,16 @@ def customer_freight_requests_view(request):
         body = parse_json_body(request)
         if body is None:
             return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
-            
+
         origin = body.get("origin")
         destination = body.get("destination")
         if not origin or not destination:
             return error_response("bad_request", "Origem e destino são obrigatórios.", 400)
-            
+
         cargo = body.get("cargo", {})
         if not cargo or not cargo.get("description"):
             return error_response("bad_request", "A descrição da carga é obrigatória.", 400)
-            
+
         try:
             req = create_customer_freight_request(
                 actor=request.user,
@@ -910,11 +971,11 @@ def customer_freight_request_detail_view(request, uuid):
 
 def serialize_customer_freight_request(req) -> dict:
     from src.freights.domain.enums import FreightCargoProfile
-    
+
     pickup = req.pickup_stop
     delivery = req.delivery_stop
     cargo = getattr(req, "cargo", None)
-    
+
     return {
         "id": str(req.id),
         "status": req.status,
@@ -950,13 +1011,13 @@ def driver_preferences_view(request):
         from src.drivers.application.preferences_services import get_driver_preferences
         prefs = get_driver_preferences(driver)
         return JsonResponse(prefs, status=200)
-        
+
     elif request.method == "PUT":
         from src.drivers.application.preferences_services import update_driver_preferences
         payload = parse_json_body(request)
         if payload is None:
             return error_response("bad_request", "JSON inválido no corpo da requisição.", 400)
-            
+
         try:
             update_driver_preferences(driver, payload, actor=request.user)
             from src.drivers.application.preferences_services import get_driver_preferences
@@ -965,7 +1026,7 @@ def driver_preferences_view(request):
         except ValidationError as e:
             msg = e.message_dict if hasattr(e, "message_dict") else str(e)
             return error_response("validation_error", str(msg), 400)
-            
+
     else:
         return error_response("method_not_allowed", "Método não permitido.", 405)
 
@@ -1013,10 +1074,10 @@ def driver_route_intents_view(request):
                 vehicle = Vehicle.objects.get(id=vehicle_id)
             except (Vehicle.DoesNotExist, ValueError, ValidationError):
                 return error_response("validation_error", "Veículo inválido ou não encontrado.", 400)
-            
+
             if vehicle.organization_id != driver.organization_id:
                 return error_response("validation_error", "Veículo pertence a outra organização.", 400)
-            
+
             active_assignment = DriverVehicleAssignment.objects.filter(
                 driver=driver,
                 vehicle=vehicle,
@@ -1065,7 +1126,7 @@ def driver_route_intents_view(request):
 
         try:
             intent = create_driver_route_intent(data=intent_data, actor=request.user)
-            
+
             from src.drivers.application.route_intent_services import _transition_intent
             intent = _transition_intent(
                 intent,
@@ -1073,7 +1134,7 @@ def driver_route_intents_view(request):
                 actor=request.user,
                 audit_action="driver_route_intent_activated"
             )
-            
+
             return JsonResponse({
                 "id": str(intent.id),
                 "intent_type": intent.intent_type,
@@ -1100,19 +1161,19 @@ def cancel_driver_route_intent_view(request, uuid):
 
     if request.method != "POST":
         return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
-        
+
     driver = request.driver
     try:
         intent = DriverRouteIntent.objects.get(id=uuid)
     except (DriverRouteIntent.DoesNotExist, ValueError, ValidationError):
         return error_response("not_found", "Intenção de rota não encontrada.", 404)
-        
+
     if intent.driver_id != driver.id:
         return error_response("not_found", "Intenção de rota não encontrada.", 404)
-        
+
     from src.drivers.application.route_intent_services import _transition_intent
     from src.drivers.domain.route_intent_enums import DriverRouteIntentStatus
-    
+
     try:
         intent = _transition_intent(
             intent,
@@ -1129,3 +1190,40 @@ def cancel_driver_route_intent_view(request, uuid):
         return error_response("validation_error", str(msg), 400)
 
 
+@csrf_exempt
+@mobile_auth_required
+def advance_stop_status_view(request, uuid, stop_uuid):
+    if request.method != "POST":
+        return error_response("method_not_allowed", "Apenas método POST é suportado.", 405)
+
+    body = parse_json_body(request)
+    if body is None:
+        return error_response("bad_request", "Corpo da requisição deve ser um JSON válido.", 400)
+
+    next_status_str = body.get("next_status")
+
+    if not next_status_str:
+        return error_response("bad_request", "O campo 'next_status' é obrigatório.", 400)
+
+    driver = request.driver
+    try:
+        op = FreightOperation.objects.get(id=uuid, driver=driver)
+    except (FreightOperation.DoesNotExist, ValidationError):
+        return error_response("not_found", "Operação não encontrada.", 404)
+
+    try:
+        updated_stop = change_stop_status(
+            operation_id=str(op.id),
+            stop_id=str(stop_uuid),
+            new_status=next_status_str,
+            actor=request.user,
+            driver_only=True,
+        )
+    except ValidationError as e:
+        message = str(e.message_dict) if hasattr(e, "message_dict") else str(e)
+        return error_response("conflict", f"Conflito de transição: {message}", 409)
+
+    return JsonResponse({
+        "id": str(updated_stop.id),
+        "status": updated_stop.status,
+    }, status=200)

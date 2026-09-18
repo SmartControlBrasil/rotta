@@ -1,10 +1,10 @@
 {% extends 'public/base.html' %}
 {% load static %}
 
-{% block title %}Rotta 116 | Marketplace de Transporte e Logística{% endblock %}
+{% block title %}Rotta 116 | Gestão e Marketplace de Transporte Rodoviário{% endblock %}
 
 {% block logo %}
-<meta name="description" content="O Rotta 116 conecta clientes, empresas, motoristas e transportadores para operações de transporte urbano, regional e rodoviário.">
+<meta name="description" content="Gestão de fretes, transportadoras, motoristas, frota, rastreamento e marketplace de transporte em uma única plataforma.">
 <link rel="shortcut icon" href="{% static 'public/cargon/img/icon/ca-fav-3.svg' %}">
 {% endblock %}
 
@@ -41,14 +41,17 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="ca-hero-content-3">
                             <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">
-                                Marketplace de Transporte e Logística</h5>
-                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Transporte conectado
-                                do início ao destino</h1>
-                            <p class="pt-16 pb-32">O Rotta 116 conecta pessoas e empresas a motoristas e transportadores<br> para operações urbanas, regionais e rodoviárias. </p>
+                                ROTTA 116 • PLATAFORMA DE TRANSPORTE
+                            </h5>
+                            <h1 class="ca-slider-heading theme-black-3 fnw-600 p-20 pb-20">
+                                Transporte contratado, acompanhado e registrado em um único fluxo.
+                            </h1>
+                            <p class="pt-16 pb-32">
+                                A Rotta 116 conecta embarcadores, transportadoras e motoristas e organiza a operação desde a demanda de transporte até a comprovação da entrega.
+                            </p>
                             <div class="hero3-btn">
-                                {# TODO: conectar ao fluxo público de solicitação/cadastro quando disponível. #}
-                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Solicitar transporte<span><i class="fa-solid fa-angle-right"></i></span></a>
-                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero fazer fretes<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Preciso transportar<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero transportar<span><i class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -74,13 +77,17 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="ca-hero-content-3">
                             <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">
-                                Marketplace de Transporte e Logística</h5>
-                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Transporte conectado
-                                do início ao destino</h1>
-                            <p class="pt-16 pb-32">O Rotta 116 conecta pessoas e empresas a motoristas e transportadores<br> para operações urbanas, regionais e rodoviárias. </p>
+                                ROTTA GESTÃO
+                            </h5>
+                            <h1 class="ca-slider-heading theme-black-3 fnw-600 p-20 pb-20">
+                                Controle operacional do frete em um único ambiente.
+                            </h1>
+                            <p class="pt-16 pb-32">
+                                Acompanhe operações, motoristas, veículos, documentos, ocorrências, SLA, rastreamento e evidências de entrega dentro do mesmo fluxo.
+                            </p>
                             <div class="hero3-btn">
-                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Solicitar transporte<span><i class="fa-solid fa-angle-right"></i></span></a>
-                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero fazer fretes<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conhecer a gestão<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero transportar<span><i class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -106,13 +113,17 @@
                     <div class="col-lg-6 col-md-10">
                         <div class="ca-hero-content-3">
                             <h5 class="ca-section-subtitle subtitle-bg-6 p-relative theme-color-3 br-50">
-                                Marketplace de Transporte e Logística</h5>
-                            <h1 class="ca-slider-heading theme-black-3 fnw-600 pt-20 pb-20">Transporte conectado
-                                do início ao destino</h1>
-                            <p class="pt-16 pb-32">O Rotta 116 conecta pessoas e empresas a motoristas e transportadores<br> para operações urbanas, regionais e rodoviárias. </p>
+                                ROTTA MARKETPLACE
+                            </h5>
+                            <h1 class="ca-slider-heading theme-black-3 fnw-600 p-20 pb-20">
+                                Demanda de transporte conectada à capacidade disponível.
+                            </h1>
+                            <p class="pt-16 pb-32">
+                                Empresas publicam suas necessidades de transporte enquanto transportadoras e motoristas acessam oportunidades compatíveis e seguem para a execução dentro da plataforma.
+                            </p>
                             <div class="hero3-btn">
-                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Solicitar transporte<span><i class="fa-solid fa-angle-right"></i></span></a>
-                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Quero fazer fretes<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-btn-primary-3 theme-bg-3 text-white br-50">Conhecer o marketplace<span><i class="fa-solid fa-angle-right"></i></span></a>
+                                <a href="{% url 'public:contact' %}" class="ca-sec-primary-3 theme-color-3 br-50">Preciso transportar<span><i class="fa-solid fa-angle-right"></i></span></a>
                             </div>
                         </div>
                     </div>

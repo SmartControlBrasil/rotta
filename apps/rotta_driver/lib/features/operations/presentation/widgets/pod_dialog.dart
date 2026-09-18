@@ -5,15 +5,17 @@ import 'package:rotta_driver/design_system/rotta_spacing.dart';
 import 'package:rotta_driver/design_system/widgets/rotta_primary_button.dart';
 
 class PodDialog extends StatefulWidget {
+  final String? stopId;
   final Future<void> Function(
     String receiverName,
     DateTime deliveredAt, {
     double? latitude,
     double? longitude,
     String? notes,
+    String? stopId,
   }) onSubmit;
 
-  const PodDialog({Key? key, required this.onSubmit}) : super(key: key);
+  const PodDialog({Key? key, required this.onSubmit, this.stopId}) : super(key: key);
 
   @override
   State<PodDialog> createState() => _PodDialogState();
@@ -65,6 +67,7 @@ class _PodDialogState extends State<PodDialog> {
         latitude: _currentPosition?.latitude,
         longitude: _currentPosition?.longitude,
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        stopId: widget.stopId,
       );
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {

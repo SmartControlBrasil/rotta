@@ -106,11 +106,11 @@ class ReportOperationsView(ReportBaseView):
             headers = ["Referência", "Data", "Organização", "Transportadora", "Motorista", "Veículo", "Status", "Tipo de Carga", "FTL/LTL", "Valor (BRL)"]
             rows = []
             for op in data["all_table_data"]:
-                offer = op.selection.offer
-                req = offer.freight_request
-                cargo = getattr(req, "cargo", None)
+                offer = op.selection.offer if op.selection else None
+                req = offer.freight_request if offer else None
+                cargo = getattr(req, "cargo", None) if req else None
                 rows.append([
-                    offer.reference_code,
+                    offer.reference_code if offer else "N/A",
                     op.created_at.strftime("%d/%m/%Y"),
                     op.organization.name,
                     op.carrier.trade_name,
@@ -119,7 +119,7 @@ class ReportOperationsView(ReportBaseView):
                     op.status,
                     cargo.cargo_profile if cargo else "N/A",
                     op.load_type or "Não informado",
-                    offer.offer_amount,
+                    offer.offer_amount if offer else 0.0,
                 ])
             return generate_csv_response("operacoes_fretes.csv", headers, rows)
             
@@ -280,14 +280,14 @@ class ReportIncidentsView(ReportBaseView):
         ).select_related("operation__selection__offer", "operation__carrier", "operation__driver").order_by("-occurred_at")
         
         # Get PODs
-        pods = ops.filter(status=OperationStatus.DELIVERED.value).select_related("pod", "selection__offer", "carrier", "driver").exclude(pod__isnull=True).order_by("-completed_at")
+        pods = ops.filter(status=OperationStatus.DELIVERED.value).select_related("selection__offer", "carrier", "driver").prefetch_related("pods").exclude(pods__isnull=True).order_by("-completed_at")
         
         if request.GET.get("export") == "csv":
             headers = ["Operação", "Tipo de Registro", "Data/Hora", "Transportadora", "Motorista", "Detalhes"]
             rows = []
             for inc in incidents:
                 rows.append([
-                    inc.operation.selection.offer.reference_code,
+                    inc.operation.selection.offer.reference_code if (inc.operation.selection and inc.operation.selection.offer) else str(inc.operation.id)[:8],
                     "INCIDENTE",
                     inc.occurred_at.strftime("%d/%m/%Y %H:%M"),
                     inc.operation.carrier.trade_name,
@@ -297,7 +297,7 @@ class ReportIncidentsView(ReportBaseView):
             for op in pods:
                 pod = op.pod
                 rows.append([
-                    op.selection.offer.reference_code,
+                    op.selection.offer.reference_code if (op.selection and op.selection.offer) else str(op.id)[:8],
                     "POD_ENTREGA",
                     pod.delivered_at.strftime("%d/%m/%Y %H:%M"),
                     op.carrier.trade_name,
@@ -320,7 +320,7 @@ class ReportIncidentsView(ReportBaseView):
             event_type="INCIDENT_REPORTED", operation__in=ops
         ).select_related("operation__selection__offer", "operation__carrier", "operation__driver").order_by("-occurred_at")
         
-        pods = ops.filter(status=OperationStatus.DELIVERED.value).select_related("pod", "selection__offer", "carrier", "driver").exclude(pod__isnull=True).order_by("-completed_at")
+        pods = ops.filter(status=OperationStatus.DELIVERED.value).select_related("selection__offer", "carrier", "driver").prefetch_related("pods").exclude(pods__isnull=True).order_by("-completed_at")
         
         context["kpis"] = {
             "incidents_count": incidents.count(),
@@ -345,8 +345,8 @@ class ReportThermalView(ReportBaseView):
             rows = []
             for ex in data["table_data"]:
                 rows.append([
-                    ex.operation.selection.offer.reference_code,
-                    ex.operation.selection.offer.freight_request.cargo.description,
+                    ex.operation.selection.offer.reference_code if (ex.operation.selection and ex.operation.selection.offer) else str(ex.operation.id)[:8],
+                    ex.operation.selection.offer.freight_request.cargo.description if (ex.operation.selection and ex.operation.selection.offer and ex.operation.selection.offer.freight_request and hasattr(ex.operation.selection.offer.freight_request, 'cargo')) else "N/A",
                     ex.operation.vehicle.plate if ex.operation.vehicle else "N/A",
                     ex.sensor_id,
                     ex.started_at.strftime("%d/%m/%Y %H:%M"),

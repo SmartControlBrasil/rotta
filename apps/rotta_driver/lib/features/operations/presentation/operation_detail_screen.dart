@@ -12,6 +12,7 @@ import 'package:rotta_driver/features/operations/presentation/providers/operatio
 import 'package:rotta_driver/features/operations/presentation/providers/tracking_provider.dart';
 import 'package:rotta_driver/features/operations/presentation/widgets/incident_dialog.dart';
 import 'package:rotta_driver/features/operations/presentation/widgets/pod_dialog.dart';
+import 'package:rotta_driver/features/operations/presentation/services/driver_operation_action_service.dart';
 
 class OperationDetailScreen extends StatefulWidget {
   final String id;
@@ -33,52 +34,9 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
     });
   }
 
-  String _getStatusButtonText(String currentStatus) {
-    switch (currentStatus) {
-      case 'ASSIGNED':
-        return 'Iniciar Deslocamento';
-      case 'DRIVER_EN_ROUTE_TO_PICKUP':
-        return 'Confirmar Chegada à Coleta';
-      case 'ARRIVED_AT_PICKUP':
-        return 'Iniciar Carregamento';
-      case 'LOADING':
-        return 'Iniciar Viagem';
-      case 'IN_TRANSIT':
-        return 'Confirmar Chegada ao Destino';
-      case 'ARRIVED_AT_DELIVERY':
-        return 'Iniciar Descarregamento';
-      case 'UNLOADING':
-        return 'Confirmar Entrega';
-      default:
-        return '';
-    }
-  }
-
-  String _getNextStatus(String currentStatus) {
-    switch (currentStatus) {
-      case 'ASSIGNED':
-        return 'DRIVER_EN_ROUTE_TO_PICKUP';
-      case 'DRIVER_EN_ROUTE_TO_PICKUP':
-        return 'ARRIVED_AT_PICKUP';
-      case 'ARRIVED_AT_PICKUP':
-        return 'LOADING';
-      case 'LOADING':
-        return 'IN_TRANSIT';
-      case 'IN_TRANSIT':
-        return 'ARRIVED_AT_DELIVERY';
-      case 'ARRIVED_AT_DELIVERY':
-        return 'UNLOADING';
-      case 'UNLOADING':
-        return 'DELIVERED';
-      default:
-        return '';
-    }
-  }
-
-  Future<void> _confirmAndAdvance(String currentStatus) async {
-    final nextStatus = _getNextStatus(currentStatus);
-    final buttonText = _getStatusButtonText(currentStatus);
-    if (nextStatus.isEmpty || buttonText.isEmpty) return;
+  Future<void> _confirmAndExecute(String action, String? stopId) async {
+    final label = DriverOperationActionService.getActionLabel(action);
+    if (label.isEmpty) return;
 
     final confirm = await showModalBottomSheet<bool>(
       context: context,
@@ -99,7 +57,7 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
               ),
               const SizedBox(height: RottaSpacing.md),
               Text(
-                'Deseja realmente prosseguir com a ação "$buttonText"?',
+                'Deseja realmente prosseguir com a ação "$label"?',
                 textAlign: TextAlign.center,
                 style: RottaTypography.body,
               ),
@@ -133,18 +91,37 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
 
     if (confirm == true) {
       try {
-        await _detailProvider.advanceStatus(widget.id, nextStatus);
+        final trackingProvider = Provider.of<TrackingProvider>(context, listen: false);
+        final op = _detailProvider.operation!;
+        await DriverOperationActionService.executeAction(
+          context: context,
+          provider: _detailProvider,
+          action: action,
+          operationId: op.id,
+          stopId: stopId,
+          onShowIncidentDialog: () => _showIncidentDialog(),
+          onShowPodDialog: () => _showPodDialog(stopId),
+          onToggleTracking: () async {
+            if (trackingProvider.isTracking) {
+              await trackingProvider.stopTracking();
+            } else {
+              await trackingProvider.startTracking(op.id);
+            }
+          },
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Status atualizado com sucesso!')),
+            SnackBar(content: Text('Ação "$label" executada com sucesso!')),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro: ${e.toString()}')),
+            SnackBar(content: Text('Erro ao executar ação: ${e.toString()}')),
           );
         }
+        // Force refetch on error to handle stale states immediately
+        _detailProvider.loadDetail(widget.id);
       }
     }
   }
@@ -164,13 +141,14 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
     });
   }
 
-  void _showPodDialog() {
+  void _showPodDialog(String? stopId) {
     showDialog(
       context: context,
       builder: (context) => PodDialog(
-        onSubmit: (name, date, {latitude, longitude, notes}) =>
+        stopId: stopId,
+        onSubmit: (name, date, {latitude, longitude, notes, stopId}) =>
             _detailProvider.recordPOD(widget.id, name, date,
-                latitude: latitude, longitude: longitude, notes: notes),
+                latitude: latitude, longitude: longitude, notes: notes, stopId: stopId),
       ),
     ).then((success) {
       if (success == true && mounted) {
@@ -241,7 +219,6 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
           if (op == null) {
             return const Center(child: Text('Operação não encontrada.'));
           }
-
           final trackingProvider = Provider.of<TrackingProvider>(context);
 
           return SingleChildScrollView(
@@ -249,6 +226,64 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // 0. Next Action / Next Stop Highlight Card
+                if (op.nextStop != null || op.availableActions.where((a) => DriverOperationActionService.isMainAction(a.action)).isNotEmpty)
+                  Card(
+                    color: RottaColors.primary.withValues(alpha: 0.05),
+                    margin: const EdgeInsets.only(bottom: RottaSpacing.md),
+                    shape: RoundedRectangleBorder(
+                      side: const BorderSide(color: RottaColors.primary, width: 1.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(RottaSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'PRÓXIMA ETAPA REQUERIDA',
+                            style: RottaTypography.subtitleBold.copyWith(color: RottaColors.primary, fontSize: 12, letterSpacing: 1.2),
+                          ),
+                          const SizedBox(height: RottaSpacing.sm),
+                          if (op.nextStop != null) ...[
+                            Text(
+                              '${op.nextStop!.stopType == 'PICKUP' ? 'Coleta' : 'Entrega'} #${op.nextStop!.sequence} - ${op.nextStop!.city}/${op.nextStop!.state}',
+                              style: RottaTypography.headline3.copyWith(fontSize: 18),
+                            ),
+                            const SizedBox(height: RottaSpacing.xs),
+                            Text('${op.nextStop!.street ?? ''}, ${op.nextStop!.number ?? ''}'),
+                            const SizedBox(height: RottaSpacing.md),
+                          ],
+                          // Render main action buttons
+                          ...op.availableActions.where((a) => DriverOperationActionService.isMainAction(a.action)).map((availableAction) {
+                            final label = DriverOperationActionService.getActionLabel(availableAction.action);
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: RottaSpacing.xs),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: RottaColors.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                ),
+                                onPressed: _detailProvider.isSubmitting || !availableAction.enabled
+                                    ? null
+                                    : () => _confirmAndExecute(availableAction.action, op.nextStop?.id),
+                                child: _detailProvider.isSubmitting
+                                    ? const CircularProgressIndicator(color: Colors.white)
+                                    : Text(
+                                        label,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                              ),
+                            );
+                          }).toList(),
+                          if (op.nextStop == null && op.availableActions.where((a) => DriverOperationActionService.isMainAction(a.action)).isEmpty)
+                            const Text('Operação sem ações principais no momento.', style: TextStyle(fontStyle: FontStyle.italic)),
+                        ],
+                      ),
+                    ),
+                  ),
+
                 // 1. Operação Section
                 _section('Operação', [
                   RottaInfoRow(label: 'Referência', value: op.referenceCode ?? '-'),
@@ -290,9 +325,20 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Parada ${s.sequence} - ${s.stopType ?? ''}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Row(
+                            children: [
+                              Text('Parada ${s.sequence} - ${s.stopType ?? ''}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const Spacer(),
+                              if (s.status != null) RottaStatusBadge(status: s.status!),
+                            ],
+                          ),
                           Text('${s.street ?? ''}, ${s.number ?? ''} - ${s.city ?? ''}/${s.state ?? ''}'),
                           Text('Agendado: $dateStr$windowStr', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                          if (s.stopType == 'DELIVERY') ...[
+                            const SizedBox(height: 2),
+                            Text('Comprovante: ${s.hasPod == true ? 'Registrado' : 'Pendente'}',
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: s.hasPod == true ? Colors.green : Colors.orange)),
+                          ],
                           const Divider(),
                         ],
                       ),
@@ -467,32 +513,12 @@ class _OperationDetailScreenState extends State<OperationDetailScreen> {
                         backgroundColor: RottaColors.primary,
                         foregroundColor: Colors.white,
                       ),
-                      onPressed: () => _showPodDialog(),
+                      onPressed: () => _showPodDialog(null),
                       child: const Text('Registrar Comprovante de Entrega'),
                     ),
                   ],
                 ]),
 
-                // 12. Ações Operacionais Section
-                if (_getStatusButtonText(op.status).isNotEmpty) ...[
-                  const SizedBox(height: RottaSpacing.md),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: RottaColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    onPressed: _detailProvider.isSubmitting
-                        ? null
-                        : () => _confirmAndAdvance(op.status),
-                    child: _detailProvider.isSubmitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            _getStatusButtonText(op.status),
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                  ),
-                ],
                 const SizedBox(height: RottaSpacing.xl),
               ],
             ),

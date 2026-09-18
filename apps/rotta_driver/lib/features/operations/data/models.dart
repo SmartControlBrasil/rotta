@@ -32,6 +32,7 @@ class OperationSummary {
 }
 
 class Stop {
+  final String? id;
   final int sequence;
   final String? stopType;
   final String? city;
@@ -41,8 +42,11 @@ class Stop {
   final String? scheduledDate;
   final String? windowStart;
   final String? windowEnd;
+  final String? status;
+  final bool? hasPod;
 
   Stop({
+    this.id,
     required this.sequence,
     this.stopType,
     this.city,
@@ -52,9 +56,12 @@ class Stop {
     this.scheduledDate,
     this.windowStart,
     this.windowEnd,
+    this.status,
+    this.hasPod,
   });
 
   factory Stop.fromJson(Map<String, dynamic> json) => Stop(
+        id: json['id'] as String?,
         sequence: json['sequence'] as int,
         stopType: json['stop_type'] as String?,
         city: json['city'] as String?,
@@ -64,6 +71,8 @@ class Stop {
         scheduledDate: json['scheduled_date'] as String?,
         windowStart: json['window_start'] as String?,
         windowEnd: json['window_end'] as String?,
+        status: json['status'] as String?,
+        hasPod: json['has_pod'] as bool?,
       );
 }
 
@@ -226,6 +235,8 @@ class OperationDetail {
   final Map<String, dynamic>? origin;
   final Map<String, dynamic>? destination;
   final List<Stop> stops;
+  final Stop? nextStop;
+  final List<AvailableAction> availableActions;
   final Cargo? cargo;
   final TrackingInfo tracking;
   final PodInfo pod;
@@ -246,6 +257,8 @@ class OperationDetail {
     this.origin,
     this.destination,
     required this.stops,
+    this.nextStop,
+    required this.availableActions,
     this.cargo,
     required this.tracking,
     required this.pod,
@@ -267,6 +280,12 @@ class OperationDetail {
         origin: json['origin'] as Map<String, dynamic>?,
         destination: json['destination'] as Map<String, dynamic>?,
         stops: (json['stops'] as List<dynamic>).map((e) => Stop.fromJson(e as Map<String, dynamic>)).toList(),
+        nextStop: json['next_stop'] != null ? Stop.fromJson(json['next_stop'] as Map<String, dynamic>) : null,
+        availableActions: json['available_actions'] != null
+            ? (json['available_actions'] as List<dynamic>)
+                .map((e) => AvailableAction.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : [],
         cargo: json['cargo'] != null ? Cargo.fromJson(json['cargo'] as Map<String, dynamic>) : null,
         tracking: TrackingInfo.fromJson(json['tracking'] as Map<String, dynamic>),
         pod: PodInfo.fromJson(json['pod'] as Map<String, dynamic>),
@@ -278,6 +297,20 @@ class OperationDetail {
             ? (json['timeline'] as List<dynamic>).map((e) => TimelineEvent.fromJson(e as Map<String, dynamic>)).toList()
             : [],
         thermalSummary: json['thermal_summary'] != null ? ThermalSummary.fromJson(json['thermal_summary'] as Map<String, dynamic>) : null,
+      );
+}
+
+class AvailableAction {
+  final String action;
+  final String label;
+  final bool enabled;
+
+  AvailableAction({required this.action, required this.label, required this.enabled});
+
+  factory AvailableAction.fromJson(Map<String, dynamic> json) => AvailableAction(
+        action: json['action'] as String,
+        label: json['label'] as String,
+        enabled: json['enabled'] as bool,
       );
 }
 
