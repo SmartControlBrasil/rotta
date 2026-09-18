@@ -11,3 +11,7 @@ Create an `AuditLog` with actor, organization, action, target, before/after payl
 ## Consequences
 
 The system gains an early audit foundation. Edits and deletes are blocked in Django Admin, and service-level payload sanitization redacts sensitive keys.
+
+## Implementation Status — 2026-08-22
+
+Append-only audit is active and is kept distinct from FreightOperationEvent, which records the operational execution timeline.

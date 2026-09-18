@@ -1,42 +1,86 @@
 # Supply Side Marketplace Domain
 
-Rotta 116 is a transport marketplace. The supply side represents people and assets that can execute transport opportunities: autonomous drivers, aggregated partners, partner carriers, own fleet and third-party fleet.
+The Rotta 116 supply side represents the people, organizations and assets capable of executing transport: autonomous drivers, aggregated partners, carriers, owned fleets and third-party fleets.
 
 ## User Is Not Driver
 
-`User` remains an identity and authentication concept. `Driver` is a business entity that represents a person who can execute freight operations in the field. A `Driver` may be linked to a `User` when that person needs to access web or future mobile interfaces, but the driver profile is not the authentication account.
+`User` is an identity/authentication concept. `Driver` is a business entity representing a person capable of executing freight operations.
+
+A driver may be linked to a user for web/mobile access, but operational driver state remains in the driver domain rather than the authentication model.
 
 ## Organization As Provider
 
-`Organization` is used to represent companies and institutional participants, including transport companies, fleet owners, partners and carriers. A separate `TransportCompany` entity was not created in this phase because it would duplicate the existing multi-organization foundation. Provider-specific behavior can evolve through organization type, memberships and future bounded contexts.
+`Organization` represents companies and institutional participants. Carrier behavior is modeled in the carrier/supply contexts without creating a duplicate top-level tenancy concept.
 
-## Vehicle Ownership
+This enables one multi-organization authorization/audit foundation across customers, carriers, fleet owners and partners.
 
-`Vehicle` belongs to an `Organization`, not directly to a `Driver`. This supports owned fleet, aggregated fleet, autonomous providers, third parties and partner carriers. A vehicle may be operated by different drivers over time.
+## Vehicle Ownership And Assignment
 
-## DriverVehicleAssignment
+`Vehicle` belongs to an organization rather than directly to a driver.
 
-`DriverVehicleAssignment` records the historical relationship between a driver and a vehicle. It supports active/inactive assignments, primary assignment, `valid_from` and `valid_until`. The current model enforces one active primary vehicle per driver and one active primary driver per vehicle, while preserving historical assignments.
+`DriverVehicleAssignment` preserves the historical relationship between drivers and vehicles, including active/primary assignments and validity periods. The current domain prevents contradictory active-primary relationships while preserving history.
 
-## Approval Is Not Availability
+## Driver Approval And Availability
 
-Driver approval and operational availability are separate concepts.
+Approval and availability are independent:
 
-- `approval_status` controls whether the driver has passed registration/document review.
-- `availability_status` controls operational state such as offline, available, busy or paused.
+- approval/document/compliance status answers whether the driver is eligible.
+- availability answers whether the driver is operationally available.
 
-An approved driver can be offline. An available driver still depends on future matching, shipment and tracking contexts before receiving freight opportunities.
+Marketplace matching applies additional constraints; availability alone does not mean every offer is compatible.
 
-## Driver Documents
+## Driver Documents And Compliance
 
-`DriverDocument` stores metadata and a private `storage_key`. Private documents must use the document storage port/adapter and must not be exposed through permanent public URLs. Audit payloads redact personal documents and storage keys.
+Private driver/vehicle/carrier documents use metadata plus private storage references. Private material must use the document storage port/adapter and must not be exposed through permanent public URLs.
 
-## Flutter And Tracking Readiness
+Audit data must redact sensitive document/storage values.
 
-The future Flutter app will allow drivers to go online, receive opportunities, accept services, update operational status, send photos/signatures/POD and send GPS. This phase does not create the app, mobile API or tracking domain.
+## Driver Geographic Preferences
 
-Tracking will be a separate bounded context. Historical location must not be stored as latitude/longitude directly in `Driver`. Future tracking records should preserve `occurred_at` and `received_at`, and mobile commands should support an idempotency key such as `client_event_id`.
+Drivers can persist geographic preferences and route intentions.
 
-## Out Of Scope For D1
+The current code includes driver preferences/route intents consumed by matching evolution. The long-term matching objective is geographic coherence rather than simple proximity:
 
-D1 does not implement loads, transport requests, quotes, pricing, matching, shipments, real tracking, payments, commission, settlement, billing or a Flutter app.
+- base/locality and radius.
+- preferred/avoided regions.
+- desired route direction.
+- additional distance/detour.
+- return implications.
+- journey time.
+- historical affinity.
+
+The backend remains authoritative; Flutter only submits/reads these preferences through API contracts.
+
+## Mobile Operations
+
+The Flutter driver application and `/api/v1/` driver API are implemented.
+
+Current mobile-operational capabilities include:
+
+- authenticated driver identity/capabilities.
+- assigned operation list/detail.
+- operation state advancement.
+- multi-stop execution.
+- incident reporting.
+- POD submission.
+- GPS tracking start/points/batch/end.
+- driver preferences and route intents.
+- thermal-reading endpoint support in the operational API.
+
+`DRIVER` RBAC permissions are intentionally narrow and must always be combined with operation ownership.
+
+## Tracking Model
+
+Tracking is not stored as latitude/longitude fields directly on `Driver`.
+
+`TrackingSession` represents a tracking lifecycle for a `FreightOperation`; `LocationPoint` stores the emitted samples.
+
+Retry safety relies on explicit identifiers such as `client_event_id`/sequence rather than timestamp-only deduplication.
+
+## Next Supply-Side Evolutions
+
+- deeper geographic matching/scoring.
+- preferred/fixed driver and vehicle behavior for contracted recurring routes.
+- substitution rules when preferred resources become unavailable.
+- operational notifications/push delivery.
+- richer fleet-health/maintenance capabilities where relevant.

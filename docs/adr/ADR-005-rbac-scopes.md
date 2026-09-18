@@ -11,3 +11,7 @@ Implement roles, permissions, role permissions, membership role assignments, and
 ## Consequences
 
 Permissions answer what a user may do. Scopes answer where or over which data that permission applies. This supports future filtering without inventing fake modules now.
+
+## Implementation Status — 2026-08-22
+
+RBAC/scopes are active. The DRIVER role now has a deliberately narrow operational permission set combined with driver ownership checks.

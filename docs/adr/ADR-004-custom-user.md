@@ -11,3 +11,7 @@ Use a custom `AUTH_USER_MODEL` based on `AbstractUser` with UUID primary key fro
 ## Consequences
 
 Authentication remains compatible with Django while allowing future identity evolution. Business rules are not concentrated inside the user model.
+
+## Implementation Status — 2026-08-22
+
+The UUID custom User remains active. Driver remains a separate business profile linked to authentication identity when mobile/web access is required.

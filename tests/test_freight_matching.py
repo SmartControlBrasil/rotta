@@ -3,6 +3,7 @@ from decimal import Decimal
 from io import StringIO
 
 import pytest
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.utils import timezone
@@ -308,10 +309,11 @@ def test_generate_matching_creates_ranked_candidates(organization, django_user_m
     candidates = list(get_current_match_candidates(offer))
 
     assert generation.is_current is True
-    assert generation.algorithm_version == MATCHING_ALGORITHM_VERSION
+    expected_version = getattr(settings, "MATCHING_ALGORITHM_VERSION", MATCHING_ALGORITHM_VERSION)
+    assert generation.algorithm_version == expected_version
     assert generation.candidate_count == len(candidates)
     assert generation.candidate_count >= 2
-    assert all(candidate.algorithm_version == MATCHING_ALGORITHM_VERSION for candidate in candidates)
+    assert all(candidate.algorithm_version == expected_version for candidate in candidates)
     assert candidates[0].rank_position == 1
     assert candidates[0].total_score is not None
     assert "compliance" in candidates[0].score_explanation

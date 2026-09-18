@@ -34,8 +34,8 @@ def _make_operation(**kwargs):
     op.started_at = kwargs.get("started_at", None)
     op.completed_at = kwargs.get("completed_at", None)
     op.status = kwargs.get("status", OperationStatus.ASSIGNED.value)
-    # selection.offer.freight_request.stops chain
-    op.selection.offer.freight_request.stops.filter.return_value.order_by.return_value.first.return_value = None
+    # stops chain
+    op.stops.filter.return_value.order_by.return_value.first.return_value = None
     return op
 
 
@@ -322,7 +322,7 @@ class TestSLAServiceWithETA:
         stop = MagicMock()
         stop.scheduled_date = deadline_local.date()
         stop.window_end = deadline_local.time()  # no microseconds — replaced above
-        (op.selection.offer.freight_request.stops
+        (op.stops
            .filter.return_value.order_by.return_value.first.return_value) = stop
         return op
 
@@ -368,7 +368,7 @@ class TestSLAServiceCompleted:
         stop = MagicMock()
         stop.scheduled_date = deadline_local.date()
         stop.window_end = deadline_local.time()
-        (op.selection.offer.freight_request.stops
+        (op.stops
            .filter.return_value.order_by.return_value.first.return_value) = stop
         return op
 

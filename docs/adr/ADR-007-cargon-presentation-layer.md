@@ -11,3 +11,6 @@ Do not build a substitute dashboard. Keep only a temporary minimal page and late
 ## Consequences
 
 No time is spent on throwaway UI. Cargon will provide visual identity, while Rotta's domain, application, RBAC, audit, and organizational architecture remain independent.
+## Implementation Status — 2026-08-22
+
+Cargon is integrated as the Rotta 116 public presentation adapter. Public-template content must reflect the actual platform state without moving business rules into the presentation layer.

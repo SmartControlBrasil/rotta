@@ -126,15 +126,17 @@ def make_operation(organization, user, ref):
         selected_by=user,
         selected_at=timezone.now(),
     )
-    operation = FreightOperation.objects.create(
-        organization=organization,
-        selection=selection,
-        carrier=carrier,
-        driver=driver,
-        vehicle=vehicle,
-        status=OperationStatus.ASSIGNED.value,
-        assigned_at=timezone.now(),
-    )
+    from src.organizations.infrastructure.django.models import Membership
+    membership_existed = Membership.objects.filter(user=user, organization=organization).exists()
+    temp_membership = None
+    if not membership_existed:
+        temp_membership = Membership.objects.create(user=user, organization=organization, status="ACTIVE")
+    try:
+        from src.freights.application.operation_services import create_operation_from_selection
+        operation = create_operation_from_selection(selection_id=str(selection.id), actor=user)
+    finally:
+        if temp_membership:
+            temp_membership.delete()
     return operation
 
 
@@ -156,7 +158,7 @@ def test_backoffice_renders_tracking_telemetry_correctly(client, org_a, user_a, 
         started_at=timezone.now(),
         status=TrackingSessionStatus.ACTIVE.value,
     )
-    
+
     point = LocationPoint.objects.create(
         organization=org_a,
         tracking_session=session,
@@ -179,11 +181,11 @@ def test_backoffice_renders_tracking_telemetry_correctly(client, org_a, user_a, 
 
     # Verify Rastreamento title
     assert "Rastreamento em Tempo Quase Real" in content
-    
+
     # Session Details
     assert str(session.id)[:8] in content
     assert "ACTIVE" in content
-    
+
     # GPS position & accuracy & speed textual assertions
     assert "-23" in content
     assert "-46" in content
@@ -227,7 +229,7 @@ def test_backoffice_scoping_no_data_leakage(client, org_a, org_b, user_a, user_b
     )
 
     client.force_login(user_a)
-    
+
     # User A tries to get User B's operation detail - should be 404/denied due to operation scoping
     response = client.get(reverse("backoffice:freight_operation_detail", args=[op_b.id]), HTTP_HOST="localhost")
     assert response.status_code == 404

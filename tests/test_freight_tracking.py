@@ -134,15 +134,17 @@ def make_operation(organization, user, ref):
         selected_by=user,
         selected_at=timezone.now(),
     )
-    operation = FreightOperation.objects.create(
-        organization=organization,
-        selection=selection,
-        carrier=carrier,
-        driver=driver,
-        vehicle=vehicle,
-        status=OperationStatus.ASSIGNED.value,
-        assigned_at=timezone.now(),
-    )
+    from src.organizations.infrastructure.django.models import Membership
+    membership_existed = Membership.objects.filter(user=user, organization=organization).exists()
+    temp_membership = None
+    if not membership_existed:
+        temp_membership = Membership.objects.create(user=user, organization=organization, status="ACTIVE")
+    try:
+        from src.freights.application.operation_services import create_operation_from_selection
+        operation = create_operation_from_selection(selection_id=str(selection.id), actor=user)
+    finally:
+        if temp_membership:
+            temp_membership.delete()
     return operation
 
 

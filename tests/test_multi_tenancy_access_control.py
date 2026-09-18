@@ -169,20 +169,18 @@ def make_operation(organization, user, driver, ref):
         interest=interest,
         organization=organization,
         offer=offer,
-        status="PENDING_CONFIRMATION",
+        status="CONFIRMED",
         selected_by=user,
         selected_at=timezone.now(),
     )
-    operation = FreightOperation.objects.create(
+    from src.organizations.infrastructure.django.models import Membership
+    Membership.objects.get_or_create(
+        user=user,
         organization=organization,
-        selection=selection,
-        carrier=carrier,
-        driver=driver,
-        vehicle=vehicle,
-        status=OperationStatus.ASSIGNED.value,
-        assigned_at=timezone.now(),
+        defaults={"status": "ACTIVE"}
     )
-    return operation
+    from src.freights.application.operation_services import create_operation_from_selection
+    return create_operation_from_selection(selection_id=str(selection.id), actor=user)
 
 
 @pytest.mark.django_db

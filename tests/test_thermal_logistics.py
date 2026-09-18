@@ -38,6 +38,10 @@ def base_op(db, org_a, user_a, driver_a):
     cargo.temperature_min_c = Decimal("2.00")
     cargo.temperature_max_c = Decimal("8.00")
     cargo.save()
+    # Update operational snapshot limits
+    op.temperature_min_c = Decimal("2.00")
+    op.temperature_max_c = Decimal("8.00")
+    op.save()
     return op
 
 

@@ -11,3 +11,7 @@ Model organizations and memberships from the beginning instead of attaching each
 ## Consequences
 
 Access control, audit records, and future workflows can be scoped by organization. The first phase has slightly more structure, but avoids a future tenant migration.
+
+## Implementation Status — 2026-08-22
+
+The multi-organization foundation is active across RBAC, customer/carrier/driver/vehicle/freight flows and is part of current fail-closed access enforcement.

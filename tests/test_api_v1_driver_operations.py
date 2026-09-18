@@ -166,15 +166,17 @@ def make_operation(organization, user, driver, ref):
         selected_by=user,
         selected_at=timezone.now(),
     )
-    operation = FreightOperation.objects.create(
-        organization=organization,
-        selection=selection,
-        carrier=carrier,
-        driver=driver,
-        vehicle=vehicle,
-        status=OperationStatus.ASSIGNED.value,
-        assigned_at=timezone.now(),
-    )
+    from src.organizations.infrastructure.django.models import Membership
+    membership_existed = Membership.objects.filter(user=user, organization=organization).exists()
+    temp_membership = None
+    if not membership_existed:
+        temp_membership = Membership.objects.create(user=user, organization=organization, status="ACTIVE")
+    try:
+        from src.freights.application.operation_services import create_operation_from_selection
+        operation = create_operation_from_selection(selection_id=str(selection.id), actor=user)
+    finally:
+        if temp_membership:
+            temp_membership.delete()
     return operation
 
 
@@ -198,7 +200,7 @@ def test_driver_sees_own_operations(client, org_a, user_a, driver_a):
 def test_driver_does_not_see_another_drivers_operation(client, org_a, org_b, user_a, user_b, driver_a, driver_b):
     # Make operation for driver_b (user_b)
     op_b = make_operation(org_b, user_b, driver_b, "B")
-    
+
     # Authenticate as user_a (driver_a)
     token_a = generate_access_token(user_a)
 
@@ -320,7 +322,7 @@ def test_driver_operations_list_enrichment(client, org_a, user_a, driver_a):
     op = make_operation(org_a, user_a, driver_a, "A")
     op.load_type = "FTL"
     op.save()
-    
+
     token = generate_access_token(user_a)
     response = client.get(
         reverse("api_v1:driver_operations"),
@@ -357,12 +359,19 @@ def test_driver_operation_detail_enrichment(client, org_a, user_a, driver_a):
     cargo.temperature_min_c = Decimal("2.00")
     cargo.temperature_max_c = Decimal("8.00")
     cargo.save()
+    op.temperature_min_c = Decimal("2.00")
+    op.temperature_max_c = Decimal("8.00")
+    op.save()
 
     # Let's set window_end on delivery stop to make sure a real deadline exists
     import datetime
     delivery_stop = op.selection.offer.freight_request.stops.filter(stop_type="DELIVERY").first()
     delivery_stop.window_end = datetime.time(18, 0)
     delivery_stop.save()
+    op_d_stop = op.stops.filter(stop_type="DELIVERY").first()
+    if op_d_stop:
+        op_d_stop.window_end = datetime.time(18, 0)
+        op_d_stop.save()
 
     # Add a custom event to the timeline
     event = FreightOperationEvent.objects.create(
@@ -411,6 +420,7 @@ def test_driver_operation_detail_enrichment(client, org_a, user_a, driver_a):
 @pytest.mark.django_db
 def test_driver_operation_enrichment_absence_of_data(client, org_a, user_a, driver_a):
     op = make_operation(org_a, user_a, driver_a, "A")
+    op.events.all().delete()
     # Empty thermal readings, empty events, no load_type
     token = generate_access_token(user_a)
     detail_url = reverse("api_v1:driver_operation_detail", args=[op.id])
@@ -431,7 +441,8 @@ def test_driver_operation_enrichment_absence_of_data(client, org_a, user_a, driv
 def test_operation_timeline_sorting(db, org_a, user_a, driver_a):
     from src.freights.infrastructure.django.models import FreightOperationEvent
     op = make_operation(org_a, user_a, driver_a, "A")
-    
+    op.events.all().delete()
+
     # Create 3 events with different occurred_at / received_at
     now = timezone.now()
     e3 = FreightOperationEvent.objects.create(
@@ -458,4 +469,3 @@ def test_operation_timeline_sorting(db, org_a, user_a, driver_a):
     assert events[0].id == e1.id
     assert events[1].id == e2.id
     assert events[2].id == e3.id
-

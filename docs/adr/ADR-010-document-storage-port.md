@@ -11,3 +11,7 @@ Model document storage as a port. The local filesystem adapter is only the devel
 ## Consequences
 
 Domain and application code should not depend directly on S3, MinIO, or filesystem details. Private business documents must not depend on permanent public URLs and should be private by default.
+
+## Implementation Status — 2026-08-22
+
+Private-document storage remains port/adapter based and is used by compliance/document workflows; public permanent document URLs remain prohibited.
