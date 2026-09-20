@@ -1,0 +1,25 @@
+/* Rotta 116 — ajustes pontuais sobre o tema Cargon */
+
+/* Hero slider: evita corte dos CTAs por height fixo + overflow hidden */
+.ca-slider-3 {
+    min-height: 784px;
+    height: auto;
+}
+
+.ca-hero-content-3 {
+    padding-bottom: 48px;
+}
+
+@media only screen and (max-width: 991px) {
+    .ca-hero-content-3 {
+        padding-bottom: 64px;
+    }
+}
+
+/* Logo do rodapé: ~1/4 da largura da coluna */
+.ca-ft-logo img.rotta-public-logo {
+    display: block;
+    width: 25%;
+    max-width: 130px;
+    height: auto;
+}
