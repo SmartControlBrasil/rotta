@@ -4,10 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rotta_driver/features/operations/data/models.dart';
 import 'package:rotta_driver/features/operations/data/operations_repository.dart';
 import 'package:rotta_driver/features/operations/presentation/providers/operation_detail_provider.dart';
-import 'package:rotta_driver/core/api/api_client.dart';
-import 'package:rotta_driver/core/config/config.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:rotta_driver/core/api/api_client.dart';
+import 'package:rotta_driver/core/api/tracking_service.dart';
+import 'package:rotta_driver/core/config/config.dart';
+import 'package:rotta_driver/features/operations/presentation/providers/tracking_provider.dart';
+
+
 
 class MockClient extends http.BaseClient {
   final Future<http.Response> Function(http.BaseRequest request) mockHandler;
@@ -337,5 +342,70 @@ void main() {
       expect(provider.operation!.nextStop!.status, 'ARRIVED');
       expect(provider.operation!.availableActions.map((a) => a.action), contains('COMPLETE_STOP'));
     });
+
+    test('TrackingProvider handles disabled location services gracefully', () async {
+      final mockService = MockTrackingService(serviceEnabled: false);
+      final provider = TrackingProvider(trackingService: mockService);
+
+      try {
+        await provider.startTracking('op-uuid');
+        fail('Should have thrown an exception');
+      } catch (e) {
+        expect(provider.error, contains('desativado'));
+      }
+    });
+
+    test('TrackingProvider handles denied location permission', () async {
+      final mockService = MockTrackingService(
+        serviceEnabled: true,
+        permission: LocationPermission.denied,
+      );
+      final provider = TrackingProvider(trackingService: mockService);
+
+      try {
+        await provider.startTracking('op-uuid');
+        fail('Should have thrown an exception');
+      } catch (e) {
+        expect(provider.error, contains('negada pelo motorista'));
+      }
+    });
+
+    test('TrackingProvider handles deniedForever location permission', () async {
+      final mockService = MockTrackingService(
+        serviceEnabled: true,
+        permission: LocationPermission.deniedForever,
+      );
+      final provider = TrackingProvider(trackingService: mockService);
+
+      try {
+        await provider.startTracking('op-uuid');
+        fail('Should have thrown an exception');
+      } catch (e) {
+        expect(provider.error, contains('permanentemente'));
+      }
+    });
+
   });
+}
+
+class MockTrackingService extends TrackingService {
+  final bool serviceEnabled;
+  final LocationPermission permission;
+
+  MockTrackingService({
+    this.serviceEnabled = true,
+    this.permission = LocationPermission.whileInUse,
+  });
+
+  @override
+  Future<bool> isLocationServiceEnabled() async => serviceEnabled;
+
+  @override
+  Future<LocationPermission> checkLocationPermissions() async => permission;
+
+  @override
+  Future<LocationPermission> requestLocationPermissions() async => permission;
+
+  @override
+  Future<List<Map<String, dynamic>>> getOfflineQueue() async => [];
 }

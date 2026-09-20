@@ -16,12 +16,13 @@ class TrackingService {
   })  : _repository = repository ?? OperationsRepository(),
         _storage = storage ?? const FlutterSecureStorage();
 
-  // Check if location services are enabled and permissions are granted
+  // Check if GPS location services are enabled on the device
+  Future<bool> isLocationServiceEnabled() async {
+    return await Geolocator.isLocationServiceEnabled();
+  }
+
+  // Check if location permissions are granted
   Future<LocationPermission> checkLocationPermissions() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return LocationPermission.denied;
-    }
     return await Geolocator.checkPermission();
   }
 
@@ -29,6 +30,17 @@ class TrackingService {
   Future<LocationPermission> requestLocationPermissions() async {
     return await Geolocator.requestPermission();
   }
+
+  // Open device location settings (GPS toggle)
+  Future<bool> openLocationSettings() async {
+    return await Geolocator.openLocationSettings();
+  }
+
+  // Open system app settings (when permission is deniedForever)
+  Future<bool> openAppSettings() async {
+    return await Geolocator.openAppSettings();
+  }
+
 
   // Store a point in the offline queue
   Future<void> saveToOfflineQueue(String sessionUuid, Map<String, dynamic> point) async {

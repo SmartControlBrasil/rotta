@@ -36,21 +36,42 @@ class TrackingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Open app settings for deniedForever permissions
+  Future<bool> openAppSettings() async {
+    return await _trackingService.openAppSettings();
+  }
+
+  // Open device location settings when GPS is toggled off
+  Future<bool> openLocationSettings() async {
+    return await _trackingService.openLocationSettings();
+  }
+
   // Request permissions and start tracking session
   Future<void> startTracking(String operationId) async {
     _error = null;
     notifyListeners();
 
-    final permission = await _trackingService.checkLocationPermissions();
+    // 1. Check if GPS service is enabled on device
+    final serviceEnabled = await _trackingService.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _error = 'O serviço de localização (GPS) está desativado no dispositivo.';
+      notifyListeners();
+      throw Exception(_error);
+    }
+
+    // 2. Check & request runtime location permissions
+    var permission = await _trackingService.checkLocationPermissions();
     if (permission == LocationPermission.denied) {
-      final requested = await _trackingService.requestLocationPermissions();
-      if (requested == LocationPermission.denied || requested == LocationPermission.deniedForever) {
-        _error = 'Permissão de localização negada.';
+      permission = await _trackingService.requestLocationPermissions();
+      if (permission == LocationPermission.denied) {
+        _error = 'Permissão de localização negada pelo motorista.';
         notifyListeners();
         throw Exception(_error);
       }
-    } else if (permission == LocationPermission.deniedForever) {
-      _error = 'Permissão de localização negada permanentemente nas configurações.';
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _error = 'Permissão de localização negada permanentemente nas configurações do aplicativo.';
       notifyListeners();
       throw Exception(_error);
     }
@@ -69,6 +90,7 @@ class TrackingProvider extends ChangeNotifier {
       rethrow;
     }
   }
+
 
   // End tracking session
   Future<void> stopTracking() async {
